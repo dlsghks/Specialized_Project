@@ -9,7 +9,9 @@ export const Header = () => {
 
             <nav>
                 <Link to="/products">자전거</Link>
-                <Link to="/customize/tarmac-sl9">커스터마이징</Link>
+                <Link to="/customize">장비 커스텀</Link>
+                <Link to="/community">라이더 커뮤니티</Link>
+                <Link to="/dealers">대리점</Link>
                 <Link to="/compare">상품 비교</Link>
             </nav>
 

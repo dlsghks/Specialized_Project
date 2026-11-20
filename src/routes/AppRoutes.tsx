@@ -14,6 +14,11 @@ import { Signup } from "../pages/Signup";
 import { MyPage } from "../pages/MyPage";
 import { OrderDetail } from "../pages/OrderDetail";
 import { Support } from "../pages/Support";
+import { Community } from "../pages/Community";
+import { CommunityDetail } from "../pages/CommunityDetail";
+import { Dealers } from "../pages/Dealers";
+import { TestRideReservation } from "../pages/TestRideReservation";
+import { CustomizeModels } from "../pages/CustomizeModels";
 import { NotFound } from "../pages/NotFound";
 
 export const AppRoutes = () => {
@@ -23,7 +28,12 @@ export const AppRoutes = () => {
                 <Route index element={<Home />} />
                 <Route path="products" element={<Products />} />
                 <Route path="products/:id" element={<ProductDetail />} />
+                <Route path="customize" element={<CustomizeModels />} />
                 <Route path="customize/:id" element={<Customize />} />
+                <Route path="community" element={<Community />} />
+                <Route path="community/:id" element={<CommunityDetail />} />
+                <Route path="dealers" element={<Dealers />} />
+                <Route path="dealers/reserve" element={<TestRideReservation />} />
                 <Route path="compare" element={<Compare />} />
                 <Route path="cart" element={<Cart />} />
                 <Route path="checkout" element={<Checkout />} />
