@@ -28,7 +28,7 @@ export const ProductDetail = () => {
 };
 
 const TarmacDetail = () => {
-    const [view, setView] = useState(0);
+    const [{ view, direction }, setGallery] = useState({ view: 0, direction: 0 });
     const [color, setColor] = useState(0);
     const [size, setSize] = useState(54);
     const [delivery, setDelivery] = useState("집으로 수령");
@@ -38,7 +38,10 @@ const TarmacDetail = () => {
     const specsPanel = useRef<HTMLDetailsElement>(null);
     const geometryPanel = useRef<HTMLDetailsElement>(null);
 
-    const move = (offset: number) => setView((current) => (current + offset + views.length) % views.length);
+    const move = (offset: number) => setGallery(({ view: current }) => ({
+        view: (current + offset + views.length) % views.length,
+        direction: Math.sign(offset),
+    }));
     const startSwipe = (event: PointerEvent<HTMLDivElement>) => {
         if (!event.isPrimary || event.button !== 0) return;
         swipe.current = { id: event.pointerId, x: event.clientX, y: event.clientY };
@@ -62,12 +65,14 @@ const TarmacDetail = () => {
     return (
         <article className="product-detail">
             <section className="product-gallery" aria-label="상품 이미지">
-                <div className="product-placeholder product-gallery__image"
+                <div className="product-gallery__image"
                     onPointerDown={startSwipe} onPointerUp={finishSwipe}
                     onLostPointerCapture={(event) => {
                         if (swipe.current?.id === event.pointerId) swipe.current = null;
                     }}>
-                    <span aria-live="polite">S-Works Tarmac SL9 · {views[view]} · {colors[color]}</span>
+                    <div className={`product-placeholder${direction ? " product-gallery__slide" : ""}${direction < 0 ? " product-gallery__slide--previous" : ""}`} key={view}>
+                        <span aria-live="polite">S-Works Tarmac SL9 · {views[view]} · {colors[color]}</span>
+                    </div>
                 </div>
                 <button className="product-gallery__zoom" type="button" aria-label="이미지 확대" onClick={() => zoom.current?.showModal()}>
                     <Search size={20} />
@@ -78,7 +83,7 @@ const TarmacDetail = () => {
                     <span>{String(view + 1).padStart(2, "0")} / 06</span>
                     <div aria-label="이미지 보기 선택">
                         {views.map((label, index) => (
-                            <button key={label} type="button" aria-pressed={view === index} onClick={() => setView(index)}>{label}</button>
+                            <button key={label} type="button" aria-pressed={view === index} onClick={() => move(index - view)}>{label}</button>
                         ))}
                     </div>
                 </div>
