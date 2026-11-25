@@ -18,7 +18,12 @@
     margin-inline-start: clamp(0rem, 12vw, 13rem);
 }
 
-.home-hero h1,
+.home-hero h1 {
+    font-size: clamp(18px, 6vw, 56px);
+    margin-block: .5rem 1rem;
+    white-space: nowrap;
+}
+
 .home-ride-finder h2 {
     font-size: clamp(2rem, 4.5vw, 5rem);
     margin-block: .5rem 1rem;
@@ -239,7 +244,10 @@
 .home-hero__playback .home-hero__pause {
     border: 0;
     padding: 0;
-    background: #fff;
-    border-radius: 50%;
-    overflow: hidden;
+    background: transparent;
+    mix-blend-mode: screen;
+}
+
+.home-hero__pause img {
+    filter: contrast(1.15) invert(1);
 }
