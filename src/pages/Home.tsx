@@ -40,7 +40,6 @@ export const Home = () => {
     const [bikeIndex, setBikeIndex] = useState(0);
     const [heroPaused, setHeroPaused] = useState(false);
     const [showGuide, setShowGuide] = useState(false);
-    const [showRecommendationStatus, setShowRecommendationStatus] = useState(false);
     const highlight = highlights[highlightIndex];
     const visibleBikes = [-1, 0, 1].map(
         (offset) => featuredBikes[(bikeIndex + offset + featuredBikes.length) % featuredBikes.length],
@@ -81,7 +80,7 @@ export const Home = () => {
                             {highlight.to ? (
                                 <Link className="home-link" to={highlight.to}>{highlight.action}</Link>
                             ) : (
-                                <a className="home-link" href="#ride-finder">추천 서비스 안내</a>
+                                <Link className="home-link" to="/bike-finder">자전거 추천 받기</Link>
                             )}
                             {highlightIndex === 0 && (
                                 <button className="home-link home-link--outline" type="button"
@@ -165,10 +164,7 @@ export const Home = () => {
                 <section className="home-ride-finder" id="ride-finder" aria-labelledby="ride-title">
                     <h2 id="ride-title">FIND YOUR RIDE</h2>
                     <p>AI를 통해 나에게 딱 맞는 자전거를 추천받아 보세요.</p>
-                    <button className="home-link" type="button" onClick={() => setShowRecommendationStatus(true)}>
-                        AI 자전거 추천 받기
-                    </button>
-                    {showRecommendationStatus && <p role="status">AI 추천 기능은 준비 중이에요.</p>}
+                    <Link className="home-link" to="/bike-finder">AI 자전거 추천 받기</Link>
                 </section>
 
                 <section className="home-community" aria-labelledby="community-title">
