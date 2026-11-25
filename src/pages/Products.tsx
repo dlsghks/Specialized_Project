@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Check, ChevronDown, SlidersHorizontal, X } from "lucide-react";
 import "../styles/pages/catalog/Products.scss";
@@ -31,6 +31,7 @@ const equipment: Product[] = [
 ];
 const won = new Intl.NumberFormat("ko-KR", { style: "currency", currency: "KRW" });
 const pageSize = 12;
+const comparisonLimit = 3;
 
 const filterGroups = [
     { label: "그룹", options: ["자전거", "E-Bikes", "프레임셋"] },
@@ -86,6 +87,12 @@ function Catalog({ isEquipment }: { isEquipment: boolean }) {
     const [expandedGroups, setExpandedGroups] = useState<string[]>([]);
     const [page, setPage] = useState(1);
     const [comparison, setComparison] = useState<string[]>([]);
+    const [comparisonCollapsed, setComparisonCollapsed] = useState(false);
+    const comparisonDialog = useRef<HTMLDialogElement>(null);
+    const comparedProducts = comparison.flatMap((name) => products.filter((product) => product.name === name));
+    const removeComparison = (name: string) => {
+        setComparison((current) => current.filter((entry) => entry !== name));
+    };
     const categoryOptions = [...new Set(products.map(({ category }) => category))];
     const filtered = products.filter((product) => Object.entries(filters).every(
         ([key, options]) => options.length === 0 || options.some((option) => matchesFilter(product, key, option)),
@@ -128,7 +135,7 @@ function Catalog({ isEquipment }: { isEquipment: boolean }) {
     const pages = Math.ceil(sorted.length / pageSize);
 
     return (
-        <section className="catalog" aria-labelledby="catalog-title">
+        <section className="catalog" data-comparing={comparison.length > 0} aria-labelledby="catalog-title">
             <header className="catalog__heading">
                 <p><Link to="/">홈</Link> / {title}</p>
                 <h1 id="catalog-title">{title} <small>({filtered.length})</small></h1>
@@ -194,10 +201,19 @@ function Catalog({ isEquipment }: { isEquipment: boolean }) {
                                 <div className="catalog__photo" aria-hidden="true">제품 이미지<span>● ● ●</span></div>
                                 <div className="catalog__card-heading">
                                     <h2>{id ? <Link to={`/products/${id}`}>{name}</Link> : name}</h2>
-                                    <label>비교 <input type="checkbox" aria-label={`${name} 비교 선택`} checked={comparison.includes(name)} onChange={(event) => {
-                                        const checked = event.target.checked;
-                                        setComparison((current) => checked ? [...current, name] : current.filter((entry) => entry !== name));
-                                    }} /></label>
+                                    <label className="catalog__compare-choice" data-selected={comparison.includes(name)}>
+                                        {comparison.includes(name) ? "비교 중" : "비교"}
+                                        <input type="checkbox" aria-label={`${name} 비교 선택`} checked={comparison.includes(name)}
+                                            disabled={comparison.length >= comparisonLimit && !comparison.includes(name)}
+                                            onChange={(event) => {
+                                                if (!event.target.checked) {
+                                                    removeComparison(name);
+                                                    return;
+                                                }
+                                                setComparison((current) => current.length < comparisonLimit ? [...current, name] : current);
+                                                setComparisonCollapsed(false);
+                                            }} />
+                                    </label>
                                 </div>
                                 <p>{detail ?? category} · {won.format(price)}</p>
                             </li>
@@ -213,6 +229,53 @@ function Catalog({ isEquipment }: { isEquipment: boolean }) {
                     )}
                 </div>
             </div>
+            {comparison.length > 0 && (
+                <aside className="catalog-compare" aria-label="제품 비교" data-collapsed={comparisonCollapsed}>
+                    <div className="catalog-compare__summary">
+                        <strong>제품 비교</strong>
+                        <div><span aria-live="polite">{comparison.length} / {comparisonLimit}</span>
+                            <button type="button" onClick={() => setComparison([])}>초기화</button>
+                        </div>
+                        <button type="button" aria-expanded={!comparisonCollapsed} aria-controls="catalog-compare-slots"
+                            onClick={() => setComparisonCollapsed((current) => !current)}>
+                            {comparisonCollapsed ? "펼치기 ⌃" : "접기 ⌄"}
+                        </button>
+                    </div>
+                    <ul id="catalog-compare-slots" className="catalog-compare__slots" hidden={comparisonCollapsed}>
+                        {comparedProducts.map(({ name, price }) => (
+                            <li key={name} className="catalog-compare__product">
+                                <div className="catalog-compare__thumbnail" aria-hidden="true" />
+                                <div><strong title={name}>{name}</strong><p>{won.format(price)}</p></div>
+                                <button type="button" aria-label={`${name} 비교에서 제거`} onClick={() => removeComparison(name)}><X size={16} /></button>
+                            </li>
+                        ))}
+                        {Array.from({ length: comparisonLimit - comparison.length }, (_, index) => (
+                            <li className="catalog-compare__empty" key={index}>＋ 비교할 제품 추가</li>
+                        ))}
+                    </ul>
+                    <button className="catalog-compare__submit" type="button" disabled={comparison.length < 2}
+                        onClick={() => comparisonDialog.current?.showModal()}>
+                        비교하기 ({comparison.length})
+                        {comparison.length < 2 && <small>2개 이상 선택 시 활성</small>}
+                    </button>
+                </aside>
+            )}
+            <dialog ref={comparisonDialog} className="catalog-compare-dialog" aria-labelledby="catalog-compare-title">
+                <div className="catalog-compare-dialog__heading">
+                    <h2 id="catalog-compare-title">제품 비교</h2>
+                    <form method="dialog"><button aria-label="제품 비교 닫기"><X size={20} /></button></form>
+                </div>
+                <div className="catalog-compare-dialog__table">
+                    <table>
+                        <thead><tr><th scope="col">항목</th>{comparedProducts.map(({ name }) => <th scope="col" key={name}>{name}</th>)}</tr></thead>
+                        <tbody>
+                            <tr><th scope="row">카테고리</th>{comparedProducts.map(({ name, category }) => <td key={name}>{category}</td>)}</tr>
+                            <tr><th scope="row">가격</th>{comparedProducts.map(({ name, price }) => <td key={name}>{won.format(price)}</td>)}</tr>
+                            <tr><th scope="row">구성</th>{comparedProducts.map(({ name, detail }) => <td key={name}>{detail ?? "—"}</td>)}</tr>
+                        </tbody>
+                    </table>
+                </div>
+            </dialog>
         </section>
     );
 }
