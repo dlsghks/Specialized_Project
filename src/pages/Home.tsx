@@ -38,13 +38,12 @@ export const Home = () => {
     const [{ index: highlightIndex, direction }, setHighlight] = useState({ index: 0, direction: 1 });
     const swipeStart = useRef<{ id: number; x: number; y: number } | null>(null);
     const [bikeIndex, setBikeIndex] = useState(0);
-    const [componentIndex, setComponentIndex] = useState(0);
     const [heroPaused, setHeroPaused] = useState(false);
     const [showGuide, setShowGuide] = useState(false);
     const [showRecommendationStatus, setShowRecommendationStatus] = useState(false);
     const highlight = highlights[highlightIndex];
-    const visibleComponents = [-1, 0, 1].map(
-        (offset) => components[(componentIndex + offset + components.length) % components.length],
+    const visibleBikes = [-1, 0, 1].map(
+        (offset) => featuredBikes[(bikeIndex + offset + featuredBikes.length) % featuredBikes.length],
     );
     const changeHighlight = (offset: number) =>
         setHighlight(({ index }) => ({
@@ -68,9 +67,6 @@ export const Home = () => {
     };
     const changeBike = (offset: number) =>
         setBikeIndex((index) => (index + offset + featuredBikes.length) % featuredBikes.length);
-
-    const changeComponent = (offset: number) =>
-        setComponentIndex((index) => (index + offset + components.length) % components.length);
 
     return (
         <div className="home">
@@ -131,7 +127,13 @@ export const Home = () => {
                         <h2 id="featured-bikes">자전거 제품 소개</h2>
                         <Link to="/products">전체보기 →</Link>
                     </div>
-                    <div className="home-bike-media home-media" aria-hidden="true" />
+                    <div className="home-bike-window" aria-hidden="true">
+                        <div className="home-bike-track">
+                            {visibleBikes.map((bike) => (
+                                <div key={bike} className="home-bike-media home-media">{bike}</div>
+                            ))}
+                        </div>
+                    </div>
                     <div className="home-section-heading">
                         <h3 aria-live="polite">{featuredBikes[bikeIndex]}</h3>
                         <div className="home-controls">
@@ -145,22 +147,18 @@ export const Home = () => {
                     <div className="home-section-heading">
                         <h2 id="bike-components">Bike components</h2>
                     </div>
-                    <div className="home-component-window">
-                        <ul className="home-components">
-                            {visibleComponents.map(({ id, name, price }) => (
-                                <li key={id}>
-                                    <div className="home-media" aria-hidden="true" />
-                                    <h3>{name}</h3>
-                                    <p>{won.format(price)}</p>
-                                    <Link to={`/products/${id}`} aria-label={`${name} 보기`}>View →</Link>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                    <div className="home-controls home-component-actions">
-                        <button type="button" aria-label="이전 부품" onClick={() => changeComponent(-1)}>‹</button>
-                        <Link className="home-link" to="/products">View All →</Link>
-                        <button type="button" aria-label="다음 부품" onClick={() => changeComponent(1)}>›</button>
+                    <ul className="home-components">
+                        {components.map(({ id, name, price }) => (
+                            <li key={id}>
+                                <div className="home-media" aria-hidden="true" />
+                                <h3>{name}</h3>
+                                <p>{won.format(price)}</p>
+                                <Link to={`/products/${id}`} aria-label={`${name} 보기`}>View →</Link>
+                            </li>
+                        ))}
+                    </ul>
+                    <div className="home-component-actions">
+                        <Link className="home-link" to="/products">VIEW ALL →</Link>
                     </div>
                 </section>
 
