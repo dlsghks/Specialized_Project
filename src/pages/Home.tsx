@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState, type PointerEvent } from "react";
 import { Link } from "react-router-dom";
 import "./Home.scss";
 
@@ -35,7 +35,8 @@ const components = [
 const won = new Intl.NumberFormat("ko-KR", { style: "currency", currency: "KRW" });
 
 export const Home = () => {
-    const [highlightIndex, setHighlightIndex] = useState(0);
+    const [{ index: highlightIndex, direction }, setHighlight] = useState({ index: 0, direction: 1 });
+    const swipeStart = useRef<{ id: number; x: number; y: number } | null>(null);
     const [bikeIndex, setBikeIndex] = useState(0);
     const [componentIndex, setComponentIndex] = useState(0);
     const [heroPaused, setHeroPaused] = useState(false);
@@ -46,7 +47,25 @@ export const Home = () => {
         (offset) => components[(componentIndex + offset + components.length) % components.length],
     );
     const changeHighlight = (offset: number) =>
-        setHighlightIndex((index) => (index + offset + highlights.length) % highlights.length);
+        setHighlight(({ index }) => ({
+            index: (index + offset + highlights.length) % highlights.length,
+            direction: Math.sign(offset),
+        }));
+
+    const startSwipe = (event: PointerEvent<HTMLDivElement>) => {
+        if (!event.isPrimary || event.button !== 0 || (event.target as Element).closest("a, button")) return;
+        swipeStart.current = { id: event.pointerId, x: event.clientX, y: event.clientY };
+        event.currentTarget.setPointerCapture(event.pointerId);
+    };
+
+    const finishSwipe = (event: PointerEvent<HTMLDivElement>) => {
+        const start = swipeStart.current;
+        if (!start || start.id !== event.pointerId) return;
+        swipeStart.current = null;
+        const x = event.clientX - start.x;
+        const y = event.clientY - start.y;
+        if (Math.abs(x) >= 45 && Math.abs(x) > Math.abs(y)) changeHighlight(x < 0 ? 1 : -1);
+    };
     const changeBike = (offset: number) =>
         setBikeIndex((index) => (index + offset + featuredBikes.length) % featuredBikes.length);
 
@@ -56,31 +75,34 @@ export const Home = () => {
     return (
         <div className="home">
             <section className="home-hero" aria-label="주요 서비스">
-                <div className="home-hero__content" key={highlightIndex}>
-                    <p>{highlight.label}</p>
-                    <h1>{highlight.title[0]}<br />{highlight.title[1]}</h1>
-                    <p className="home-hero__description">{highlight.description[0]}<br />{highlight.description[1]}</p>
-                    <div className="home-hero__actions">
-                        {highlight.to ? (
-                            <Link className="home-link" to={highlight.to}>{highlight.action}</Link>
-                        ) : (
-                            <a className="home-link" href="#ride-finder">추천 서비스 안내</a>
-                        )}
-                        {highlightIndex === 0 && (
-                            <button className="home-link home-link--outline" type="button"
-                                aria-expanded={showGuide} onClick={() => setShowGuide((open) => !open)}>
-                                커스터마이징 가이드
-                            </button>
+                <div className="home-hero__viewport" onPointerDown={startSwipe} onPointerUp={finishSwipe}
+                    onLostPointerCapture={() => { swipeStart.current = null; }}>
+                    <div className={`home-hero__content${direction < 0 ? " home-hero__content--previous" : ""}`} key={highlightIndex}>
+                        <p>{highlight.label}</p>
+                        <h1>{highlight.title[0]}<br />{highlight.title[1]}</h1>
+                        <p className="home-hero__description">{highlight.description[0]}<br />{highlight.description[1]}</p>
+                        <div className="home-hero__actions">
+                            {highlight.to ? (
+                                <Link className="home-link" to={highlight.to}>{highlight.action}</Link>
+                            ) : (
+                                <a className="home-link" href="#ride-finder">추천 서비스 안내</a>
+                            )}
+                            {highlightIndex === 0 && (
+                                <button className="home-link home-link--outline" type="button"
+                                    aria-expanded={showGuide} onClick={() => setShowGuide((open) => !open)}>
+                                    커스터마이징 가이드
+                                </button>
+                            )}
+                        </div>
+                        {highlightIndex === 0 && showGuide && (
+                            <p className="home-hero__description">S-LAB에서 모델을 선택한 뒤 컬러와 부품을 조합해보세요.</p>
                         )}
                     </div>
-                    {highlightIndex === 0 && showGuide && (
-                        <p className="home-hero__description">S-LAB에서 모델을 선택한 뒤 컬러와 부품을 조합해보세요.</p>
-                    )}
                 </div>
                 <div className="home-controls home-hero__controls">
                     {highlights.map(({ label }, index) => (
                         <button key={label} type="button" aria-pressed={index === highlightIndex}
-                            onClick={() => setHighlightIndex(index)}>
+                            onClick={() => changeHighlight(index - highlightIndex)}>
                             {index === highlightIndex && (
                                 <span className={`home-hero__progress${heroPaused ? " is-paused" : ""}`}
                                     aria-hidden="true" onAnimationEnd={() => changeHighlight(1)} />
@@ -88,11 +110,16 @@ export const Home = () => {
                             {label}
                         </button>
                     ))}
-                    <button type="button" aria-label="이전 히어로" onClick={() => changeHighlight(-1)}>‹</button>
-                    <button type="button" aria-label="다음 히어로" onClick={() => changeHighlight(1)}>›</button>
-                    <button className="home-hero__pause" type="button" onClick={() => setHeroPaused((paused) => !paused)}>
-                        {heroPaused ? "자동 재생" : "일시정지"}
-                    </button>
+                    <div className="home-hero__playback">
+                        <span aria-label={`전체 ${highlights.length}개 중 ${highlightIndex + 1}번째`}>
+                            {String(highlightIndex + 1).padStart(2, "0")} / {String(highlights.length).padStart(2, "0")}
+                        </span>
+                        <button className="home-hero__pause" type="button" aria-label={heroPaused ? "자동 재생" : "일시정지"}
+                            onClick={() => setHeroPaused((paused) => !paused)}>
+                            <img src={`${import.meta.env.BASE_URL}images/icons/${heroPaused ? "play" : "pause"}.png`}
+                                alt="" width={24} height={24} />
+                        </button>
+                    </div>
                 </div>
             </section>
 
