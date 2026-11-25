@@ -32,6 +32,44 @@ const equipment: Product[] = [
 const won = new Intl.NumberFormat("ko-KR", { style: "currency", currency: "KRW" });
 const pageSize = 12;
 
+const filterGroups = [
+    { label: "그룹", options: ["자전거", "E-Bikes", "프레임셋"] },
+    { label: "모델", options: ["Aethos", "Allez", "Crux", "Diverge", "Tarmac", "Roubaix", "Chisel", "Stumpjumper", "Jett", "Sirrus", "Hotwalk", "Turbo Vado"], limit: 5 },
+    { label: "자전거 연식", options: ["S-Works", "S-Level", "Pro", "Expert", "Elite", "Comp", "Sport"], limit: 5 },
+    { label: "사이즈", options: ["XS", "S", "M", "L", "XL", "44", "49", "52", "54", "56", "58", "61"], limit: 8, style: "size" },
+    { label: "컬러", options: ["검은색", "파란색", "갈색", "녹색", "회색", "주황색", "보라", "빨간색", "하얀색", "노란색", "중립적"], style: "color" },
+    { label: "소재", options: ["카본", "알루미늄"] },
+    { label: "구동계", options: ["스램", "시마노", "마이크로시프트"], key: "브랜드" },
+    { label: "가격", options: ["₩200,000–499,999", "₩500,000–999,999", "₩1,000,000–2,499,999", "₩2,500,000–4,999,999", "₩5,000,000–9,999,999", "₩10,000,000 이상"], limit: 5 },
+];
+
+const swatches = ["#222", "#28558c", "#795747", "#46604e", "#808080", "#d47642", "#705580", "#a80000", "#fff", "#dbb647", "#d4d4d4"];
+const priceLimits = [499999, 999999, 2499999, 4999999, 9999999, Infinity];
+const categoryDetails: Record<string, string> = { 로드: "로드 레이스 · 로드 엔듀런스", 산악: "트레일", 그래블: "그래블 레이스" };
+
+// Sample attributes until the live catalog is connected.
+const bikeAttributes: Record<string, Record<string, string[]>> = {
+    "S-Works Tarmac SL9": { 사이즈: ["44", "49", "52", "54", "56", "58", "61"], 컬러: ["빨간색", "하얀색"], 소재: ["카본"], 브랜드: ["스램"], 구성: ["2x", "11 · 12 · 13-Speed"] },
+    "S-Works Tarmac SL9 프레임셋": { 사이즈: ["49", "52", "54", "56"], 컬러: ["검은색"], 소재: ["카본"] },
+    "Tarmac SL9 S-Level": { 사이즈: ["49", "52", "54", "56", "58"], 컬러: ["회색"], 소재: ["카본"], 브랜드: ["스램"], 구성: ["2x", "11 · 12 · 13-Speed"] },
+    "Tarmac SL9 Comp": { 사이즈: ["49", "52", "54", "56", "58"], 컬러: ["파란색"], 소재: ["카본"], 브랜드: ["스램"], 구성: ["2x", "11 · 12 · 13-Speed"] },
+    "Allez Sport": { 사이즈: ["49", "52", "54", "56"], 컬러: ["검은색"], 소재: ["알루미늄"], 브랜드: ["시마노"], 구성: ["2x"] },
+    Chisel: { 사이즈: ["S", "M", "L", "XL"], 컬러: ["녹색"], 소재: ["알루미늄"], 브랜드: ["시마노"], 구성: ["1x", "11 · 12 · 13-Speed"] },
+    "Sirrus X": { 사이즈: ["XS", "S", "M", "L"], 컬러: ["회색"], 소재: ["알루미늄"], 브랜드: ["마이크로시프트"], 구성: ["1x"] },
+};
+
+function matchesFilter(product: Product, key: string, option: string) {
+    if (key === "카테고리") return product.category === option;
+    if (key === "그룹") return option === (product.name.includes("프레임셋") ? "프레임셋" : product.name.startsWith("Turbo") ? "E-Bikes" : "자전거");
+    if (key === "모델") return product.name.includes(option);
+    if (key === "자전거 연식") return product.name.split(" ").includes(option);
+    if (key === "가격") {
+        const index = filterGroups.find((group) => group.label === "가격")!.options.indexOf(option);
+        return product.price > (priceLimits[index - 1] ?? 199999) && product.price <= priceLimits[index];
+    }
+    return bikeAttributes[product.name]?.[key]?.includes(option) ?? false;
+}
+
 export const Products = () => {
     const [params] = useSearchParams();
     const isEquipment = params.get("type") === "equipment";
@@ -44,11 +82,44 @@ function Catalog({ isEquipment }: { isEquipment: boolean }) {
     const [filterOpen, setFilterOpen] = useState(false);
     const [sort, setSort] = useState<Sort>("추천순");
     const [sortOpen, setSortOpen] = useState(false);
-    const [categories, setCategories] = useState<string[]>([]);
+    const [filters, setFilters] = useState<Record<string, string[]>>({});
+    const [expandedGroups, setExpandedGroups] = useState<string[]>([]);
     const [page, setPage] = useState(1);
     const [comparison, setComparison] = useState<string[]>([]);
     const categoryOptions = [...new Set(products.map(({ category }) => category))];
-    const filtered = products.filter(({ category }) => !categories.length || categories.includes(category));
+    const filtered = products.filter((product) => Object.entries(filters).every(
+        ([key, options]) => options.length === 0 || options.some((option) => matchesFilter(product, key, option)),
+    ));
+    const toggleFilter = (key: string, option: string) => {
+        setFilters((current) => {
+            const options = current[key] ?? [];
+            return { ...current, [key]: options.includes(option) ? options.filter((value) => value !== option) : [...options, option] };
+        });
+        setPage(1);
+    };
+
+    const renderOptions = (key: string, options: string[], style?: string) => (
+        <div className={`catalog__filter-options${style ? ` catalog__filter-options--${style}` : ""}`}>
+            {options.map((option, index) => {
+                const selected = filters[key]?.includes(option) ?? false;
+                if (style) return (
+                    <button key={option} type="button" aria-pressed={selected} onClick={() => toggleFilter(key, option)}>
+                        {style === "color" && <span className="catalog__swatch" style={{ backgroundColor: swatches[index] }} />}
+                        {option}
+                    </button>
+                );
+                const count = products.filter((product) => matchesFilter(product, key, option)).length;
+                return (
+                    <label key={option}>
+                        <input type="checkbox" checked={selected} onChange={() => toggleFilter(key, option)} />
+                        <span>{option}{key !== "구성" && ` (${count})`}
+                            {key === "카테고리" && categoryDetails[option] && <small>{categoryDetails[option]}</small>}
+                        </span>
+                    </label>
+                );
+            })}
+        </div>
+    );
     const sorted = [...filtered];
     if (sort === "가격 낮은 순") sorted.sort((a, b) => a.price - b.price);
     if (sort === "가격 높은 순") sorted.sort((a, b) => b.price - a.price);
@@ -95,21 +166,28 @@ function Catalog({ isEquipment }: { isEquipment: boolean }) {
                         <div className="catalog__filter-title"><h2>Filters</h2><button type="button" aria-label="필터 닫기" onClick={() => setFilterOpen(false)}><X size={18} /></button></div>
                         <details open>
                             <summary>카테고리</summary>
-                            {categoryOptions.map((category) => (
-                                <label key={category}><input type="checkbox" checked={categories.includes(category)} onChange={(event) => {
-                                    const checked = event.target.checked;
-                                    setCategories((current) => checked ? [...current, category] : current.filter((value) => value !== category));
-                                    setPage(1);
-                                }} />{category} ({products.filter((product) => product.category === category).length})</label>
-                            ))}
+                            {renderOptions("카테고리", categoryOptions)}
                         </details>
-                        {["그룹", "모델", "자전거 연식", "사이즈", "컬러", "소재"].map((group) => (
-                            <details key={group}><summary>{group}</summary><p>필터 옵션 준비 중</p></details>
-                        ))}
+                        {!isEquipment && filterGroups.map(({ label, key, options, limit, style }) => {
+                            const expanded = expandedGroups.includes(label);
+                            return (
+                                <details key={label}>
+                                    <summary>{label}</summary>
+                                    {key && <p>브랜드</p>}
+                                    {renderOptions(key ?? label, expanded ? options : options.slice(0, limit ?? options.length), style)}
+                                    {key && <><p>구성</p>{renderOptions("구성", ["1x", "2x", "11 · 12 · 13-Speed"])}</>}
+                                    {limit && <button className="catalog__filter-more" type="button" aria-expanded={expanded} onClick={() => {
+                                        setExpandedGroups((current) => expanded ? current.filter((group) => group !== label) : [...current, label]);
+                                    }}>{expanded ? "접기" : "더 보기"}</button>}
+                                </details>
+                            );
+                        })}
+                        {!isEquipment && <details><summary>구분</summary><p>세부 옵션 준비 중</p></details>}
                         <button className="catalog__filter-apply" type="button" onClick={() => setFilterOpen(false)}>상품 {filtered.length}개 보기</button>
                     </div>
                 </aside>
                 <div className="catalog__results">
+                    {sorted.length === 0 && <p role="status">선택한 조건에 맞는 상품이 없어요.</p>}
                     <ul className="catalog__grid">
                         {sorted.slice((page - 1) * pageSize, page * pageSize).map(({ name, detail, category, price, id }) => (
                             <li key={name}>
