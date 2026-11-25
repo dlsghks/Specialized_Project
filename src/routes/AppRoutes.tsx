@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import { Layout } from "../layouts/Layout";
 
 import { Home } from "../pages/Home";
+import { BikeFinder } from "../pages/BikeFinder";
 import { Products } from "../pages/Products";
 import { ProductDetail } from "../pages/ProductDetail";
 import { Customize } from "../pages/Customize";
@@ -24,6 +25,7 @@ import { NotFound } from "../pages/NotFound";
 export const AppRoutes = () => {
     return (
         <Routes>
+            <Route path="bike-finder" element={<BikeFinder />} />
             <Route element={<Layout />}>
                 <Route index element={<Home />} />
                 <Route path="products" element={<Products />} />
