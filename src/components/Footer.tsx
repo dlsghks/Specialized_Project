@@ -5,7 +5,7 @@ import "./Footer.scss";
 const icons = `${import.meta.env.BASE_URL}images/icons/`;
 const officialSite = "https://www.specialized.com/kr/ko";
 const socials = [
-    { label: "Instagram", icon: "instagram.svg", url: "https://www.instagram.com/specializedbikes/" },
+    { label: "Instagram", icon: "instagram.svg", url: "https://www.instagram.com/iamspecialized/" },
     { label: "Facebook", icon: "facebook.svg", url: "https://www.facebook.com/specializedbicycles/" },
     { label: "YouTube", icon: "youtube.svg", url: "https://www.youtube.com/@specializedbicycles" },
     { label: "TikTok", icon: "tiktok.png", url: "https://www.tiktok.com/@specializedbikes" },
