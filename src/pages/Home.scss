@@ -74,16 +74,41 @@
     aspect-ratio: 1;
 }
 
+.home-bike-window {
+    overflow: hidden;
+}
+
+.home-bike-track {
+    --bike-gap: clamp(.5rem, 2vw, 1rem);
+    --bike-card-width: calc((100% - 2 * var(--bike-gap)) * 3 / 7);
+    display: grid;
+    grid-template-columns: repeat(3, var(--bike-card-width));
+    gap: var(--bike-gap);
+    transform: translateX(calc(-1 * var(--bike-card-width) / 3));
+}
+
 .home-bike-media {
-    aspect-ratio: 2.4;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 1.6;
+    text-align: center;
+    font-size: clamp(.625rem, 1.5vw, 1rem);
+}
+
+.home-bike-media:not(:nth-child(2)) {
+    opacity: .65;
 }
 
 .home-components {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    width: calc((100% - 2rem) * 9 / 7 + 2rem);
-    margin-inline-start: calc((2rem - 100%) / 7);
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 1rem;
+}
+
+@media (max-width: 680px) {
+    .home-components {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
 
 .home-components h3 {
@@ -176,11 +201,6 @@
     animation-play-state: paused;
 }
 
-.home-component-window {
-    overflow: hidden;
-}
-
-
 .home-components li {
     min-width: 0;
     text-align: center;
@@ -193,7 +213,7 @@
 }
 
 .home-component-actions {
-    justify-content: center;
+    text-align: center;
     margin-top: 1rem;
 }
 
