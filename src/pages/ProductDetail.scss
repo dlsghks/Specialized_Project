@@ -43,7 +43,27 @@
     }
 }
 
+.product-gallery__slide {
+    animation: product-gallery-enter 280ms ease-out both;
+    --gallery-entry-offset: 20%;
+}
+
+.product-gallery__slide--previous {
+    --gallery-entry-offset: -20%;
+}
+
+@keyframes product-gallery-enter {
+    from { transform: translateX(var(--gallery-entry-offset)); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .product-gallery__slide { animation: none; }
+}
+
 .product-gallery__image {
+    display: grid;
+    overflow: hidden;
     touch-action: pan-y pinch-zoom;
     user-select: none;
     cursor: grab;
