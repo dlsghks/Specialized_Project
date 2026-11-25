@@ -44,6 +44,11 @@
 }
 
 .product-gallery__image {
+    touch-action: pan-y pinch-zoom;
+    user-select: none;
+    cursor: grab;
+
+    &:active { cursor: grabbing; }
     margin: clamp(1rem, 4vw, 5rem) 12%;
 }
 
