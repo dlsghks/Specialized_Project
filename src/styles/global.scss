@@ -4,6 +4,10 @@
     padding: 0;
 }
 
+html {
+    scrollbar-gutter: stable;
+}
+
 body {
     font-family: Arial, sans-serif;
     color: #111;
@@ -50,7 +54,7 @@ img {
     position: relative;
     z-index: 1;
     display: grid;
-    grid-template-columns: 1fr auto 1fr;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
     align-items: center;
     padding: 10px clamp(8px, 3vw, 40px);
     gap: 4px;
