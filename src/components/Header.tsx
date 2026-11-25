@@ -4,7 +4,7 @@ export const Header = () => {
     return (
         <header className="site-header">
             <Link to="/" className="logo">
-                SPECIALIZED
+                <img src={`${import.meta.env.BASE_URL}images/specialized-logo.svg`} alt="Specialized 홈" width={193} height={20} />
             </Link>
 
             <nav>
