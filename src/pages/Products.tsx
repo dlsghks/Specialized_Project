@@ -135,7 +135,7 @@ function Catalog({ isEquipment }: { isEquipment: boolean }) {
     const pages = Math.ceil(sorted.length / pageSize);
 
     return (
-        <section className="catalog" data-comparing={comparison.length > 0} aria-labelledby="catalog-title">
+        <section className="catalog" data-comparing={comparison.length > 0 && !comparisonCollapsed} aria-labelledby="catalog-title">
             <header className="catalog__heading">
                 <p><Link to="/">홈</Link> / {title}</p>
                 <h1 id="catalog-title">{title} <small>({filtered.length})</small></h1>
@@ -233,12 +233,20 @@ function Catalog({ isEquipment }: { isEquipment: boolean }) {
                 <aside className="catalog-compare" aria-label="제품 비교" data-collapsed={comparisonCollapsed}>
                     <div className="catalog-compare__summary">
                         <strong>제품 비교</strong>
-                        <div><span aria-live="polite">{comparison.length} / {comparisonLimit}</span>
-                            <button type="button" onClick={() => setComparison([])}>초기화</button>
+                        <div className="catalog-compare__count"><span aria-live="polite">{comparison.length} / {comparisonLimit}</span>
+                            {!comparisonCollapsed && <button type="button" onClick={() => setComparison([])}>초기화</button>}
                         </div>
-                        <button type="button" aria-expanded={!comparisonCollapsed} aria-controls="catalog-compare-slots"
+                        {comparisonCollapsed && (
+                            <div className="catalog-compare__mini-slots" aria-hidden="true">
+                                {Array.from({ length: comparisonLimit }, (_, index) => (
+                                    <span key={index} data-filled={index < comparison.length} />
+                                ))}
+                            </div>
+                        )}
+                        <button type="button" aria-label={comparisonCollapsed ? "비교 영역 펼치기" : "비교 영역 접기"}
+                            aria-expanded={!comparisonCollapsed} aria-controls="catalog-compare-slots"
                             onClick={() => setComparisonCollapsed((current) => !current)}>
-                            {comparisonCollapsed ? "펼치기 ⌃" : "접기 ⌄"}
+                            {comparisonCollapsed ? "⌃" : "접기 ⌄"}
                         </button>
                     </div>
                     <ul id="catalog-compare-slots" className="catalog-compare__slots" hidden={comparisonCollapsed}>
@@ -253,7 +261,7 @@ function Catalog({ isEquipment }: { isEquipment: boolean }) {
                             <li className="catalog-compare__empty" key={index}>＋ 비교할 제품 추가</li>
                         ))}
                     </ul>
-                    <button className="catalog-compare__submit" type="button" disabled={comparison.length < 2}
+                    <button className="catalog-compare__submit" type="button" hidden={comparisonCollapsed} disabled={comparison.length < 2}
                         onClick={() => comparisonDialog.current?.showModal()}>
                         비교하기 ({comparison.length})
                         {comparison.length < 2 && <small>2개 이상 선택 시 활성</small>}
