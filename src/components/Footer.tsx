@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import "./Footer.scss";
+import "../styles/components/Footer.scss";
 
 const icons = `${import.meta.env.BASE_URL}images/icons/`;
 const officialSite = "https://www.specialized.com/kr/ko";

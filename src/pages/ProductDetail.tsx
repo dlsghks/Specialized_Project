@@ -1,7 +1,7 @@
 import { useRef, useState, type PointerEvent } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Search, ShoppingCart, Store, Truck } from "lucide-react";
-import "./ProductDetail.scss";
+import "../styles/pages/ProductDetail.scss";
 
 const views = ["측면", "정면", "후면", "구동계", "콕핏", "휠"];
 const colors = ["Gloss Ruby Metallic / White Silver Metallic", "Gloss White / Black"];

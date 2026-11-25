@@ -1,6 +1,6 @@
 import { useRef, useState, type PointerEvent } from "react";
 import { Link } from "react-router-dom";
-import "./Home.scss";
+import "../styles/pages/Home.scss";
 
 const highlights = [
     {
