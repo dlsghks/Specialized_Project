@@ -75,7 +75,9 @@
 
 .home-components {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: calc((100% - 2rem) * 9 / 7 + 2rem);
+    margin-inline-start: calc((2rem - 100%) / 7);
     gap: 1rem;
 }
 
@@ -119,4 +121,92 @@
 
 .home-dealers {
     background: #efefef;
+}
+
+.home-hero__content {
+    animation: home-hero-enter 420ms ease-out both;
+}
+
+.home-hero__description {
+    margin-block: .75rem 1.25rem;
+    font-weight: 400;
+    line-height: 1.55;
+}
+
+.home-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem;
+}
+
+.home-link--outline {
+    color: #fff;
+    background: transparent;
+}
+
+.home-hero__controls button[aria-pressed] {
+    position: relative;
+    border: 0;
+    border-top: 2px solid #999;
+    box-shadow: none;
+}
+
+.home-hero__progress {
+    position: absolute;
+    inset: -2px 0 auto;
+    height: 2px;
+    background: var(--home-accent);
+    transform-origin: left;
+    animation: home-hero-progress 6s linear both;
+}
+
+.home-hero__progress.is-paused {
+    animation-play-state: paused;
+}
+
+.home-component-window {
+    overflow: hidden;
+}
+
+
+.home-components li {
+    min-width: 0;
+    text-align: center;
+}
+
+.home-components a {
+    display: inline-block;
+    margin-top: .4rem;
+    text-decoration: underline;
+}
+
+.home-component-actions {
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.home-ride-finder .home-link {
+    justify-self: center;
+    margin-block: 1rem .5rem;
+}
+
+@keyframes home-hero-enter {
+    from { transform: translateX(3rem); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes home-hero-progress {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .home-hero__content,
+    .home-hero__progress {
+        animation: none;
+    }
+
+    .home-hero__pause {
+        display: none;
+    }
 }
