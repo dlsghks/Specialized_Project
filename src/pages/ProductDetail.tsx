@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, type PointerEvent } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Search, ShoppingCart, Store, Truck } from "lucide-react";
 import "./ProductDetail.scss";
@@ -33,11 +33,27 @@ const TarmacDetail = () => {
     const [size, setSize] = useState(54);
     const [delivery, setDelivery] = useState("집으로 수령");
     const [status, setStatus] = useState("");
+    const swipe = useRef<{ id: number; x: number; y: number } | null>(null);
     const zoom = useRef<HTMLDialogElement>(null);
     const specsPanel = useRef<HTMLDetailsElement>(null);
     const geometryPanel = useRef<HTMLDetailsElement>(null);
 
     const move = (offset: number) => setView((current) => (current + offset + views.length) % views.length);
+    const startSwipe = (event: PointerEvent<HTMLDivElement>) => {
+        if (!event.isPrimary || event.button !== 0) return;
+        swipe.current = { id: event.pointerId, x: event.clientX, y: event.clientY };
+        event.currentTarget.setPointerCapture(event.pointerId);
+    };
+
+    const finishSwipe = (event: PointerEvent<HTMLDivElement>) => {
+        const start = swipe.current;
+        if (!start || start.id !== event.pointerId) return;
+        swipe.current = null;
+        const x = event.clientX - start.x;
+        const y = event.clientY - start.y;
+        if (Math.abs(x) >= 40 && Math.abs(x) > Math.abs(y)) move(x < 0 ? 1 : -1);
+    };
+
     const showGeometry = () => {
         if (geometryPanel.current) geometryPanel.current.open = true;
         geometryPanel.current?.scrollIntoView();
@@ -46,7 +62,11 @@ const TarmacDetail = () => {
     return (
         <article className="product-detail">
             <section className="product-gallery" aria-label="상품 이미지">
-                <div className="product-placeholder product-gallery__image">
+                <div className="product-placeholder product-gallery__image"
+                    onPointerDown={startSwipe} onPointerUp={finishSwipe}
+                    onLostPointerCapture={(event) => {
+                        if (swipe.current?.id === event.pointerId) swipe.current = null;
+                    }}>
                     <span aria-live="polite">S-Works Tarmac SL9 · {views[view]} · {colors[color]}</span>
                 </div>
                 <button className="product-gallery__zoom" type="button" aria-label="이미지 확대" onClick={() => zoom.current?.showModal()}>
