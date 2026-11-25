@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Header } from "../components/Header";
-import "./BikeFinder.scss";
+import "../styles/pages/BikeFinder.scss";
 
 type Option = { label: string; detail?: string; photo?: number };
 type Question = { title: string; detail: string; options: Option[] };
