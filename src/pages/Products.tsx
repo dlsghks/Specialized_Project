@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { Check, ChevronDown, SlidersHorizontal, X } from "lucide-react";
+import { Check, SlidersHorizontal, X } from "lucide-react";
 import "../styles/pages/catalog/Products.scss";
 
 const sorts = ["추천순", "인기순", "가격 낮은 순", "가격 높은 순", "최신순"] as const;
@@ -154,7 +154,7 @@ function Catalog({ isEquipment }: { isEquipment: boolean }) {
                         setSortOpen(false);
                     }
                 }}>
-                    <button type="button" aria-expanded={sortOpen} aria-controls="catalog-sort-options" onClick={() => setSortOpen(!sortOpen)}>정렬: {sort} <ChevronDown size={16} /></button>
+                    <button type="button" aria-expanded={sortOpen} aria-controls="catalog-sort-options" onClick={() => setSortOpen(!sortOpen)}>정렬: {sort} <span className="catalog-arrow catalog-arrow--down" aria-hidden="true" /></button>
                     <ul id="catalog-sort-options" hidden={!sortOpen}>
                         {sorts.map((option) => (
                             <li key={option}><button type="button" aria-pressed={sort === option} onClick={(event) => {
@@ -224,7 +224,7 @@ function Catalog({ isEquipment }: { isEquipment: boolean }) {
                             {Array.from({ length: pages }, (_, index) => (
                                 <button key={index} type="button" aria-current={page === index + 1 ? "page" : undefined} onClick={() => setPage(index + 1)}>{index + 1}</button>
                             ))}
-                            <button type="button" disabled={page === pages} onClick={() => setPage(page + 1)}>다음 ›</button>
+                            <button type="button" disabled={page === pages} onClick={() => setPage(page + 1)}>다음 <span className="catalog-arrow" aria-hidden="true" /></button>
                         </nav>
                     )}
                 </div>
@@ -246,7 +246,8 @@ function Catalog({ isEquipment }: { isEquipment: boolean }) {
                         <button type="button" aria-label={comparisonCollapsed ? "비교 영역 펼치기" : "비교 영역 접기"}
                             aria-expanded={!comparisonCollapsed} aria-controls="catalog-compare-slots"
                             onClick={() => setComparisonCollapsed((current) => !current)}>
-                            {comparisonCollapsed ? "⌃" : "접기 ⌄"}
+                            {!comparisonCollapsed && "접기 "}
+                            <span className={`catalog-arrow catalog-arrow--${comparisonCollapsed ? "up" : "down"}`} aria-hidden="true" />
                         </button>
                     </div>
                     <ul id="catalog-compare-slots" className="catalog-compare__slots" hidden={comparisonCollapsed}>
