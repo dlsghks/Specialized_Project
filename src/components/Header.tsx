@@ -5,6 +5,7 @@ const iconDirectory = `${import.meta.env.BASE_URL}images/icons/`;
 
 export const Header = () => {
     const [menuOpen, setMenuOpen] = useState(false);
+    const [shopOpen, setShopOpen] = useState(false);
     const menu = useRef<HTMLDialogElement>(null);
     const closeMenu = () => menu.current?.close();
 
@@ -24,7 +25,7 @@ export const Header = () => {
             </Link>
 
             <dialog ref={menu} id="site-navigation" className="site-navigation" aria-label="주 메뉴"
-                onClose={() => setMenuOpen(false)} onClick={(event) => {
+                onClose={() => { setMenuOpen(false); setShopOpen(false); }} onClick={(event) => {
                     if (event.target !== event.currentTarget) return;
                     const { left, right, top, bottom } = event.currentTarget.getBoundingClientRect();
                     if (event.clientX < left || event.clientX > right || event.clientY < top || event.clientY > bottom) closeMenu();
@@ -33,7 +34,18 @@ export const Header = () => {
                     <span aria-hidden="true">×</span> CLOSE
                 </button>
                 <nav className="site-navigation__primary" aria-label="주 메뉴">
-                    <Link to="/products" onClick={closeMenu}><span aria-hidden="true">›</span>쇼핑</Link>
+                    <div>
+                        <button className="site-navigation__shop" type="button" aria-expanded={shopOpen}
+                            aria-controls="shop-links" onClick={() => setShopOpen((open) => !open)}>
+                            <span aria-hidden="true">›</span>쇼핑
+                        </button>
+                        <div id="shop-links" className="site-navigation__shop-links" data-open={shopOpen} inert={!shopOpen}>
+                            <div>
+                                <Link to="/products" onClick={closeMenu}>자전거</Link>
+                                <Link to="/products?type=equipment" onClick={closeMenu}>장비</Link>
+                            </div>
+                        </div>
+                    </div>
                     <Link to="/customize" onClick={closeMenu}><span aria-hidden="true">›</span>장비 커스텀</Link>
                     <Link to="/community" onClick={closeMenu}><span aria-hidden="true">›</span>라이더 커뮤니티</Link>
                     <Link to="/dealers" onClick={closeMenu}><span aria-hidden="true">›</span>대리점</Link>
