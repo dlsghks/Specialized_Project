@@ -182,15 +182,31 @@
     &::-webkit-details-marker { display: none; }
     &::after {
         content: "";
-        width: .4rem;
-        height: .4rem;
-        border: solid currentColor;
-        border-width: 0 1.5px 1.5px 0;
-        transform: rotate(45deg);
+        flex: none;
+        width: .7em;
+        height: .7em;
+        background: currentColor;
+        mask: var(--catalog-arrow) center / contain no-repeat;
+        transform: rotate(90deg);
     }
 }
 
-.catalog__filter-content details[open] > summary::after { transform: rotate(225deg); }
+.catalog__filter-content details[open] > summary::after { transform: rotate(-90deg); }
+
+.catalog { --catalog-arrow: url("/images/icons/arrow.png"); }
+
+.catalog-arrow {
+    display: inline-block;
+    flex: none;
+    width: .75em;
+    height: .75em;
+    background: currentColor;
+    mask: var(--catalog-arrow) center / contain no-repeat;
+    vertical-align: -.02em;
+}
+
+.catalog-arrow--down { transform: rotate(90deg); }
+.catalog-arrow--up { transform: rotate(-90deg); }
 
 .catalog__filter-options {
     label { align-items: flex-start; }
