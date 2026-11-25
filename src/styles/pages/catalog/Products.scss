@@ -260,7 +260,25 @@
     animation: catalog-compare-enter .28s ease-out both;
     font-size: .85rem;
 
-    &[data-collapsed="true"] { grid-template-columns: 1fr minmax(7rem, 12rem); }
+    &[data-collapsed="true"] {
+        inset-inline: auto var(--catalog-gutter);
+        display: block;
+        max-width: calc(100% - 2 * var(--catalog-gutter));
+        padding: .45rem .75rem;
+        padding-bottom: max(.45rem, env(safe-area-inset-bottom));
+        border-radius: .45rem .45rem 0 0;
+        box-shadow: 0 -2px 12px #0004;
+
+        .catalog-compare__summary {
+            display: flex;
+            align-items: center;
+            gap: clamp(.4rem, 2vw, .9rem);
+            white-space: nowrap;
+        }
+
+        .catalog-compare__count { color: #ff5252; font-weight: 700; }
+        .catalog-compare__summary > button { color: #fff; padding: .15rem .25rem; }
+    }
 }
 
 .catalog-compare__summary {
@@ -271,6 +289,20 @@
 
     button { margin-inline-start: .5rem; color: #ccc; }
     > button { margin-inline-start: 0; }
+}
+
+.catalog-compare__mini-slots {
+    display: flex;
+    gap: .25rem;
+
+    span {
+        width: clamp(.85rem, 4vw, 1.55rem);
+        height: 1.1rem;
+        border: 1px dashed #888;
+        border-radius: .15rem;
+    }
+
+    span[data-filled="true"] { background: #fff; border: 1px solid #fff; }
 }
 
 .catalog-compare__slots:not([hidden]) {
@@ -304,8 +336,8 @@
 .catalog button.catalog-compare__submit {
     padding: .6rem;
     border-radius: .25rem;
-    background: #fff;
-    color: #151515;
+    background: #a80000;
+    color: #fff;
     font-weight: 700;
 
     &:disabled { background: #383838; color: #aaa; cursor: default; }
