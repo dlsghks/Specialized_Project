@@ -100,16 +100,18 @@ export const Home = () => {
                     </div>
                 </div>
                 <div className="home-controls home-hero__controls">
-                    {highlights.map(({ label }, index) => (
-                        <button key={label} type="button" aria-pressed={index === highlightIndex}
-                            onClick={() => changeHighlight(index - highlightIndex)}>
-                            {index === highlightIndex && (
-                                <span className={`home-hero__progress${heroPaused ? " is-paused" : ""}`}
-                                    aria-hidden="true" onAnimationEnd={() => changeHighlight(1)} />
-                            )}
-                            {label}
-                        </button>
-                    ))}
+                    <div className="home-hero__tabs">
+                        {highlights.map(({ label }, index) => (
+                            <button key={label} type="button" aria-pressed={index === highlightIndex}
+                                onClick={() => changeHighlight(index - highlightIndex)}>
+                                {index === highlightIndex && (
+                                    <span className={`home-hero__progress${heroPaused ? " is-paused" : ""}`}
+                                        aria-hidden="true" onAnimationEnd={() => changeHighlight(1)} />
+                                )}
+                                {label}
+                            </button>
+                        ))}
+                    </div>
                     <div className="home-hero__playback">
                         <span aria-label={`전체 ${highlights.length}개 중 ${highlightIndex + 1}번째`}>
                             {String(highlightIndex + 1).padStart(2, "0")} / {String(highlights.length).padStart(2, "0")}

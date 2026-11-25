@@ -149,7 +149,14 @@
     background: transparent;
 }
 
-.home-hero__controls button[aria-pressed] {
+.home-hero__tabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: .5rem;
+    width: min(100%, calc(900px + 1rem));
+}
+
+.home-hero__tabs button[aria-pressed] {
     position: relative;
     border: 0;
     border-top: 2px solid #999;
