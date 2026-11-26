@@ -1,9 +1,9 @@
 import { useRef, useState } from "react";
 import { Bookmark, Check, ChevronDown, ChevronRight, CircleHelp, Eye, List, MessageCircle, RotateCcw, X, ZoomIn, ZoomOut } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import "../styles/pages/Customize.scss";
 
-const model = "S-Works Tarmac SL9";
+import { bikePhoto, customizeBikes } from "./customizeBikes";
 const sizes = [44, 49, 52, 54, 56, 58, 61];
 const colors = [
     { name: "Satin Silver Dust", image: "satin-silver-dust.webp", finish: "linear-gradient(90deg, #c9cbce 40%, #7a7d7e)" },
@@ -26,9 +26,18 @@ function readBuild(): { size: number | null; color: number | null } {
 }
 
 export function Customize() {
-    const [build, setBuild] = useState(readBuild);
+    const { id } = useParams();
+    const bike = customizeBikes.find((item) => item.id === id);
+    return bike ? <BikeCustomizer key={bike.id} bike={bike} /> : <Link to="/customize">모델 선택으로 돌아가기</Link>;
+}
+
+function BikeCustomizer({ bike }: { bike: (typeof customizeBikes)[number] }) {
+    const { name: model, category } = bike;
+    const isRoad = bike.id === "tarmac-sl9";
+    const [categoryId, setCategoryId] = useState(bike.id);
+    const [build, setBuild] = useState(() => isRoad ? readBuild() : { size: null, color: null });
     const previewColor = colors[build.color ?? 0];
-    const [step, setStep] = useState(3);
+    const [step, setStep] = useState(isRoad ? 3 : 1);
     const [summaryOpen, setSummaryOpen] = useState(true);
     const [helpOpen, setHelpOpen] = useState(false);
     const [zoom, setZoom] = useState(1);
@@ -38,7 +47,7 @@ export function Customize() {
         setHelpOpen(false);
         helpToggle.current?.focus();
     };
-    const values = ["ROAD", model.toUpperCase(), build.size?.toString(), build.color === null ? undefined : colors[build.color].name];
+    const values = [category, model.toUpperCase(), build.size?.toString(), build.color === null ? undefined : colors[build.color].name];
 
     const save = () => {
         try {
@@ -72,7 +81,7 @@ export function Customize() {
                         <Link to="/support"><MessageCircle size={19} aria-hidden="true" /> 고객 지원 연결 <ChevronRight size={19} aria-hidden="true" /></Link>
                     </section>
                     <div className="bike-build__stage">
-                        <img src={`${import.meta.env.BASE_URL}images/customize/${previewColor.image}`} width={900} height={506} alt={`${model} · ${previewColor.name}`} style={{ scale: zoom }} />
+                        <img src={isRoad ? `${import.meta.env.BASE_URL}images/customize/${previewColor.image}` : bikePhoto(bike.id)} width={900} height={506} alt={isRoad ? `${model} · ${previewColor.name}` : model} style={{ scale: zoom }} />
                     </div>
                     <div className="bike-build__controls" aria-label="미리보기 조작">
                         <button type="button" disabled aria-label="3D 회전 준비 중" title="3D 회전 준비 중"><RotateCcw /></button>
@@ -85,7 +94,7 @@ export function Customize() {
                     <div className="bike-build__summary-clip">
                         <aside className="bike-build__summary" aria-label="선택 요약">
                             <div className="bike-build__summary-top">
-                                <button className="bike-build__summary-save" type="button" onClick={save} inert={!summaryOpen}><Bookmark size={17} /> 저장</button>
+                                <button className="bike-build__summary-save" type="button" onClick={save} disabled={!isRoad} inert={!summaryOpen}><Bookmark size={17} /> 저장</button>
                                 <button className="bike-build__summary-toggle" type="button" aria-expanded={summaryOpen}
                                     aria-controls="bike-build-summary-content" aria-label={summaryOpen ? "선택 요약 접기" : "선택 요약 펼치기"}
                                     onClick={() => setSummaryOpen((open) => !open)}>
@@ -105,7 +114,7 @@ export function Customize() {
                                         </div>
                                     ))}
                                 </dl>
-                                <div className="bike-build__total"><span>합산 가격</span><strong>₩ {build.size && build.color !== null ? "20,900,000" : "00,000,000"}</strong></div>
+                                <div className="bike-build__total"><span>합산 가격</span><strong>₩ {build.size && build.color !== null ? "20,900,000" : isRoad ? "00,000,000" : "—"}</strong></div>
                                 <button className="bike-build__cart" type="button" disabled title="장바구니 연결 준비 중">장바구니 담기</button>
                                 {notice && <p role="status" className="bike-build__notice">{notice}</p>}
                             </div>
@@ -115,7 +124,7 @@ export function Customize() {
             </div>
             <nav className="bike-build__steps" aria-label="커스터마이징 단계">
                 {steps.map((label, index) => (
-                    <button key={label} type="button" aria-current={step === index ? "step" : undefined} disabled={index >= 4} onClick={() => setStep(index)}>
+                    <button key={label} type="button" aria-current={step === index ? "step" : undefined} disabled={index >= (isRoad ? 4 : 2)} onClick={() => setStep(index)}>
                         <span>{index + 1}</span><span>{label}{step === index && index === 3 && <small>컬러를 선택하세요</small>}</span>
                     </button>
                 ))}
@@ -135,8 +144,17 @@ export function Customize() {
                     </button>
                 ))}
                 {step === 2 && sizes.map((size) => <button className="bike-build__option" key={size} type="button" aria-pressed={build.size === size} onClick={() => setBuild({ ...build, size })}>{size}</button>)}
-                {step === 1 && <Link className="bike-build__option" to="/customize">{model} · 모델 선택</Link>}
-                {step === 0 && <button type="button" className="bike-build__option" aria-pressed="true" onClick={() => setStep(step + 1)}>{values[step]} <Check size={16} aria-hidden="true" /></button>}
+                {step === 1 && customizeBikes.filter((item) => item.id === categoryId).map(({ id, name }) => (
+                    <Link className="bike-build__option bike-build__bike-card" key={id}
+                        to={`/customize/${id}`} onClick={() => { if (id === bike.id && isRoad) setStep(3); }}>
+                        <img src={bikePhoto(id)} alt="" width={800} height={475} />
+                        <strong>{name}</strong>
+                    </Link>
+                ))}
+                {step === 0 && customizeBikes.map(({ id, category }) => (
+                    <button key={id} type="button" className="bike-build__option" aria-pressed={categoryId === id}
+                        onClick={() => { setCategoryId(id); setStep(1); }}>{category}</button>
+                ))}
             </section>
         </article>
     );
