@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Bookmark, Check, CircleHelp, RotateCcw, X, ZoomIn, ZoomOut } from "lucide-react";
+import { Bookmark, Check, ChevronDown, ChevronRight, CircleHelp, Eye, List, MessageCircle, RotateCcw, X, ZoomIn, ZoomOut } from "lucide-react";
 import { Link } from "react-router-dom";
 import "../styles/pages/Customize.scss";
 
@@ -33,6 +33,11 @@ export function Customize() {
     const [helpOpen, setHelpOpen] = useState(false);
     const [zoom, setZoom] = useState(1);
     const [notice, setNotice] = useState("");
+    const helpToggle = useRef<HTMLButtonElement>(null);
+    const closeHelp = () => {
+        setHelpOpen(false);
+        helpToggle.current?.focus();
+    };
     const summaryToggle = useRef<HTMLButtonElement>(null);
     const summaryClose = useRef<HTMLButtonElement>(null);
     const values = ["ROAD", model.toUpperCase(), "BIKE", build.size?.toString(), build.color === null ? undefined : colors[build.color].name];
@@ -56,17 +61,23 @@ export function Customize() {
             <div className="bike-build__workspace" data-summary={summaryOpen}>
                 <section className="bike-build__preview" aria-label="자전거 미리보기">
                     <header><p>CONFIGURE</p><h1>{model}</h1></header>
-                    <button type="button" className="bike-build__help" aria-label="커스터마이징 도움말" aria-expanded={helpOpen} onClick={() => setHelpOpen(!helpOpen)}>
+                    <button ref={helpToggle} type="button" className="bike-build__help" aria-controls="bike-build-help" aria-label="커스터마이징 도움말" aria-expanded={helpOpen} onClick={() => setHelpOpen(!helpOpen)}>
                         <CircleHelp size={30} aria-hidden="true" />
                     </button>
-                    {helpOpen && (
-                        <div className="bike-build__help-panel">
-                            <strong>커스터마이징 도움말</strong>
-                            <p>아래 단계에서 사이즈와 컬러를 고르고, 요약에서 선택한 옵션을 확인할 수 있어요.</p>
-                            <p>현재 미리보기는 제품 이미지예요. 확대와 축소를 사용할 수 있어요.</p>
-                            <Link to="/support">고객 지원</Link>
+                    <section id="bike-build-help" className="bike-build__help-panel" aria-labelledby="bike-build-help-title" hidden={!helpOpen}
+                        onKeyDown={(event) => { if (event.key === "Escape") closeHelp(); }}>
+                        <div className="bike-build__help-heading">
+                            <CircleHelp size={20} aria-hidden="true" />
+                            <h2 id="bike-build-help-title">3D 커스터마이징 도움말</h2>
+                            <button type="button" aria-label="도움말 닫기" onClick={closeHelp}><X size={20} aria-hidden="true" /></button>
                         </div>
-                    )}
+                        <ul>
+                            <li><span><List size={20} aria-hidden="true" /></span><div><strong>옵션 선택</strong><p>아래 메뉴에서 항목을 고르고 원하는 옵션을 선택하세요.</p></div></li>
+                            <li><span><RotateCcw size={20} aria-hidden="true" /></span><div><strong>3D 화면 조작</strong><p>버튼으로 제품 이미지를 확대하거나 축소하세요.</p></div></li>
+                            <li><span><Eye size={20} aria-hidden="true" /></span><div><strong>선택 결과 확인</strong><p>선택한 컬러는 미리보기와 오른쪽 SUMMARY에 바로 반영됩니다.</p></div></li>
+                        </ul>
+                        <Link to="/support"><MessageCircle size={19} aria-hidden="true" /> 고객 지원 연결 <ChevronRight size={19} aria-hidden="true" /></Link>
+                    </section>
                     <div className="bike-build__stage">
                         <img src={`${import.meta.env.BASE_URL}images/customize/${previewColor.image}`} width={900} height={506} alt={`${model} · ${previewColor.name}`} style={{ scale: zoom }} />
                     </div>
@@ -82,7 +93,7 @@ export function Customize() {
                     <aside className="bike-build__summary" aria-label="선택 요약">
                         <div className="bike-build__summary-top">
                             <button type="button" onClick={save}><Bookmark size={17} /> 저장</button>
-                            <button ref={summaryClose} type="button" aria-label="선택 요약 접기" onClick={() => toggleSummary(false)}><X size={20} /></button>
+                            <button ref={summaryClose} type="button" aria-label="선택 요약 접기" onClick={() => toggleSummary(false)}><ChevronDown size={22} aria-hidden="true" /></button>
                         </div>
                         <h2>SUMMARY</h2>
                         <p className="bike-build__model">{model}</p>

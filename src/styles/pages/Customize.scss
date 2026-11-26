@@ -52,19 +52,36 @@
 
 .bike-build__help-panel {
     position: absolute;
-    z-index: 2;
+    z-index: 4;
     top: 66px;
     right: 16px;
-    width: min(320px, calc(100% - 32px));
+    width: min(356px, calc(100% - 32px));
+    max-height: calc(100% - 82px);
+    overflow: auto;
     padding: 20px;
-    border-radius: 12px;
+    border: 1px solid #e5e5e5;
+    border-radius: 13px;
     background: #fff;
-    box-shadow: 0 9px 24px #0002;
-    font-size: 14px;
-    line-height: 1.5;
+    box-shadow: 0 12px 32px #0002;
+    line-height: 1.45;
 
-    p { margin-block: 8px; }
-    a { text-decoration: underline; }
+    ul { display: grid; gap: 18px; margin-block: 22px 26px; }
+    li { display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 12px; }
+    li > span { display: grid; height: 36px; place-items: center; border-radius: 9px; background: #f1f1f1; }
+    p { margin-top: 2px; color: #626262; font-size: 13px; }
+    a { display: flex; align-items: center; gap: 9px; padding-top: 16px; border-top: 1px solid #ddd; font-weight: 700; }
+    a:hover { text-decoration: underline; }
+    a svg:last-child { margin-left: auto; }
+}
+
+.bike-build__help-heading {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    > svg { flex-shrink: 0; color: var(--build-red); }
+    h2 { flex: 1; font-size: clamp(14px, 2.5vw, 18px); }
+    button { display: grid; width: 28px; height: 28px; place-items: center; }
 }
 
 .bike-build__stage {
