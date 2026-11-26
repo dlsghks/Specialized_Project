@@ -6,9 +6,9 @@ import "../styles/pages/Customize.scss";
 const model = "S-Works Tarmac SL9";
 const sizes = [44, 49, 52, 54, 56, 58, 61];
 const colors = [
-    { name: "Satin Silver Dust", finish: "linear-gradient(90deg, #c9cbce 40%, #7a7d7e)" },
-    { name: "Gloss White Silver Metallic", finish: "linear-gradient(90deg, #efeff1 43%, #b60022)" },
-    { name: "Gloss Ruby Metallic", finish: "linear-gradient(90deg, #d2d7d7 40%, #86262f)" },
+    { name: "Satin Silver Dust", image: "satin-silver-dust.webp", finish: "linear-gradient(90deg, #c9cbce 40%, #7a7d7e)" },
+    { name: "Gloss White Silver Metallic", image: "gloss-white-silver-metallic.webp", finish: "linear-gradient(90deg, #efeff1 43%, #b60022)" },
+    { name: "Gloss Ruby Metallic", image: "gloss-ruby-metallic.webp", finish: "linear-gradient(90deg, #d2d7d7 40%, #86262f)" },
 ];
 const steps = ["CATEGORY", "MODEL", "TYPE", "SIZE", "COLOR", "GROUPSET", "CRANKSET", "WHEELS & TUBES", "TIRES", "HANDLEBAR", "SADDLES", "SEATPOST"];
 const storageKey = "specialized-tarmac-sl9-build";
@@ -27,6 +27,7 @@ function readBuild(): { size: number | null; color: number | null } {
 
 export function Customize() {
     const [build, setBuild] = useState(readBuild);
+    const previewColor = colors[build.color ?? 0];
     const [step, setStep] = useState(4);
     const [summaryOpen, setSummaryOpen] = useState(true);
     const [helpOpen, setHelpOpen] = useState(false);
@@ -67,7 +68,7 @@ export function Customize() {
                         </div>
                     )}
                     <div className="bike-build__stage">
-                        <img src={`${import.meta.env.BASE_URL}images/customize/tarmac-sl9.webp`} width={1010} height={421} alt={model} style={{ scale: zoom }} />
+                        <img src={`${import.meta.env.BASE_URL}images/customize/${previewColor.image}`} width={900} height={506} alt={`${model} · ${previewColor.name}`} style={{ scale: zoom }} />
                     </div>
                     <div className="bike-build__controls" aria-label="미리보기 조작">
                         <button type="button" disabled aria-label="3D 회전 준비 중" title="3D 회전 준비 중"><RotateCcw /></button>
