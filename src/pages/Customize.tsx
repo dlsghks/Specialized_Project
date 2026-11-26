@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowRight, Bookmark, Check, ChevronDown, ChevronRight, CircleHelp, Eye, List, MessageCircle, RotateCcw, X, ZoomIn, ZoomOut } from "lucide-react";
 import { Link, useLocation, useParams } from "react-router-dom";
 import "../styles/pages/Customize.scss";
@@ -61,30 +61,58 @@ function readBuild(storageKey: string, sizes: (number | string)[], colors: Frame
     }
 }
 
-export function Customize() {
-    const { id } = useParams();
-    const { state } = useLocation();
-    const bike = customizeBikes.find((item) => item.id === id);
-    return bike ? <BikeCustomizer key={bike.id} bike={bike} initialStep={state?.modelSelected ? 2 : 0} /> : <Link to="/customize">모델 선택으로 돌아가기</Link>;
+type BuildDraft = {
+    build: ReturnType<typeof readBuild>;
+    categoryId: string;
+    step: number;
+    furthestStep: number;
+    confirmedParts: number;
+    summaryOpen: boolean;
+};
+
+function readDraft(key: string): BuildDraft | null {
+    try {
+        return JSON.parse(sessionStorage.getItem(key) ?? "null");
+    } catch {
+        return null;
+    }
 }
 
-function BikeCustomizer({ bike, initialStep }: { bike: (typeof customizeBikes)[number]; initialStep: number }) {
+export function Customize() {
+    const { id } = useParams();
+    const { key, state } = useLocation();
+    const bike = customizeBikes.find((item) => item.id === id);
+    return bike ? <BikeCustomizer key={bike.id} bike={bike} initialStep={state?.modelSelected ? 2 : 0} draftKey={`specialized-${bike.id}-draft-${key}`} /> : <Link to="/customize">모델 선택으로 돌아가기</Link>;
+}
+
+function BikeCustomizer({ bike, initialStep, draftKey }: { bike: (typeof customizeBikes)[number]; initialStep: number; draftKey: string }) {
     const { name: model, category } = bike;
     const { sizes, colors, price } = modelOptions[bike.id];
     const storageKey = `specialized-${bike.id}-build`;
-    const [categoryId, setCategoryId] = useState(bike.id);
-    const [build, setBuild] = useState(() => readBuild(storageKey, sizes, colors));
+    const [draft] = useState(() => readDraft(draftKey));
+    const [categoryId, setCategoryId] = useState(draft?.categoryId ?? bike.id);
+    const [build, setBuild] = useState(() => draft?.build ?? readBuild(storageKey, sizes, colors));
     const previewColor = colors[build.color ?? 0];
-    const [step, setStep] = useState(initialStep);
-    const [furthestStep, setFurthestStep] = useState(initialStep);
-    const [confirmedParts, setConfirmedParts] = useState(0);
+    const [step, setStep] = useState(draft?.step ?? initialStep);
+    const [furthestStep, setFurthestStep] = useState(draft?.furthestStep ?? initialStep);
+    const [confirmedParts, setConfirmedParts] = useState(draft?.confirmedParts ?? 0);
     const gear = recommendedGear[bike.id] ?? [];
     const advance = () => {
         const nextStep = step + 1;
         setFurthestStep((furthest) => Math.max(furthest, nextStep));
         setStep(nextStep);
     };
-    const [summaryOpen, setSummaryOpen] = useState(true);
+    const [summaryOpen, setSummaryOpen] = useState(draft?.summaryOpen ?? true);
+
+    useEffect(() => {
+        const currentDraft: BuildDraft = { build, categoryId, step, furthestStep, confirmedParts, summaryOpen };
+        try {
+            sessionStorage.setItem(draftKey, JSON.stringify(currentDraft));
+        } catch {
+            // The current configuration stays usable when browser storage is unavailable.
+        }
+    }, [build, categoryId, step, furthestStep, confirmedParts, summaryOpen, draftKey]);
+
     const [helpOpen, setHelpOpen] = useState(false);
     const [zoom, setZoom] = useState(1);
     const [notice, setNotice] = useState("");
