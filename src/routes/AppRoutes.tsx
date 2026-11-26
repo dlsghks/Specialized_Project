@@ -20,6 +20,7 @@ import { CommunityDetail } from "../pages/CommunityDetail";
 import { Dealers } from "../pages/Dealers";
 import { TestRideReservation } from "../pages/TestRideReservation";
 import { CustomizeModels } from "../pages/CustomizeModels";
+import { FooterPage } from "../pages/FooterPage";
 import { NotFound } from "../pages/NotFound";
 
 export const AppRoutes = () => {
@@ -45,6 +46,7 @@ export const AppRoutes = () => {
                 <Route path="mypage" element={<MyPage />} />
                 <Route path="mypage/orders/:id" element={<OrderDetail />} />
                 <Route path="support" element={<Support />} />
+                <Route path="info/:slug" element={<FooterPage />} />
                 <Route path="*" element={<NotFound />} />
             </Route>
         </Routes>
