@@ -137,8 +137,8 @@
     background: #fff;
     transition: transform 280ms ease;
 
-    h2 { margin-top: 4px; font-size: 23px; }
-    dl { margin-block: 15px 9px; }
+    h2 { margin-block: 8px 6px; font-size: 23px; }
+    dl { margin-block: 20px 18px; }
 }
 
 .bike-build__summary-content {
@@ -180,12 +180,12 @@
 
 .bike-build__summary-row {
     position: relative;
-    min-height: 38px;
-    padding: 4px 34px 4px 4px;
+    min-height: 45px;
+    padding: 7px 36px 7px 6px;
     border-bottom: 1px solid #efefef;
 
     dt { color: #777; font-size: 11px; letter-spacing: .04em; }
-    dd { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; }
+    dd { display: flex; align-items: center; gap: 6px; margin-top: 3px; font-size: 13px; font-weight: 700; }
     button { position: absolute; top: 50%; right: 0; transform: translateY(-50%); color: #606060; font-size: 12px; text-decoration: underline; }
     &[data-current="true"] { box-shadow: -3px 0 var(--build-red); }
     &[data-current="true"] dd { color: var(--build-red); }
@@ -198,7 +198,7 @@
     justify-content: space-between;
     gap: 8px;
     margin-top: auto;
-    padding-block: 17px 13px;
+    padding-block: 20px 16px;
     border-top: 1px solid #ddd;
 
     span { color: #666; font-size: 13px; }
