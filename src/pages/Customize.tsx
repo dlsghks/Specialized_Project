@@ -159,6 +159,11 @@ function BikeCustomizer({ bike, initialStep }: { bike: (typeof customizeBikes)[n
                                             {values[index] && index <= furthestStep && <button type="button" aria-label={`${label} 변경`} onClick={() => setStep(index)}>변경</button>}
                                         </div>
                                     ))}
+                                    <div className="bike-build__summary-row" data-current={step === gearStep} data-pending={gearStep > furthestStep}>
+                                        <dt>{steps[gearStep]}</dt>
+                                        <dd>{gear.length ? `추천 제품 ${gear.length}개` : "준비 중"}</dd>
+                                        {gearStep <= furthestStep && <button type="button" aria-label="추천 장비 보기" onClick={() => setStep(gearStep)}>보기</button>}
+                                    </div>
                                 </dl>
                                 <div className="bike-build__total"><span>합산 가격</span><strong>₩ {build.size && build.color !== null ? price.toLocaleString("ko-KR") : "00,000,000"}</strong></div>
                                 <button className="bike-build__cart" type="button" disabled title="장바구니 연결 준비 중">장바구니 담기</button>
