@@ -380,3 +380,8 @@
     img { width: 100%; height: auto; border-radius: 4px; }
     strong { display: block; }
 }
+
+.bike-build__options .bike-build__category-card img {
+    height: 100px;
+    object-fit: cover;
+}

@@ -9,7 +9,11 @@ const roadColors = [
     { name: "Gloss White Silver Metallic", image: "gloss-white-silver-metallic.webp", finish: "linear-gradient(90deg, #efeff1 43%, #b60022)" },
     { name: "Gloss Ruby Metallic", image: "gloss-ruby-metallic.webp", finish: "linear-gradient(90deg, #d2d7d7 40%, #86262f)" },
 ];
-const categoryOrder = ["demo-11", "crux-5", "tarmac-sl9"];
+const categoryCards = [
+    { id: "demo-11", label: "산악", image: "mountain.webp" },
+    { id: "crux-5", label: "그래블", image: "gravel.webp" },
+    { id: "tarmac-sl9", label: "로드", image: "road.webp" },
+];
 const steps = ["CATEGORY", "MODEL", "SIZE", "COLOR", "TIRES", "WHEELS", "HANDLEBAR", "SADDLES"];
 type FrameColor = { name: string; finish: string; image?: string };
 
@@ -181,13 +185,16 @@ function BikeCustomizer({ bike, initialStep }: { bike: (typeof customizeBikes)[n
                         <strong>{name}</strong>
                     </Link>
                 ))}
-                {step === 0 && categoryOrder.map((id) => (
-                    <button key={id} type="button" className="bike-build__option" aria-pressed={categoryId === id}
+                {step === 0 && categoryCards.map(({ id, label, image }) => (
+                    <button key={id} type="button" className="bike-build__option bike-build__bike-card bike-build__category-card" aria-pressed={categoryId === id}
                         onClick={() => {
                             setCategoryId(id);
                             if (id !== bike.id) setFurthestStep(1);
                             advance();
-                        }}>{customizeBikes.find((item) => item.id === id)?.category}</button>
+                        }}>
+                        <img src={`${import.meta.env.BASE_URL}images/customize/categories/${image}`} alt="" width={272} height={100} />
+                        <strong>{label}</strong>
+                    </button>
                 ))}
                 {step >= 4 && step < steps.length && (
                     <button className="bike-build__option" type="button" onClick={() => {
