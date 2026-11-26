@@ -224,14 +224,14 @@
     padding: 12px var(--build-gutter);
     border-block: 1px solid #ddd;
 
-    button { display: flex; flex: none; align-items: center; gap: 8px; min-height: 38px; font-size: 13px; letter-spacing: .03em; text-align: left; }
+    button { display: flex; flex: none; align-items: center; gap: 8px; height: 40px; font-size: 13px; line-height: 1.2; letter-spacing: .03em; text-align: left; }
     button + button::before { color: #aaa; content: "›"; }
     button > span:first-child { display: grid; width: 26px; height: 26px; place-items: center; border-radius: 2px; background: #050505; color: #fff; font-weight: 700; }
     button[aria-current] { font-weight: 700; }
     button[aria-current] > span:first-child { width: 36px; height: 36px; background: var(--build-red); }
     button:disabled { color: #777; }
     button:disabled > span:first-child { background: #efefef; color: #777; }
-    small { display: block; font-weight: 400; letter-spacing: 0; }
+    small { display: block; font-size: 11px; line-height: 14px; font-weight: 400; letter-spacing: 0; }
 }
 
 .bike-build__options {
