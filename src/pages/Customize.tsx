@@ -1,8 +1,9 @@
 import { useRef, useState } from "react";
-import { Bookmark, Check, ChevronDown, ChevronRight, CircleHelp, Eye, List, MessageCircle, RotateCcw, X, ZoomIn, ZoomOut } from "lucide-react";
+import { ArrowRight, Bookmark, Check, ChevronDown, ChevronRight, CircleHelp, Eye, List, MessageCircle, RotateCcw, X, ZoomIn, ZoomOut } from "lucide-react";
 import { Link, useLocation, useParams } from "react-router-dom";
 import "../styles/pages/Customize.scss";
 
+import { gearImage, readGearCart, writeGearCart, type GearItem } from "./gearCart";
 import { bikePhoto, customizeBikes } from "./customizeBikes";
 const roadColors = [
     { name: "Satin Silver Dust", image: "satin-silver-dust.webp", finish: "linear-gradient(90deg, #c9cbce 40%, #7a7d7e)" },
@@ -17,7 +18,7 @@ const categoryCards = [
 const steps = ["CATEGORY", "MODEL", "SIZE", "COLOR", "TIRES", "WHEELS", "HANDLEBAR", "SADDLES", "추천 장비"];
 const gearStep = steps.length - 1;
 
-const recommendedGear: Record<string, { name: string; image: string }[]> = {
+const recommendedGear: Record<string, GearItem[]> = {
     "tarmac-sl9": [
         { name: "S-Works Prevail 3", image: "S-Works_Prevail3.webp" },
         { name: "S-Works Ares 2", image: "S-Works_Ares2.webp" },
@@ -87,6 +88,23 @@ function BikeCustomizer({ bike, initialStep }: { bike: (typeof customizeBikes)[n
     const [helpOpen, setHelpOpen] = useState(false);
     const [zoom, setZoom] = useState(1);
     const [notice, setNotice] = useState("");
+    const [cartItems, setCartItems] = useState(readGearCart);
+    const [gearDetail, setGearDetail] = useState<GearItem | null>(null);
+    const [gearNotice, setGearNotice] = useState("");
+    const gearDialog = useRef<HTMLDialogElement>(null);
+
+    const addGear = (item: GearItem) => {
+        const current = readGearCart();
+        const next = current.some(({ image }) => image === item.image) ? current : [...current, item];
+        try {
+            writeGearCart(next);
+            setCartItems(next);
+            setGearNotice(`${item.name}을(를) 장바구니에 담았어요.`);
+        } catch {
+            setGearNotice("장비를 장바구니에 담지 못했어요.");
+        }
+    };
+
     const helpToggle = useRef<HTMLButtonElement>(null);
     const closeHelp = () => {
         setHelpOpen(false);
@@ -162,7 +180,7 @@ function BikeCustomizer({ bike, initialStep }: { bike: (typeof customizeBikes)[n
                                     <div className="bike-build__summary-row" data-current={step === gearStep} data-pending={gearStep > furthestStep}>
                                         <dt>{steps[gearStep]}</dt>
                                         <dd>{gear.length ? `추천 제품 ${gear.length}개` : "준비 중"}</dd>
-                                        {gearStep <= furthestStep && <button type="button" aria-label="추천 장비 보기" onClick={() => setStep(gearStep)}>보기</button>}
+                                        {gearStep <= furthestStep && <button type="button" aria-label="추천 장비 변경" onClick={() => setStep(gearStep)}>변경</button>}
                                     </div>
                                 </dl>
                                 <div className="bike-build__total"><span>합산 가격</span><strong>₩ {build.size && build.color !== null ? price.toLocaleString("ko-KR") : "00,000,000"}</strong></div>
@@ -180,7 +198,7 @@ function BikeCustomizer({ bike, initialStep }: { bike: (typeof customizeBikes)[n
                     </button>
                 ))}
             </nav>
-            <section className="bike-build__options" aria-label={step === steps.length ? "구성 완료" : `${steps[step]} 옵션`}>
+            {step < steps.length && <section className="bike-build__options" aria-label={`${steps[step]} 옵션`}>
                 {step === 3 && colors.map(({ name, finish }, index) => (
                     <button className="bike-build__color" key={name} type="button" aria-pressed={build.color === index} onClick={() => { setBuild({ ...build, color: index }); advance(); }}>
                         <span className="bike-build__swatch" style={{ background: finish }} />
@@ -223,22 +241,40 @@ function BikeCustomizer({ bike, initialStep }: { bike: (typeof customizeBikes)[n
                     <div className="bike-build__gear">
                         <div className="bike-build__gear-heading">
                             <h2>추천 장비</h2>
-                            <button className="bike-build__option" type="button" onClick={() => { setSummaryOpen(true); advance(); }}>구성 완료</button>
+                            <button className="bike-build__finish" type="button" onClick={() => { setSummaryOpen(true); setNotice("구성이 완료됐어요."); advance(); }}><Check size={18} aria-hidden="true" /> 구성 완료</button>
                         </div>
                         {gear.length ? (
                             <ul>
                                 {gear.map(({ name, image }) => (
                                     <li key={image}>
-                                        <img src={`${import.meta.env.BASE_URL}images/customize/gear/${image}`} alt="" width={240} height={135} />
-                                        <strong>{name}</strong>
+                                        <div className="bike-build__gear-media">
+                                            <img src={gearImage(image)} alt="" width={240} height={135} />
+                                            <button className="bike-build__gear-detail" type="button" aria-label={`${name} 상세보기`} onClick={() => {
+                                                setGearDetail({ name, image });
+                                                gearDialog.current?.showModal();
+                                            }}>상세보기 <ArrowRight size={16} aria-hidden="true" /></button>
+                                        </div>
+                                        <div className="bike-build__gear-body">
+                                            <strong>{name}</strong>
+                                            {cartItems.some((item) => item.image === image) ? (
+                                                <Link className="bike-build__gear-add" to="/cart" aria-label={`${name} 담김, 장바구니 보기`}>담김 <ArrowRight size={14} aria-hidden="true" /></Link>
+                                            ) : <button className="bike-build__gear-add" type="button" aria-label={`${name} 담기`} onClick={() => addGear({ name, image })}>담기</button>}
+                                        </div>
                                     </li>
                                 ))}
                             </ul>
                         ) : <p>이 모델의 추천 장비는 준비 중이에요.</p>}
+                        {gearNotice && <p role="status">{gearNotice}</p>}
                     </div>
                 )}
-                {step === steps.length && <p role="status">모든 단계의 선택을 완료했어요.</p>}
-            </section>
+            </section>}
+            <dialog className="bike-build__gear-dialog" ref={gearDialog} aria-label={gearDetail?.name ?? "추천 장비 상세"}>
+                <form method="dialog"><button aria-label="상세보기 닫기"><X size={20} aria-hidden="true" /></button></form>
+                {gearDetail && <>
+                    <h2>{gearDetail.name}</h2>
+                    <img src={gearImage(gearDetail.image)} alt={gearDetail.name} />
+                </>}
+            </dialog>
         </article>
     );
 }
