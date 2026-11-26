@@ -23,7 +23,7 @@ const modelOptions: Record<string, { sizes: (number | string)[]; colors: FrameCo
         sizes: ["S3", "S4"],
         colors: [
             { name: "Satin Powder Indigo", finish: `url("${import.meta.env.BASE_URL}images/customize/swatches/satin-powder-indigo.png") center / cover no-repeat`, image: "demo-11-preview.webp" },
-            { name: "다크 그레이 / 화이트", finish: `url("${import.meta.env.BASE_URL}images/customize/swatches/demo-gray-white.png") center / cover no-repeat` },
+            { name: "Gloss Charcoal", finish: `url("${import.meta.env.BASE_URL}images/customize/swatches/demo-gray-white.png") center / cover no-repeat` },
         ],
         price: 14900000,
     },
@@ -31,7 +31,7 @@ const modelOptions: Record<string, { sizes: (number | string)[]; colors: FrameCo
         sizes: [49, 52, 54, 56, 58],
         colors: [
             { name: "Redwood Metallic", finish: `url("${import.meta.env.BASE_URL}images/customize/swatches/redwood-metallic.png") center / cover no-repeat`, image: "crux-5-preview.webp" },
-            { name: "그레이 / 실버", finish: `url("${import.meta.env.BASE_URL}images/customize/swatches/crux-gray-silver.png") center / cover no-repeat` },
+            { name: "Deep Marine Metallic", finish: `url("${import.meta.env.BASE_URL}images/customize/swatches/crux-gray-silver.png") center / cover no-repeat` },
         ],
         price: 12500000,
     },
