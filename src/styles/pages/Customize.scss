@@ -15,7 +15,8 @@
 
 .bike-build__workspace {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) clamp(290px, 21vw, 400px);
+    --summary-width: clamp(290px, 21vw, 400px);
+    grid-template-columns: minmax(0, 1fr) var(--summary-width);
     gap: var(--build-gutter);
     margin-inline: var(--build-gutter);
     margin-bottom: 14px;
@@ -287,6 +288,37 @@
     border-radius: 16px;
 }
 
+@media (min-width: 851px) {
+    .bike-build__workspace {
+        transition: grid-template-columns 280ms ease, column-gap 280ms ease;
+
+        &[data-summary="false"] {
+            grid-template-columns: minmax(0, 1fr) 0px;
+            column-gap: 0;
+        }
+    }
+
+    .bike-build__summary-slot {
+        width: var(--summary-width);
+        justify-self: end;
+        z-index: 1;
+    }
+
+    .bike-build__workspace[data-summary="false"] .bike-build__summary-slot {
+        pointer-events: none;
+    }
+
+    .bike-build__workspace[data-summary="false"] .bike-build__summary-toggle {
+        pointer-events: auto;
+    }
+}
+
+@media (851px <= width <= 1120px) {
+    .bike-build__workspace[data-summary="false"] .bike-build__controls {
+        align-self: flex-start;
+    }
+}
+
 @media (max-width: 850px) {
     .bike-build__workspace { grid-template-columns: minmax(0, 1fr); gap: 16px; }
     .bike-build__preview { min-height: 0; }
@@ -302,5 +334,6 @@
     .bike-build__stage img,
     .bike-build__summary,
     .bike-build__summary-toggle svg,
-    .bike-build__summary-slot { transition: none; }
+    .bike-build__summary-slot,
+    .bike-build__workspace { transition: none; }
 }
