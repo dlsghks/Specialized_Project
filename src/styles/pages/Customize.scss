@@ -421,3 +421,63 @@
     justify-content: space-between;
     gap: 12px;
 }
+
+.bike-build__gear strong { padding: 0; }
+
+.bike-build__gear-media { position: relative; }
+
+.bike-build .bike-build__gear-detail {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 10px;
+    border-radius: 4px;
+    background: #fff;
+    color: #111;
+    font-size: 13px;
+}
+
+@media (hover: hover) {
+    .bike-build__gear-detail { opacity: 0; }
+    .bike-build__gear li:hover .bike-build__gear-detail,
+    .bike-build__gear li:focus-within .bike-build__gear-detail { opacity: 1; }
+}
+
+.bike-build__gear-body {
+    display: grid;
+    align-content: space-between;
+    gap: 10px;
+    padding: 12px;
+}
+
+.bike-build .bike-build__gear-add,
+.bike-build .bike-build__finish {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 40px;
+    padding: 8px 16px;
+    border-radius: 5px;
+    font-weight: 700;
+}
+
+.bike-build .bike-build__gear-add { border: 1px solid #ccc; color: #111; }
+.bike-build .bike-build__gear-add:hover { border-color: #111; }
+.bike-build .bike-build__finish { background: var(--build-red); color: #fff; }
+.bike-build .bike-build__finish:hover { background: #830000; }
+
+.bike-build__gear-dialog {
+    width: min(680px, calc(100% - 32px));
+    margin: auto;
+    padding: 20px;
+    border: 0;
+    border-radius: 8px;
+
+    &::backdrop { background: #0008; }
+    form { display: flex; justify-content: flex-end; }
+    img { display: block; width: 100%; height: auto; margin-top: 16px; }
+}

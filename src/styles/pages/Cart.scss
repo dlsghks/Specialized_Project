@@ -1,0 +1,9 @@
+.gear-cart {
+    width: min(900px, calc(100% - 32px));
+    margin: 40px auto;
+
+    ul { padding: 0; list-style: none; }
+    li { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding-block: 16px; border-bottom: 1px solid #dedede; }
+    img { object-fit: cover; border-radius: 6px; }
+    button { margin-inline-start: auto; cursor: pointer; }
+}
