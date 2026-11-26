@@ -22,16 +22,16 @@ const modelOptions: Record<string, { sizes: (number | string)[]; colors: FrameCo
     "demo-11": {
         sizes: ["S3", "S4"],
         colors: [
-            { name: "Satin Powder Indigo", finish: "linear-gradient(180deg, #7470a7 50%, #fff 50%)", image: "demo-11-preview.webp" },
-            { name: "다크 그레이 / 화이트", finish: "linear-gradient(180deg, #3c3939 50%, #fff 50%)" },
+            { name: "Satin Powder Indigo", finish: `url("${import.meta.env.BASE_URL}images/customize/swatches/satin-powder-indigo.png") center / cover no-repeat`, image: "demo-11-preview.webp" },
+            { name: "다크 그레이 / 화이트", finish: `url("${import.meta.env.BASE_URL}images/customize/swatches/demo-gray-white.png") center / cover no-repeat` },
         ],
         price: 14900000,
     },
     "crux-5": {
         sizes: [49, 52, 54, 56, 58],
         colors: [
-            { name: "Redwood Metallic", finish: "linear-gradient(180deg, #910a0a 50%, #171717 50%)", image: "crux-5-preview.webp" },
-            { name: "그레이 / 실버", finish: "linear-gradient(180deg, #4a5252 50%, #a8adae 50%)" },
+            { name: "Redwood Metallic", finish: `url("${import.meta.env.BASE_URL}images/customize/swatches/redwood-metallic.png") center / cover no-repeat`, image: "crux-5-preview.webp" },
+            { name: "그레이 / 실버", finish: `url("${import.meta.env.BASE_URL}images/customize/swatches/crux-gray-silver.png") center / cover no-repeat` },
         ],
         price: 12500000,
     },
