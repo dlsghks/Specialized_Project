@@ -154,32 +154,3 @@ html:has(.site-navigation[open]) {
 @media (prefers-reduced-motion: reduce) {
     .site-navigation[open] { animation: none; }
 }
-
-.site-navigation__shop {
-    display: flex;
-    align-items: center;
-    gap: 1.25rem;
-    border: 0;
-    background: transparent;
-    color: inherit;
-    font-weight: inherit;
-
-    span { transition: transform .25s ease; }
-    &[aria-expanded="true"] span { transform: rotate(90deg); }
-}
-
-.site-navigation__shop-links {
-    display: grid;
-    grid-template-rows: 0fr;
-    transition: grid-template-rows .25s ease;
-    font-size: .55em;
-
-    &[data-open="true"] { grid-template-rows: 1fr; }
-    > div { overflow: hidden; }
-    a { padding: .65rem 0 .15rem 2rem; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .site-navigation__shop span,
-    .site-navigation__shop-links { transition: none; }
-}
