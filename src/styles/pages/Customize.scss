@@ -212,6 +212,8 @@
     width: min(280px, 100%);
     min-height: 136px;
 
+    > span:nth-child(2) { position: relative; }
+
     small { display: block; margin-top: 8px; max-width: 122px; }
 }
 
@@ -229,8 +231,10 @@
 }
 
 .bike-build__color-selected {
-    display: block;
-    margin-top: 6px;
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    white-space: nowrap;
     color: var(--build-red);
     font-size: 12px;
     font-weight: 700;
