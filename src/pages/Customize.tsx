@@ -10,7 +10,7 @@ const colors = [
     { name: "Gloss White Silver Metallic", image: "gloss-white-silver-metallic.webp", finish: "linear-gradient(90deg, #efeff1 43%, #b60022)" },
     { name: "Gloss Ruby Metallic", image: "gloss-ruby-metallic.webp", finish: "linear-gradient(90deg, #d2d7d7 40%, #86262f)" },
 ];
-const steps = ["CATEGORY", "MODEL", "TYPE", "SIZE", "COLOR", "TIRES", "WHEELS", "HANDLEBAR", "SADDLES"];
+const steps = ["CATEGORY", "MODEL", "SIZE", "COLOR", "TIRES", "WHEELS", "HANDLEBAR", "SADDLES"];
 const storageKey = "specialized-tarmac-sl9-build";
 
 function readBuild(): { size: number | null; color: number | null } {
@@ -28,7 +28,7 @@ function readBuild(): { size: number | null; color: number | null } {
 export function Customize() {
     const [build, setBuild] = useState(readBuild);
     const previewColor = colors[build.color ?? 0];
-    const [step, setStep] = useState(4);
+    const [step, setStep] = useState(3);
     const [summaryOpen, setSummaryOpen] = useState(true);
     const [helpOpen, setHelpOpen] = useState(false);
     const [zoom, setZoom] = useState(1);
@@ -38,7 +38,7 @@ export function Customize() {
         setHelpOpen(false);
         helpToggle.current?.focus();
     };
-    const values = ["ROAD", model.toUpperCase(), "BIKE", build.size?.toString(), build.color === null ? undefined : colors[build.color].name];
+    const values = ["ROAD", model.toUpperCase(), build.size?.toString(), build.color === null ? undefined : colors[build.color].name];
 
     const save = () => {
         try {
@@ -98,10 +98,10 @@ export function Customize() {
                                 <p className="bike-build__model">{model}</p>
                                 <dl>
                                     {steps.map((label, index) => (
-                                        <div key={label} className="bike-build__summary-row" data-current={step === index} data-pending={index >= 5}>
+                                        <div key={label} className="bike-build__summary-row" data-current={step === index} data-pending={index >= 4}>
                                             <dt>{label}</dt>
                                             <dd>{values[index] ?? (step === index ? "선택 중" : "—")}{values[index] && <Check size={13} aria-hidden="true" />}</dd>
-                                            {values[index] && index < 5 && <button type="button" aria-label={`${label} 변경`} onClick={() => setStep(index)}>변경</button>}
+                                            {values[index] && index < 4 && <button type="button" aria-label={`${label} 변경`} onClick={() => setStep(index)}>변경</button>}
                                         </div>
                                     ))}
                                 </dl>
@@ -115,13 +115,13 @@ export function Customize() {
             </div>
             <nav className="bike-build__steps" aria-label="커스터마이징 단계">
                 {steps.map((label, index) => (
-                    <button key={label} type="button" aria-current={step === index ? "step" : undefined} disabled={index >= 5} onClick={() => setStep(index)}>
-                        <span>{index + 1}</span><span>{label}{step === index && index === 4 && <small>컬러를 선택하세요</small>}</span>
+                    <button key={label} type="button" aria-current={step === index ? "step" : undefined} disabled={index >= 4} onClick={() => setStep(index)}>
+                        <span>{index + 1}</span><span>{label}{step === index && index === 3 && <small>컬러를 선택하세요</small>}</span>
                     </button>
                 ))}
             </nav>
             <section className="bike-build__options" aria-label={`${steps[step]} 옵션`}>
-                {step === 4 && colors.map(({ name, finish }, index) => (
+                {step === 3 && colors.map(({ name, finish }, index) => (
                     <button className="bike-build__color" key={name} type="button" aria-pressed={build.color === index} onClick={() => setBuild({ ...build, color: index })}>
                         <span className="bike-build__swatch" style={{ background: finish }} />
                         <span>
@@ -134,9 +134,9 @@ export function Customize() {
                         )}
                     </button>
                 ))}
-                {step === 3 && sizes.map((size) => <button className="bike-build__option" key={size} type="button" aria-pressed={build.size === size} onClick={() => setBuild({ ...build, size })}>{size}</button>)}
+                {step === 2 && sizes.map((size) => <button className="bike-build__option" key={size} type="button" aria-pressed={build.size === size} onClick={() => setBuild({ ...build, size })}>{size}</button>)}
                 {step === 1 && <Link className="bike-build__option" to="/customize">{model} · 모델 선택</Link>}
-                {(step === 0 || step === 2) && <button type="button" className="bike-build__option" aria-pressed="true" onClick={() => setStep(step + 1)}>{values[step]} <Check size={16} aria-hidden="true" /></button>}
+                {step === 0 && <button type="button" className="bike-build__option" aria-pressed="true" onClick={() => setStep(step + 1)}>{values[step]} <Check size={16} aria-hidden="true" /></button>}
             </section>
         </article>
     );
