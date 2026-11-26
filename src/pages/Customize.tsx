@@ -38,14 +38,7 @@ export function Customize() {
         setHelpOpen(false);
         helpToggle.current?.focus();
     };
-    const summaryToggle = useRef<HTMLButtonElement>(null);
-    const summaryClose = useRef<HTMLButtonElement>(null);
     const values = ["ROAD", model.toUpperCase(), "BIKE", build.size?.toString(), build.color === null ? undefined : colors[build.color].name];
-
-    const toggleSummary = (open: boolean) => {
-        setSummaryOpen(open);
-        requestAnimationFrame(() => (open ? summaryClose : summaryToggle).current?.focus());
-    };
 
     const save = () => {
         try {
@@ -87,30 +80,38 @@ export function Customize() {
                         <button type="button" aria-label="축소" disabled={zoom <= .7} onClick={() => setZoom(Math.max(.7, zoom - .15))}><ZoomOut /></button>
                         <button type="button" aria-label="미리보기 초기화" onClick={() => setZoom(1)}><RotateCcw /></button>
                     </div>
-                    {!summaryOpen && <button ref={summaryToggle} className="bike-build__show-summary" type="button" onClick={() => toggleSummary(true)}>선택 요약 ↑</button>}
                 </section>
-                {summaryOpen && (
-                    <aside className="bike-build__summary" aria-label="선택 요약">
-                        <div className="bike-build__summary-top">
-                            <button type="button" onClick={save}><Bookmark size={17} /> 저장</button>
-                            <button ref={summaryClose} type="button" aria-label="선택 요약 접기" onClick={() => toggleSummary(false)}><ChevronDown size={22} aria-hidden="true" /></button>
-                        </div>
-                        <h2>SUMMARY</h2>
-                        <p className="bike-build__model">{model}</p>
-                        <dl>
-                            {steps.map((label, index) => (
-                                <div key={label} className="bike-build__summary-row" data-current={step === index} data-pending={index >= 5}>
-                                    <dt>{label}</dt>
-                                    <dd>{values[index] ?? (step === index ? "선택 중" : "—")}{values[index] && <Check size={13} aria-hidden="true" />}</dd>
-                                    {values[index] && index < 5 && <button type="button" aria-label={`${label} 변경`} onClick={() => setStep(index)}>변경</button>}
-                                </div>
-                            ))}
-                        </dl>
-                        <div className="bike-build__total"><span>합산 가격</span><strong>₩ {build.size && build.color !== null ? "20,900,000" : "00,000,000"}</strong></div>
-                        <button className="bike-build__cart" type="button" disabled title="장바구니 연결 준비 중">장바구니 담기</button>
-                        {notice && <p role="status" className="bike-build__notice">{notice}</p>}
-                    </aside>
-                )}
+                <div className="bike-build__summary-slot">
+                    <div className="bike-build__summary-clip">
+                        <aside className="bike-build__summary" aria-label="선택 요약">
+                            <div className="bike-build__summary-top">
+                                <button className="bike-build__summary-save" type="button" onClick={save} inert={!summaryOpen}><Bookmark size={17} /> 저장</button>
+                                <button className="bike-build__summary-toggle" type="button" aria-expanded={summaryOpen}
+                                    aria-controls="bike-build-summary-content" aria-label={summaryOpen ? "선택 요약 접기" : "선택 요약 펼치기"}
+                                    onClick={() => setSummaryOpen((open) => !open)}>
+                                    {!summaryOpen && <span>선택 요약</span>}
+                                    <ChevronDown size={22} aria-hidden="true" />
+                                </button>
+                            </div>
+                            <div id="bike-build-summary-content" className="bike-build__summary-content" inert={!summaryOpen}>
+                                <h2>SUMMARY</h2>
+                                <p className="bike-build__model">{model}</p>
+                                <dl>
+                                    {steps.map((label, index) => (
+                                        <div key={label} className="bike-build__summary-row" data-current={step === index} data-pending={index >= 5}>
+                                            <dt>{label}</dt>
+                                            <dd>{values[index] ?? (step === index ? "선택 중" : "—")}{values[index] && <Check size={13} aria-hidden="true" />}</dd>
+                                            {values[index] && index < 5 && <button type="button" aria-label={`${label} 변경`} onClick={() => setStep(index)}>변경</button>}
+                                        </div>
+                                    ))}
+                                </dl>
+                                <div className="bike-build__total"><span>합산 가격</span><strong>₩ {build.size && build.color !== null ? "20,900,000" : "00,000,000"}</strong></div>
+                                <button className="bike-build__cart" type="button" disabled title="장바구니 연결 준비 중">장바구니 담기</button>
+                                {notice && <p role="status" className="bike-build__notice">{notice}</p>}
+                            </div>
+                        </aside>
+                    </div>
+                </div>
             </div>
             <nav className="bike-build__steps" aria-label="커스터마이징 단계">
                 {steps.map((label, index) => (
