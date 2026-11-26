@@ -10,7 +10,7 @@ const colors = [
     { name: "Gloss White Silver Metallic", image: "gloss-white-silver-metallic.webp", finish: "linear-gradient(90deg, #efeff1 43%, #b60022)" },
     { name: "Gloss Ruby Metallic", image: "gloss-ruby-metallic.webp", finish: "linear-gradient(90deg, #d2d7d7 40%, #86262f)" },
 ];
-const steps = ["CATEGORY", "MODEL", "TYPE", "SIZE", "COLOR", "GROUPSET", "CRANKSET", "WHEELS & TUBES", "TIRES", "HANDLEBAR", "SADDLES", "SEATPOST"];
+const steps = ["CATEGORY", "MODEL", "TYPE", "SIZE", "COLOR", "TIRES", "WHEELS", "HANDLEBAR", "SADDLES"];
 const storageKey = "specialized-tarmac-sl9-build";
 
 function readBuild(): { size: number | null; color: number | null } {
