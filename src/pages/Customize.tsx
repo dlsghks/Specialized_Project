@@ -14,7 +14,18 @@ const categoryCards = [
     { id: "crux-5", label: "그래블", image: "gravel.webp" },
     { id: "tarmac-sl9", label: "로드", image: "road.webp" },
 ];
-const steps = ["CATEGORY", "MODEL", "SIZE", "COLOR", "TIRES", "WHEELS", "HANDLEBAR", "SADDLES"];
+const steps = ["CATEGORY", "MODEL", "SIZE", "COLOR", "TIRES", "WHEELS", "HANDLEBAR", "SADDLES", "추천 장비"];
+const gearStep = steps.length - 1;
+
+const recommendedGear: Record<string, { name: string; image: string }[]> = {
+    "tarmac-sl9": [
+        { name: "S-Works Prevail 3", image: "S-Works_Prevail3.webp" },
+        { name: "S-Works Ares 2", image: "S-Works_Ares2.webp" },
+        { name: "S-Works Carbon Rib Cage 3", image: "S-Works_Carbon_Rib_Cage3.webp" },
+        { name: "S-Works Torch", image: "S-Works_Torch.webp" },
+        { name: "S-Works Evade 4", image: "S-Works_Evade4.webp" },
+    ],
+};
 type FrameColor = { name: string; finish: string; image?: string };
 
 const modelOptions: Record<string, { sizes: (number | string)[]; colors: FrameColor[]; price: number }> = {
@@ -23,7 +34,7 @@ const modelOptions: Record<string, { sizes: (number | string)[]; colors: FrameCo
         sizes: ["S3", "S4"],
         colors: [
             { name: "Satin Powder Indigo", finish: `url("${import.meta.env.BASE_URL}images/customize/swatches/satin-powder-indigo.png") center / cover no-repeat`, image: "demo-11-preview.webp" },
-            { name: "Gloss Charcoal", finish: `url("${import.meta.env.BASE_URL}images/customize/swatches/demo-gray-white.png") center / cover no-repeat` },
+            { name: "Gloss Charcoal", image: "demo-gloss-charcoal.webp", finish: `url("${import.meta.env.BASE_URL}images/customize/swatches/demo-gray-white.png") center / cover no-repeat` },
         ],
         price: 14900000,
     },
@@ -31,7 +42,7 @@ const modelOptions: Record<string, { sizes: (number | string)[]; colors: FrameCo
         sizes: [49, 52, 54, 56, 58],
         colors: [
             { name: "Redwood Metallic", finish: `url("${import.meta.env.BASE_URL}images/customize/swatches/redwood-metallic.png") center / cover no-repeat`, image: "crux-5-preview.webp" },
-            { name: "Deep Marine Metallic", finish: `url("${import.meta.env.BASE_URL}images/customize/swatches/crux-gray-silver.png") center / cover no-repeat` },
+            { name: "Deep Marine Metallic", image: "crux-deep-marine-metallic.webp", finish: `url("${import.meta.env.BASE_URL}images/customize/swatches/crux-gray-silver.png") center / cover no-repeat` },
         ],
         price: 12500000,
     },
@@ -66,6 +77,7 @@ function BikeCustomizer({ bike, initialStep }: { bike: (typeof customizeBikes)[n
     const [step, setStep] = useState(initialStep);
     const [furthestStep, setFurthestStep] = useState(initialStep);
     const [confirmedParts, setConfirmedParts] = useState(0);
+    const gear = recommendedGear[bike.id] ?? [];
     const advance = () => {
         const nextStep = step + 1;
         setFurthestStep((furthest) => Math.max(furthest, nextStep));
@@ -140,7 +152,7 @@ function BikeCustomizer({ bike, initialStep }: { bike: (typeof customizeBikes)[n
                                 <h2>SUMMARY</h2>
                                 <p className="bike-build__model">{model}</p>
                                 <dl>
-                                    {steps.map((label, index) => (
+                                    {steps.slice(0, gearStep).map((label, index) => (
                                         <div key={label} className="bike-build__summary-row" data-current={step === index} data-pending={index > furthestStep}>
                                             <dt>{label}</dt>
                                             <dd>{values[index] ?? (step === index ? "선택 중" : "—")}{values[index] && <Check size={13} aria-hidden="true" />}</dd>
@@ -196,12 +208,29 @@ function BikeCustomizer({ bike, initialStep }: { bike: (typeof customizeBikes)[n
                         <strong>{label}</strong>
                     </button>
                 ))}
-                {step >= 4 && step < steps.length && (
+                {step >= 4 && step < gearStep && (
                     <button className="bike-build__option" type="button" onClick={() => {
                         setConfirmedParts((count) => Math.max(count, step - 3));
-                        if (step === steps.length - 1) setSummaryOpen(true);
                         advance();
                     }}>기본 구성 유지</button>
+                )}
+                {step === gearStep && (
+                    <div className="bike-build__gear">
+                        <div className="bike-build__gear-heading">
+                            <h2>추천 장비</h2>
+                            <button className="bike-build__option" type="button" onClick={() => { setSummaryOpen(true); advance(); }}>구성 완료</button>
+                        </div>
+                        {gear.length ? (
+                            <ul>
+                                {gear.map(({ name, image }) => (
+                                    <li key={image}>
+                                        <img src={`${import.meta.env.BASE_URL}images/customize/gear/${image}`} alt="" width={240} height={135} />
+                                        <strong>{name}</strong>
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : <p>이 모델의 추천 장비는 준비 중이에요.</p>}
+                    </div>
                 )}
                 {step === steps.length && <p role="status">모든 단계의 선택을 완료했어요.</p>}
             </section>
