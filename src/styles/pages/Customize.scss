@@ -1,6 +1,6 @@
 .bike-build {
     --build-gutter: clamp(16px, 2.08vw, 40px);
-    --build-red: #b60000;
+    --build-red: #A80000;
     padding-top: 16px;
 
     button {
@@ -208,10 +208,32 @@
 }
 
 .bike-build__color {
+    position: relative;
     width: min(280px, 100%);
     min-height: 136px;
 
     small { display: block; margin-top: 8px; max-width: 122px; }
+}
+
+.bike-build__color-check {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: grid;
+    width: 20px;
+    height: 20px;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--build-red);
+    color: #fff;
+}
+
+.bike-build__color-selected {
+    display: block;
+    margin-top: 6px;
+    color: var(--build-red);
+    font-size: 12px;
+    font-weight: 700;
 }
 
 .bike-build__swatch {
