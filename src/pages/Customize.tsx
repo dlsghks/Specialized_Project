@@ -81,7 +81,7 @@ function BikeCustomizer({ bike }: { bike: (typeof customizeBikes)[number] }) {
                         <Link to="/support"><MessageCircle size={19} aria-hidden="true" /> 고객 지원 연결 <ChevronRight size={19} aria-hidden="true" /></Link>
                     </section>
                     <div className="bike-build__stage">
-                        <img src={isRoad ? `${import.meta.env.BASE_URL}images/customize/${previewColor.image}` : bikePhoto(bike.id)} width={900} height={506} alt={isRoad ? `${model} · ${previewColor.name}` : model} style={{ scale: zoom }} />
+                        <img src={isRoad ? `${import.meta.env.BASE_URL}images/customize/${previewColor.image}` : `${import.meta.env.BASE_URL}images/customize/${bike.id}-preview.webp`} width={900} height={506} alt={isRoad ? `${model} · ${previewColor.name}` : model} style={{ scale: zoom }} />
                     </div>
                     <div className="bike-build__controls" aria-label="미리보기 조작">
                         <button type="button" disabled aria-label="3D 회전 준비 중" title="3D 회전 준비 중"><RotateCcw /></button>
