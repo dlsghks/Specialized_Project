@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { Bookmark, Check, ChevronDown, ChevronRight, CircleHelp, Eye, List, MessageCircle, RotateCcw, X, ZoomIn, ZoomOut } from "lucide-react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import "../styles/pages/Customize.scss";
 
 import { bikePhoto, customizeBikes } from "./customizeBikes";
@@ -9,6 +9,7 @@ const roadColors = [
     { name: "Gloss White Silver Metallic", image: "gloss-white-silver-metallic.webp", finish: "linear-gradient(90deg, #efeff1 43%, #b60022)" },
     { name: "Gloss Ruby Metallic", image: "gloss-ruby-metallic.webp", finish: "linear-gradient(90deg, #d2d7d7 40%, #86262f)" },
 ];
+const categoryOrder = ["demo-11", "crux-5", "tarmac-sl9"];
 const steps = ["CATEGORY", "MODEL", "SIZE", "COLOR", "TIRES", "WHEELS", "HANDLEBAR", "SADDLES"];
 type FrameColor = { name: string; finish: string; image?: string };
 
@@ -46,18 +47,26 @@ function readBuild(storageKey: string, sizes: (number | string)[], colors: Frame
 
 export function Customize() {
     const { id } = useParams();
+    const { state } = useLocation();
     const bike = customizeBikes.find((item) => item.id === id);
-    return bike ? <BikeCustomizer key={bike.id} bike={bike} /> : <Link to="/customize">모델 선택으로 돌아가기</Link>;
+    return bike ? <BikeCustomizer key={bike.id} bike={bike} initialStep={state?.modelSelected ? 2 : 0} /> : <Link to="/customize">모델 선택으로 돌아가기</Link>;
 }
 
-function BikeCustomizer({ bike }: { bike: (typeof customizeBikes)[number] }) {
+function BikeCustomizer({ bike, initialStep }: { bike: (typeof customizeBikes)[number]; initialStep: number }) {
     const { name: model, category } = bike;
     const { sizes, colors, price } = modelOptions[bike.id];
     const storageKey = `specialized-${bike.id}-build`;
     const [categoryId, setCategoryId] = useState(bike.id);
     const [build, setBuild] = useState(() => readBuild(storageKey, sizes, colors));
     const previewColor = colors[build.color ?? 0];
-    const [step, setStep] = useState(bike.id === "tarmac-sl9" ? 3 : 1);
+    const [step, setStep] = useState(initialStep);
+    const [furthestStep, setFurthestStep] = useState(initialStep);
+    const [confirmedParts, setConfirmedParts] = useState(0);
+    const advance = () => {
+        const nextStep = step + 1;
+        setFurthestStep((furthest) => Math.max(furthest, nextStep));
+        setStep(nextStep);
+    };
     const [summaryOpen, setSummaryOpen] = useState(true);
     const [helpOpen, setHelpOpen] = useState(false);
     const [zoom, setZoom] = useState(1);
@@ -67,7 +76,7 @@ function BikeCustomizer({ bike }: { bike: (typeof customizeBikes)[number] }) {
         setHelpOpen(false);
         helpToggle.current?.focus();
     };
-    const values = [category, model.toUpperCase(), build.size?.toString(), build.color === null ? undefined : colors[build.color].name];
+    const values = [category, model.toUpperCase(), build.size?.toString(), build.color === null ? undefined : colors[build.color].name, ...Array.from({ length: confirmedParts }, () => "기본 구성")];
 
     const save = () => {
         try {
@@ -128,10 +137,10 @@ function BikeCustomizer({ bike }: { bike: (typeof customizeBikes)[number] }) {
                                 <p className="bike-build__model">{model}</p>
                                 <dl>
                                     {steps.map((label, index) => (
-                                        <div key={label} className="bike-build__summary-row" data-current={step === index} data-pending={index >= 4}>
+                                        <div key={label} className="bike-build__summary-row" data-current={step === index} data-pending={index > furthestStep}>
                                             <dt>{label}</dt>
                                             <dd>{values[index] ?? (step === index ? "선택 중" : "—")}{values[index] && <Check size={13} aria-hidden="true" />}</dd>
-                                            {values[index] && index < 4 && <button type="button" aria-label={`${label} 변경`} onClick={() => setStep(index)}>변경</button>}
+                                            {values[index] && index <= furthestStep && <button type="button" aria-label={`${label} 변경`} onClick={() => setStep(index)}>변경</button>}
                                         </div>
                                     ))}
                                 </dl>
@@ -145,14 +154,14 @@ function BikeCustomizer({ bike }: { bike: (typeof customizeBikes)[number] }) {
             </div>
             <nav className="bike-build__steps" aria-label="커스터마이징 단계">
                 {steps.map((label, index) => (
-                    <button key={label} type="button" aria-current={step === index ? "step" : undefined} disabled={index >= 4} onClick={() => setStep(index)}>
+                    <button key={label} type="button" aria-current={step === index ? "step" : undefined} disabled={index > furthestStep} onClick={() => setStep(index)}>
                         <span>{index + 1}</span><span>{label}{step === index && index === 3 && <small>컬러를 선택하세요</small>}</span>
                     </button>
                 ))}
             </nav>
-            <section className="bike-build__options" aria-label={`${steps[step]} 옵션`}>
+            <section className="bike-build__options" aria-label={step === steps.length ? "구성 완료" : `${steps[step]} 옵션`}>
                 {step === 3 && colors.map(({ name, finish }, index) => (
-                    <button className="bike-build__color" key={name} type="button" aria-pressed={build.color === index} onClick={() => setBuild({ ...build, color: index })}>
+                    <button className="bike-build__color" key={name} type="button" aria-pressed={build.color === index} onClick={() => { setBuild({ ...build, color: index }); advance(); }}>
                         <span className="bike-build__swatch" style={{ background: finish }} />
                         <span>
                             <strong>프레임 컬러 {index + 1}</strong>
@@ -164,18 +173,30 @@ function BikeCustomizer({ bike }: { bike: (typeof customizeBikes)[number] }) {
                         )}
                     </button>
                 ))}
-                {step === 2 && sizes.map((size) => <button className="bike-build__option" key={size} type="button" aria-pressed={build.size === size} onClick={() => setBuild({ ...build, size })}>{size}</button>)}
+                {step === 2 && sizes.map((size) => <button className="bike-build__option" key={size} type="button" aria-pressed={build.size === size} onClick={() => { setBuild({ ...build, size }); advance(); }}>{size}</button>)}
                 {step === 1 && customizeBikes.filter((item) => item.id === categoryId).map(({ id, name }) => (
                     <Link className="bike-build__option bike-build__bike-card" key={id}
-                        to={`/customize/${id}`} onClick={() => { if (id === bike.id) setStep(bike.id === "tarmac-sl9" ? 3 : 2); }}>
-                        <img src={bikePhoto(id)} alt="" width={800} height={475} />
+                        to={`/customize/${id}`} state={{ modelSelected: true }} onClick={() => { if (id === bike.id) advance(); }}>
+                        <img src={bikePhoto(id)} alt="" width={800} height={475} style={{ height: 100, objectFit: "contain" }} />
                         <strong>{name}</strong>
                     </Link>
                 ))}
-                {step === 0 && customizeBikes.map(({ id, category }) => (
+                {step === 0 && categoryOrder.map((id) => (
                     <button key={id} type="button" className="bike-build__option" aria-pressed={categoryId === id}
-                        onClick={() => { setCategoryId(id); setStep(1); }}>{category}</button>
+                        onClick={() => {
+                            setCategoryId(id);
+                            if (id !== bike.id) setFurthestStep(1);
+                            advance();
+                        }}>{customizeBikes.find((item) => item.id === id)?.category}</button>
                 ))}
+                {step >= 4 && step < steps.length && (
+                    <button className="bike-build__option" type="button" onClick={() => {
+                        setConfirmedParts((count) => Math.max(count, step - 3));
+                        if (step === steps.length - 1) setSummaryOpen(true);
+                        advance();
+                    }}>기본 구성 유지</button>
+                )}
+                {step === steps.length && <p role="status">모든 단계의 선택을 완료했어요.</p>}
             </section>
         </article>
     );
