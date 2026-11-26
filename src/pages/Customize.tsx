@@ -112,7 +112,14 @@ export function Customize() {
                 {step === 4 && colors.map(({ name, finish }, index) => (
                     <button className="bike-build__color" key={name} type="button" aria-pressed={build.color === index} onClick={() => setBuild({ ...build, color: index })}>
                         <span className="bike-build__swatch" style={{ background: finish }} />
-                        <span><strong>프레임 컬러 {index + 1}</strong><small>{name}</small></span>
+                        <span>
+                            <strong>프레임 컬러 {index + 1}</strong>
+                            <small>{name}</small>
+                            {build.color === index && <span className="bike-build__color-selected" aria-hidden="true">선택됨</span>}
+                        </span>
+                        {build.color === index && (
+                            <span className="bike-build__color-check" aria-hidden="true"><Check size={13} strokeWidth={3} /></span>
+                        )}
                     </button>
                 ))}
                 {step === 3 && sizes.map((size) => <button className="bike-build__option" key={size} type="button" aria-pressed={build.size === size} onClick={() => setBuild({ ...build, size })}>{size}</button>)}
