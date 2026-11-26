@@ -9,7 +9,7 @@ const socials = [
     { label: "Instagram", icon: "instagram.svg", url: "https://www.instagram.com/iamspecialized/" },
     { label: "Facebook", icon: "facebook.svg", url: "https://www.facebook.com/specializedbicycles/" },
     { label: "YouTube", icon: "youtube.svg", url: "https://www.youtube.com/@specializedbicycles" },
-    { label: "TikTok", icon: "tiktok.png", url: "https://www.tiktok.com/@iamspecialized" },
+    { label: "TikTok", icon: "tiktok.png", url: "https://www.tiktok.com/@specializedbicycles" },
 ];
 
 const menuGroups = [
