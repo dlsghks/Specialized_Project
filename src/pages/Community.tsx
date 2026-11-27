@@ -1,18 +1,20 @@
 import { useLayoutEffect, useRef } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { AthleteRow } from "../components/community/AthleteRow";
+import { StoryListing } from "../components/community/StoryListing";
 import { athleteGroups, communityGuides, communityImages, officialCommunity } from "../data/community";
+import { communityStories, storySearch, storyTags } from "../data/communityStories";
 import "../styles/pages/Community.scss";
 
 const athleteCount = athleteGroups.reduce((count, group) => count + group.athletes.length, 0);
 
-function CommunityGuides({ isStoryTab }: { isStoryTab: boolean }) {
+function CommunityGuides() {
     return (
         <section className="community-guides" aria-labelledby="community-guides-title">
             <header className="community-row-heading">
-                <h2 id="community-guides-title">{isStoryTab ? "스토리 · 가이드" : "다른 스토리 · 가이드"}</h2>
-                {!isStoryTab && <Link className="community-row-heading__link" to="?tab=stories"
-                    onClick={() => document.getElementById("community-menu")?.scrollIntoView()}>전체 보기</Link>}
+                <h2 id="community-guides-title">다른 스토리 · 가이드</h2>
+                <Link className="community-row-heading__link" to="?tab=stories"
+                    onClick={() => document.getElementById("community-menu")?.scrollIntoView()}>전체 보기</Link>
             </header>
             <div className="community-guides__grid">
                 {communityGuides.map((guide) => (
@@ -32,11 +34,18 @@ function CommunityGuides({ isStoryTab }: { isStoryTab: boolean }) {
 }
 
 export function Community() {
-    const [params] = useSearchParams();
+    const [params, setParams] = useSearchParams();
     const requestedTab = params.get("tab");
     const tab = requestedTab === "all" || requestedTab === "stories" ? requestedTab : "athletes";
     const discipline = tab === "athletes" ? athleteGroups.find((group) => group.id === params.get("discipline")) : undefined;
     const visibleGroups = discipline ? [discipline] : athleteGroups;
+    const storyTag = storyTags.find(({ id }) => id === params.get("tag"))?.id;
+    const oldestFirst = params.get("sort") === "oldest";
+    const stories = storyTag ? communityStories.filter(({ tags }) => tags.includes(storyTag)) : communityStories;
+    const sortedStories = [...stories].sort((a, b) => {
+        if (!a.date || !b.date) return Number(!a.date) - Number(!b.date);
+        return oldestFirst ? a.date.localeCompare(b.date) : b.date.localeCompare(a.date);
+    });
     const menu = useRef<HTMLElement>(null);
 
     useLayoutEffect(() => {
@@ -57,10 +66,10 @@ export function Community() {
             <header className="community-masthead community-width">
                 <div>
                     <h1>라이더 커뮤니티</h1>
-                    <p>커뮤니티 홈 / {tab === "stories" ? "스토리 · 가이드" : tab === "all" ? "전체" : "선수"}</p>
+                    <p>{tab === "stories" ? "선수들의 이야기와 라이딩에 필요한 가이드를 만나보세요." : `커뮤니티 홈 / ${tab === "all" ? "전체" : "선수"}`}</p>
                 </div>
-                <img className="community-masthead__photo" src={communityImages + "athletes-hero.webp"}
-                    alt="산과 숲을 따라 이어지는 흙길" width={1840} height={759} fetchPriority="high" />
+                <img className="community-masthead__photo" src={communityImages + (tab === "stories" ? "stories-hero.webp" : "athletes-hero.webp")}
+                    alt={tab === "stories" ? "설산을 배경으로 산악자전거를 타는 라이더" : "산과 숲을 따라 이어지는 흙길"} width={1840} height={759} fetchPriority="high" />
             </header>
 
             <div className="community-nav" id="community-menu">
@@ -74,6 +83,16 @@ export function Community() {
                         <a href={officialCommunity + "stories"}>뉴스 · 이벤트</a>
                     </nav>
                     {tab === "athletes" && <p>선수 {discipline?.athletes.length ?? athleteCount}명</p>}
+                    {tab === "stories" && (
+                        <div className="community-story-tools">
+                            <p aria-live="polite">스토리 · 가이드 {stories.length}개</p>
+                            <select aria-label="스토리 정렬" value={oldestFirst ? "oldest" : "newest"}
+                                onChange={(event) => setParams(storySearch({ tag: storyTag, oldestFirst: event.target.value === "oldest" }))}>
+                                <option value="newest">최신순</option>
+                                <option value="oldest">오래된순</option>
+                            </select>
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -87,13 +106,14 @@ export function Community() {
                         ))}
                     </nav>
                 )}
-                {tab === "all" && <CommunityGuides isStoryTab={false} />}
+                {tab === "all" && <CommunityGuides />}
                 {tab !== "stories" && (
                     <div className="community-roster">
                         {visibleGroups.map((group) => <AthleteRow key={group.id} group={group} filtered={Boolean(discipline)} />)}
                     </div>
                 )}
-                {tab !== "all" && <CommunityGuides isStoryTab={tab === "stories"} />}
+                {tab === "athletes" && <CommunityGuides />}
+                {tab === "stories" && <StoryListing stories={sortedStories} tag={storyTag} oldestFirst={oldestFirst} requestedPage={Number(params.get("page") ?? 1)} />}
             </div>
         </div>
     );

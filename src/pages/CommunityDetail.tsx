@@ -1,30 +1,36 @@
 import { useLayoutEffect } from "react";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { athleteGroups, athleteImage, communityGuides, communityImages, officialCommunity } from "../data/community";
+import { communityStories, storySearch, storyTagLabel } from "../data/communityStories";
 import { NotFound } from "./NotFound";
 import "../styles/pages/Community.scss";
 
-export function CommunityDetail() {
+export function CommunityDetail({ kind }: { kind?: "story" }) {
     const { id } = useParams();
-    const group = athleteGroups.find(({ athletes }) => athletes.some((athlete) => athlete.id === id));
+    const location = useLocation();
+    const group = kind === "story" ? undefined : athleteGroups.find(({ athletes }) => athletes.some((athlete) => athlete.id === id));
     const athlete = group?.athletes.find((entry) => entry.id === id);
-    const guide = communityGuides.find((entry) => entry.id === id);
+    const story = kind === "story" ? communityStories.find((entry) => entry.id === id) : undefined;
+    const guide = kind === "story" ? undefined : communityGuides.find((entry) => entry.id === id);
+    const editorial = story ?? guide;
+    const storyList = location.state?.storyList;
+    const returnToStories = typeof storyList === "string" && storyList.startsWith("?tab=stories") ? storyList : storySearch();
 
     useLayoutEffect(() => {
         window.scrollTo(0, 0);
     }, [id]);
 
-    if (!athlete && !guide) return <NotFound />;
+    if (!athlete && !editorial) return <NotFound />;
 
     return (
         <article className="community-detail community-width">
-            <Link className="community-detail__back" to={athlete ? `/community?tab=athletes&discipline=${group?.id}` : "/community?tab=stories"}>
+            <Link className="community-detail__back" to={athlete ? `/community?tab=athletes&discipline=${group?.id}` : `/community${returnToStories}`}>
                 <ArrowLeft size={18} aria-hidden="true" /> {athlete ? "선수 목록" : "스토리 · 가이드"}
             </Link>
-            <div className="community-detail__body" data-guide={Boolean(guide)}>
+            <div className="community-detail__body" data-guide={Boolean(editorial)}>
                 <img className="community-detail__photo" alt={athlete?.name ?? ""}
-                    src={athlete ? athleteImage(athlete.id) : communityImages + guide?.image} />
+                    src={athlete ? athleteImage(athlete.id) : communityImages + editorial?.image} />
                 {athlete ? (
                     <div>
                         <p className="community-detail__category">{group?.label}</p>
@@ -35,12 +41,17 @@ export function CommunityDetail() {
                         </dl>
                         <a className="community-detail__link" href={officialCommunity + athlete.id}>공식 프로필 보기 <ArrowUpRight size={18} aria-hidden="true" /></a>
                     </div>
-                ) : guide && (
+                ) : editorial && (
                     <div>
-                        <p className="community-detail__category">{guide.category}</p>
-                        <h1>{guide.title}</h1>
-                        <p>{guide.summary}</p>
-                        <a className="community-detail__link" href={officialCommunity + guide.id}>공식 가이드 읽기 <ArrowUpRight size={18} aria-hidden="true" /></a>
+                        <p className="community-detail__category">{story?.tags.map(storyTagLabel).join(", ") || guide?.category || "스토리"}</p>
+                        <h1>{editorial.title}</h1>
+                        {"date" in editorial && editorial.date && (
+                            <time className="community-detail__date" dateTime={editorial.date}>{editorial.date.replaceAll("-", ".")}</time>
+                        )}
+                        <p>{editorial.summary}</p>
+                        <a className="community-detail__link" href={officialCommunity + editorial.id}>
+                            {story ? "공식 원문 읽기" : "공식 가이드 읽기"} <ArrowUpRight size={18} aria-hidden="true" />
+                        </a>
                     </div>
                 )}
             </div>
