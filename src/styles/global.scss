@@ -50,6 +50,8 @@ img {
 
     // Keep the content's stacking order below the fixed site header.
     > :is(main, footer) { isolation: isolate; }
+
+    &--home { padding-top: 0; }
 }
 
 .main-content {
@@ -57,6 +59,7 @@ img {
 }
 
 .site-header {
+    --site-header-gutter: clamp(8px, 3vw, 40px);
     position: fixed;
     inset: 0 0 auto;
     height: var(--site-header-height);
@@ -64,7 +67,7 @@ img {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
     align-items: center;
-    padding: 10px clamp(8px, 3vw, 40px);
+    padding: 10px var(--site-header-gutter);
     gap: 4px;
     background: #111;
     color: #fff;
@@ -88,6 +91,19 @@ img {
         justify-self: end;
     }
 
+}
+
+.layout--home[data-over-hero] > .site-header {
+    background: transparent;
+
+    &::after {
+        position: absolute;
+        inset: auto var(--site-header-gutter) 0;
+        height: 1px;
+        background: #ffffff66;
+        pointer-events: none;
+        content: "";
+    }
 }
 
 html:has(.site-navigation[open]) {
