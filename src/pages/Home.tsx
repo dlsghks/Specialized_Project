@@ -24,7 +24,7 @@ const showcaseBikes = customizeBikes.filter(({ id }) => Object.hasOwn(showcaseLi
     link: showcaseLinks[bike.id],
     colors: bike.id === "tarmac-sl9"
         ? colors.map(({ name, swatch, gallery }) => ({ name, swatch, ...gallery[0] }))
-        : bike.colors.map(({ name, finish, image, framing }) => ({ name, swatch: finish, image: bikePhoto(image ?? bike.image), framing })),
+        : bike.colors.map(({ name, finish, image, framing }) => ({ name, swatch: finish, image: image ?? bikePhoto(bike.image), framing })),
 }));
 // Keep enough slides around the centered bike for a seamless loop with three models.
 const showcaseSlides = [...showcaseBikes, ...showcaseBikes];
