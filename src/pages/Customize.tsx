@@ -236,7 +236,7 @@ function BikeCustomizer({ bike, initialStep, draftKey }: { bike: CustomizeBike; 
                     </section>
                     <div className="bike-build__stage">
                         <div className="bike-build__stage-photo" style={{ scale: zoom }}>
-                            <img src={bikePhoto(displayedColor.image ?? bike.image)} width={900} height={506}
+                            <img src={displayedColor.image ?? bikePhoto(bike.image)} width={900} height={506}
                                 alt={displayedColor.image ? `${model} · ${displayedColor.name}` : model} style={photoFramingStyle(displayedColor.framing)} />
                         </div>
                     </div>
