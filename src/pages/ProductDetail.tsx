@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { ProductGallery } from "../components/products/ProductGallery";
 import { ProductDetailSections } from "../components/products/ProductDetailSections";
 import { addCartItem } from "../data/commerce";
@@ -16,6 +16,7 @@ export function ProductDetail() {
 }
 
 function ProductDetailView({ product }: { product: Product }) {
+    const { hash } = useLocation();
     const page = product.page;
     const colors = page?.colors ?? [];
     const sizes = page?.sizes ?? [];
@@ -33,8 +34,10 @@ function ProductDetailView({ product }: { product: Product }) {
         .filter((value) => value != null).join(" / ");
 
     useLayoutEffect(() => {
-        window.scrollTo(0, 0);
-    }, []);
+        const section = hash ? document.getElementById(hash.slice(1)) : null;
+        if (section) section.scrollIntoView();
+        else window.scrollTo(0, 0);
+    }, [hash]);
 
     const showGeometry = () => {
         if (!geometryPanel.current) return;

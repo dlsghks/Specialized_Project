@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useSearchParams } from "react-router-dom";
 import { AthleteRow } from "../components/community/AthleteRow";
+import { CommunityOverview, CommunityOverviewHero } from "../components/community/CommunityOverview";
 import { StoryListing } from "../components/community/StoryListing";
 import { athleteGroups, communityGuides, communityImages, officialCommunity } from "../data/community";
 import { communityStories, storySearch, storyTags } from "../data/communityStories";
@@ -35,8 +36,9 @@ function CommunityGuides() {
 
 export function Community() {
     const [params, setParams] = useSearchParams();
+    const { hash } = useLocation();
     const requestedTab = params.get("tab");
-    const tab = requestedTab === "all" || requestedTab === "stories" ? requestedTab : "athletes";
+    const tab = requestedTab === "athletes" || requestedTab === "stories" ? requestedTab : "all";
     const discipline = tab === "athletes" ? athleteGroups.find((group) => group.id === params.get("discipline")) : undefined;
     const visibleGroups = discipline ? [discipline] : athleteGroups;
     const storyTag = storyTags.find(({ id }) => id === params.get("tag"))?.id;
@@ -53,6 +55,10 @@ export function Community() {
     }, []);
 
     useLayoutEffect(() => {
+        if (hash) document.getElementById(hash.slice(1))?.scrollIntoView();
+    }, [hash, tab]);
+
+    useLayoutEffect(() => {
         const nav = menu.current;
         const current = nav?.querySelector("[aria-current='page']");
         if (!nav || !current) return;
@@ -63,24 +69,35 @@ export function Community() {
 
     return (
         <div className="community-page">
-            <header className="community-masthead community-width">
-                <div>
-                    <h1>라이더 커뮤니티</h1>
-                    <p>{tab === "stories" ? "선수들의 이야기와 라이딩에 필요한 가이드를 만나보세요." : `커뮤니티 홈 / ${tab === "all" ? "전체" : "선수"}`}</p>
-                </div>
-                <img className="community-masthead__photo" src={communityImages + (tab === "stories" ? "stories-hero.webp" : "athletes-hero.webp")}
-                    alt={tab === "stories" ? "설산을 배경으로 산악자전거를 타는 라이더" : "산과 숲을 따라 이어지는 흙길"} width={1840} height={759} fetchPriority="high" />
-            </header>
+            {tab === "all" ? <CommunityOverviewHero /> : (
+                <header className="community-masthead community-width">
+                    <div>
+                        <h1>라이더 커뮤니티</h1>
+                        <p>{tab === "stories" ? "선수들의 이야기와 라이딩에 필요한 가이드를 만나보세요." : "커뮤니티 홈 / 선수"}</p>
+                    </div>
+                    <img className="community-masthead__photo" src={communityImages + (tab === "stories" ? "stories-hero.webp" : "athletes-hero.webp")}
+                        alt={tab === "stories" ? "설산을 배경으로 산악자전거를 타는 라이더" : "산과 숲을 따라 이어지는 흙길"} width={1840} height={759} fetchPriority="high" />
+                </header>
+            )}
 
-            <div className="community-nav" id="community-menu">
+            <div className="community-nav" data-overview={tab === "all" || undefined} id="community-menu">
                 <div className="community-nav__inner community-width">
                     <nav aria-label="커뮤니티 메뉴" ref={menu}>
                         <Link to="?tab=all" aria-current={tab === "all" ? "page" : undefined}>전체</Link>
-                        <span aria-disabled="true" title="준비 중">구매자 사용 후기</span>
-                        <span aria-disabled="true" title="준비 중">매장 방문 후기</span>
+                        {tab === "all" ? (
+                            <>
+                                <a href="#community-purchase-reviews">구매자 사용 후기</a>
+                                <a href="#community-store-reviews">매장 방문 후기</a>
+                            </>
+                        ) : (
+                            <>
+                                <span aria-disabled="true" title="준비 중">구매자 사용 후기</span>
+                                <span aria-disabled="true" title="준비 중">매장 방문 후기</span>
+                            </>
+                        )}
                         <Link to="?tab=stories" aria-current={tab === "stories" ? "page" : undefined}>스토리 · 가이드</Link>
                         <Link to="?tab=athletes" aria-current={tab === "athletes" ? "page" : undefined}>선수</Link>
-                        <a href={officialCommunity + "stories"}>뉴스 · 이벤트</a>
+                        <a href={tab === "all" ? "#community-news" : officialCommunity + "stories"}>뉴스 · 이벤트</a>
                     </nav>
                     {tab === "athletes" && <p>선수 {discipline?.athletes.length ?? athleteCount}명</p>}
                     {tab === "stories" && (
@@ -106,8 +123,8 @@ export function Community() {
                         ))}
                     </nav>
                 )}
-                {tab === "all" && <CommunityGuides />}
-                {tab !== "stories" && (
+                {tab === "all" && <CommunityOverview />}
+                {tab === "athletes" && (
                     <div className="community-roster">
                         {visibleGroups.map((group) => <AthleteRow key={group.id} group={group} filtered={Boolean(discipline)} />)}
                     </div>
