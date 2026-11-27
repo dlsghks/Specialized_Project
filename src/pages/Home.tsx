@@ -1,6 +1,8 @@
 import { useRef, useState, type PointerEvent } from "react";
 import { ArrowRight, ArrowUpRight, ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Swiper, SwiperSlide, type SwiperClass } from "swiper/react";
+import "swiper/css";
 import { DealerFinder } from "./Dealers";
 import { bikePhoto, customizeBikes } from "./customizeBikes";
 import { colors, grades } from "./productTarmac";
@@ -23,6 +25,8 @@ const showcaseBikes = customizeBikes.filter(({ id }) => Object.hasOwn(showcaseLi
         ? colors.map(({ name, swatch, gallery }) => ({ name, swatch, image: gallery[0].image }))
         : bike.colors.map(({ name, finish, image }) => ({ name, swatch: finish, image: bikePhoto(image ?? bike.image) })),
 }));
+// Keep enough slides around the centered bike for a seamless loop with three models.
+const showcaseSlides = [...showcaseBikes, ...showcaseBikes];
 const highlights = [
     {
         key: "customize", label: "S-LAB 3D CUSTOMIZATION", title: ["나만의 스페셜라이즈드,", "3D로 커스터마이징하세요"],
@@ -60,6 +64,7 @@ const countText = (index: number, count: number) => String(index + 1).padStart(2
 export const Home = () => {
     const [{ index: highlightIndex, direction }, setHighlight] = useState({ index: 0, direction: 0 });
     const swipe = useRef<{ id: number; x: number; y: number } | null>(null);
+    const showcase = useRef<SwiperClass | null>(null);
     const [bikeIndex, setBikeIndex] = useState(0);
     const [bikeColors, setBikeColors] = useState<Record<string, number>>({ "tarmac-sl9": 1 });
     const [storyIndex, setStoryIndex] = useState(0);
@@ -67,10 +72,7 @@ export const Home = () => {
     const [showGuide, setShowGuide] = useState(false);
     const highlight = highlights[highlightIndex];
     const currentBike = showcaseBikes[bikeIndex];
-    const previousBike = showcaseBikes[wrap(bikeIndex - 1, showcaseBikes.length)];
-    const nextBike = showcaseBikes[wrap(bikeIndex + 1, showcaseBikes.length)];
     const currentColorIndex = bikeColors[currentBike.id] ?? 0;
-    const currentColor = currentBike.colors[currentColorIndex];
     const story = stories[storyIndex];
     const storyLabel = `STORY ${String(storyIndex + 1).padStart(2, "0")}`;
 
@@ -94,8 +96,6 @@ export const Home = () => {
         const y = event.clientY - start.y;
         if (Math.abs(x) >= 45 && Math.abs(x) > Math.abs(y)) changeHighlight(x < 0 ? 1 : -1);
     };
-
-    const showcaseImage = (bike: typeof currentBike) => bike.colors[bikeColors[bike.id] ?? 0].image;
 
     return (
         <div className="home">
@@ -143,13 +143,26 @@ export const Home = () => {
             <section className="home-showcase" aria-labelledby="featured-bikes">
                 <h2 id="featured-bikes">BIKE SHOWCASE</h2>
                 <div className="home-showcase__stage">
-                    <img src={showcaseImage(previousBike)} alt="" className="home-showcase__side home-showcase__side--previous" loading="lazy" />
-                    <img src={currentColor.image} alt={`${currentBike.name} · ${currentColor.name}`} className="home-showcase__bike" loading="lazy" />
-                    <img src={showcaseImage(nextBike)} alt="" className="home-showcase__side home-showcase__side--next" loading="lazy" />
+                    <Swiper className="home-showcase__slider" slidesPerView="auto" centeredSlides loop grabCursor threshold={8}
+                        speed={window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 420}
+                        onSwiper={(slider) => { showcase.current = slider; }}
+                        onRealIndexChange={(slider) => setBikeIndex(slider.realIndex % showcaseBikes.length)}>
+                        {showcaseSlides.map((bike, index) => {
+                            const color = bike.colors[bikeColors[bike.id] ?? 0];
+                            return (
+                                <SwiperSlide className="home-showcase__slide" key={`${bike.id}-${index}`}>
+                                    {({ isActive }) => (
+                                        <img className="home-showcase__bike" src={color.image} alt={isActive ? `${bike.name} · ${color.name}` : ""}
+                                            loading="lazy" draggable={false} />
+                                    )}
+                                </SwiperSlide>
+                            );
+                        })}
+                    </Swiper>
                     <button className="home-carousel-button home-carousel-button--previous" type="button" aria-label="이전 자전거"
-                        onClick={() => setBikeIndex((index) => wrap(index - 1, showcaseBikes.length))}><ChevronLeft aria-hidden="true" /></button>
+                        onClick={() => showcase.current?.slidePrev()}><ChevronLeft aria-hidden="true" /></button>
                     <button className="home-carousel-button home-carousel-button--next" type="button" aria-label="다음 자전거"
-                        onClick={() => setBikeIndex((index) => wrap(index + 1, showcaseBikes.length))}><ChevronRight aria-hidden="true" /></button>
+                        onClick={() => showcase.current?.slideNext()}><ChevronRight aria-hidden="true" /></button>
                 </div>
                 <p className="home-showcase__count">{bikeIndex + 1} / {showcaseBikes.length}</p>
                 <div className="home-showcase__bar">
