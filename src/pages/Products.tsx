@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Check, SlidersHorizontal, X } from "lucide-react";
 import { ProductCard } from "../components/products/ProductCard";
-import { bikes, equipment, won } from "../data/products";
+import { bikes, equipment, formatProductPrice } from "../data/products";
 import type { Product } from "../data/productTypes";
 import "../styles/pages/catalog/Products.scss";
 
@@ -40,7 +40,7 @@ function matchesFilter(product: Product, key: string, option: string) {
     if (key === "자전거 연식") return product.grade ? product.grade === option : product.name.split(" ").includes(option);
     if (key === "가격") {
         const index = filterGroups.find((group) => group.label === "가격")!.options.indexOf(option);
-        return product.price > (priceLimits[index - 1] ?? 199999) && product.price <= priceLimits[index];
+        return product.price !== null && product.price > (priceLimits[index - 1] ?? 199999) && product.price <= priceLimits[index];
     }
     return filterValues(product, key).includes(option);
 }
@@ -110,8 +110,15 @@ function Catalog({ isEquipment }: { isEquipment: boolean }) {
         </div>
     );
     const sorted = [...filtered];
-    if (sort === "가격 낮은 순") sorted.sort((a, b) => a.price - b.price);
-    if (sort === "가격 높은 순") sorted.sort((a, b) => b.price - a.price);
+    if (sort === "가격 낮은 순" || sort === "가격 높은 순") {
+        const direction = sort === "가격 낮은 순" ? 1 : -1;
+        sorted.sort((a, b) => {
+            if (a.price === b.price) return 0;
+            if (a.price === null) return 1;
+            if (b.price === null) return -1;
+            return (a.price - b.price) * direction;
+        });
+    }
     if (sort === "최신순") sorted.reverse();
     if (sort === "인기순") sorted.sort((a, b) => (products.indexOf(a) + 3) % products.length - (products.indexOf(b) + 3) % products.length);
     const pages = Math.ceil(sorted.length / pageSize);
@@ -221,7 +228,7 @@ function Catalog({ isEquipment }: { isEquipment: boolean }) {
                         {comparedProducts.map(({ id, name, price, image }) => (
                             <li key={id} className="catalog-compare__product">
                                 <div className="catalog-compare__thumbnail" aria-hidden="true">{image && <img src={image} alt="" />}</div>
-                                <div><strong title={name}>{name}</strong><p>{won.format(price)}</p></div>
+                                <div><strong title={name}>{name}</strong><p>{formatProductPrice(price)}</p></div>
                                 <button type="button" aria-label={`${name} 비교에서 제거`} onClick={() => removeComparison(id)}><X size={16} /></button>
                             </li>
                         ))}
@@ -246,7 +253,7 @@ function Catalog({ isEquipment }: { isEquipment: boolean }) {
                         <thead><tr><th scope="col">항목</th>{comparedProducts.map(({ id, name }) => <th scope="col" key={id}>{name}</th>)}</tr></thead>
                         <tbody>
                             <tr><th scope="row">카테고리</th>{comparedProducts.map(({ id, category }) => <td key={id}>{category}</td>)}</tr>
-                            <tr><th scope="row">가격</th>{comparedProducts.map(({ id, price }) => <td key={id}>{won.format(price)}</td>)}</tr>
+                            <tr><th scope="row">가격</th>{comparedProducts.map(({ id, price }) => <td key={id}>{formatProductPrice(price)}</td>)}</tr>
                             <tr><th scope="row">구성</th>{comparedProducts.map(({ id, detail }) => <td key={id}>{detail ?? "—"}</td>)}</tr>
                         </tbody>
                     </table>

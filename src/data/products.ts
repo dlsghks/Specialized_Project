@@ -1,3 +1,4 @@
+import { customizeParts, partImage, partSteps } from "../pages/customizeParts";
 import { frames, gradeLabels, grades, tarmacProduct } from "../pages/productTarmac";
 import type { Product } from "./productTypes";
 
@@ -52,7 +53,17 @@ export const bikes: readonly Product[] = [
     { id: "turbo-vado", name: "Turbo Vado", category: "액티브", price: 5500000 },
 ];
 
+const equipmentParts = new Map<string, Product>();
+for (const catalog of Object.values(customizeParts)) {
+    for (const { key, category } of partSteps) {
+        for (const { id, name, productUrl } of catalog[key]) {
+            equipmentParts.set(id, { id, name, category, price: null, image: partImage(id), page: { purchaseUrl: productUrl } });
+        }
+    }
+}
+
 export const equipment: readonly Product[] = [
+    ...equipmentParts.values(),
     { id: "evade-4", name: "S-Works Evade 4 LTD", category: "헬멧", price: 450000 },
     { id: "ares-2", name: "S-Works Ares 2 LTD", category: "슈즈", price: 590000 },
     { id: "rapide", name: "S-Works Rapide", category: "부품", price: 420000 },
@@ -62,3 +73,4 @@ export const equipment: readonly Product[] = [
 
 export const products = [...bikes, ...equipment];
 export const won = new Intl.NumberFormat("ko-KR", { style: "currency", currency: "KRW" });
+export const formatProductPrice = (price: Product["price"]) => price === null ? "공식몰에서 가격 확인" : won.format(price);
