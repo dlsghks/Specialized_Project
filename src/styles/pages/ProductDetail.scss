@@ -85,8 +85,7 @@
     display: grid;
     place-items: center;
     aspect-ratio: 16 / 9;
-    width: min(100%, 76rem);
-    max-height: 62svh;
+    width: min(100%, 76rem, calc(62svh * 16 / 9));
     margin: clamp(.65rem, 1.1vw, 1.3rem) auto 1rem;
     overflow: hidden;
     touch-action: pan-y pinch-zoom;
@@ -94,7 +93,8 @@
 
     &[data-swipe="true"] { cursor: grab; }
     &[data-swipe="true"]:active { cursor: grabbing; }
-    img { grid-area: 1 / 1; height: 100%; width: 100%; min-height: 0; object-fit: contain; pointer-events: none; }
+    > div { grid-area: 1 / 1; height: 100%; width: 100%; min-height: 0; min-width: 0; overflow: hidden; }
+    img { height: 100%; width: 100%; object-fit: contain; pointer-events: none; }
 }
 
 .product-gallery__image { --gallery-slide-offset: 100%; }
@@ -167,6 +167,8 @@
     img { width: 100%; height: auto; object-fit: contain; }
     &::backdrop { background: #000b; }
 }
+
+.product-detail__dialog-photo { overflow: hidden; }
 
 .product-options {
     display: grid;

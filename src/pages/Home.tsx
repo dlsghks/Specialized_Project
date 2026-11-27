@@ -3,6 +3,7 @@ import { ArrowRight, ArrowUpRight, ChevronLeft, ChevronRight, Pause, Play } from
 import { Link } from "react-router-dom";
 import { Swiper, SwiperSlide, type SwiperClass } from "swiper/react";
 import "swiper/css";
+import { photoFramingStyle } from "../data/photoFraming";
 import { DealerFinder } from "./Dealers";
 import { bikePhoto, customizeBikes } from "./customizeBikes";
 import { colors, grades } from "./productTarmac";
@@ -22,8 +23,8 @@ const showcaseBikes = customizeBikes.filter(({ id }) => Object.hasOwn(showcaseLi
     name: bike.name,
     link: showcaseLinks[bike.id],
     colors: bike.id === "tarmac-sl9"
-        ? colors.map(({ name, swatch, gallery }) => ({ name, swatch, image: gallery[0].image }))
-        : bike.colors.map(({ name, finish, image }) => ({ name, swatch: finish, image: bikePhoto(image ?? bike.image) })),
+        ? colors.map(({ name, swatch, gallery }) => ({ name, swatch, ...gallery[0] }))
+        : bike.colors.map(({ name, finish, image, framing }) => ({ name, swatch: finish, image: bikePhoto(image ?? bike.image), framing })),
 }));
 // Keep enough slides around the centered bike for a seamless loop with three models.
 const showcaseSlides = [...showcaseBikes, ...showcaseBikes];
@@ -152,8 +153,10 @@ export const Home = () => {
                             return (
                                 <SwiperSlide className="home-showcase__slide" key={`${bike.id}-${index}`}>
                                     {({ isActive }) => (
-                                        <img className="home-showcase__bike" src={color.image} alt={isActive ? `${bike.name} · ${color.name}` : ""}
-                                            loading="lazy" draggable={false} />
+                                        <div className="home-showcase__photo">
+                                            <img className="home-showcase__bike" src={color.image} alt={isActive ? `${bike.name} · ${color.name}` : ""}
+                                                loading="lazy" draggable={false} style={photoFramingStyle(color.framing)} />
+                                        </div>
                                     )}
                                 </SwiperSlide>
                             );

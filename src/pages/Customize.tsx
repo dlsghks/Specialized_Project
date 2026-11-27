@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { ArrowRight, Bookmark, Check, ChevronDown, ChevronRight, CircleHelp, Eye, List, MessageCircle, RotateCcw, X, ZoomIn, ZoomOut } from "lucide-react";
 import { Link, useLocation, useParams, useSearchParams } from "react-router-dom";
 import "../styles/pages/Customize.scss";
+import { photoFramingStyle } from "../data/photoFraming";
 
 import { gearImage, readGearCart, writeGearCart, type GearItem } from "./gearCart";
 import { bikePhoto, customizeBikes, customizeCategories, type CustomizeBike, type FrameColor } from "./customizeBikes";
@@ -234,8 +235,10 @@ function BikeCustomizer({ bike, initialStep, draftKey }: { bike: CustomizeBike; 
                         <Link to="/support"><MessageCircle size={19} aria-hidden="true" /> 고객 지원 연결 <ChevronRight size={19} aria-hidden="true" /></Link>
                     </section>
                     <div className="bike-build__stage">
-                        <img src={bikePhoto(displayedColor.image ?? bike.image)} width={900} height={506}
-                            alt={displayedColor.image ? `${model} · ${displayedColor.name}` : model} style={{ scale: zoom }} />
+                        <div className="bike-build__stage-photo" style={{ scale: zoom }}>
+                            <img src={bikePhoto(displayedColor.image ?? bike.image)} width={900} height={506}
+                                alt={displayedColor.image ? `${model} · ${displayedColor.name}` : model} style={photoFramingStyle(displayedColor.framing)} />
+                        </div>
                     </div>
                     {!previewColor.image && <p role="status">선택한 컬러의 사진은 준비 중이에요. 기본 사진을 표시하고 있어요.</p>}
                     <div className="bike-build__controls" aria-label="미리보기 조작">

@@ -1,5 +1,6 @@
 import { useRef, useState, type PointerEvent } from "react";
 import { ChevronLeft, ChevronRight, Search, X } from "lucide-react";
+import { photoFramingStyle } from "../../data/photoFraming";
 import type { ProductPhoto } from "../../data/productTypes";
 
 type ProductGalleryProps = {
@@ -17,6 +18,7 @@ export function ProductGallery({ name, subtitle, badge, colorName, gallery }: Pr
     const swipe = useRef<{ id: number; x: number; y: number } | null>(null);
     const zoom = useRef<HTMLDialogElement>(null);
     const selected = gallery[view];
+    const outgoing = previousView === null ? undefined : gallery[previousView];
     const hasMultipleViews = gallery.length > 1;
     const selectedPhotoName = [name, colorName, selected?.label].filter(Boolean).join(" · ");
 
@@ -61,15 +63,19 @@ export function ProductGallery({ name, subtitle, badge, colorName, gallery }: Pr
                         onLostPointerCapture={(event) => {
                             if (swipe.current?.id === event.pointerId) swipe.current = null;
                         }}>
-                        {previousView !== null && (
-                            <img className="product-gallery__outgoing" key={gallery[previousView].image + "-outgoing"}
-                                src={gallery[previousView].image} alt="" aria-hidden="true" width={1440} height={810} draggable={false} />
+                        {outgoing && (
+                            <div className="product-gallery__outgoing" key={outgoing.image + "-outgoing"} aria-hidden="true">
+                                <img src={outgoing.image} alt="" width={1440} height={810} draggable={false}
+                                    style={photoFramingStyle(outgoing.framing)} />
+                            </div>
                         )}
-                        <img className={previousView === null ? undefined : "product-gallery__slide"}
+                        <div className={outgoing ? "product-gallery__slide" : undefined}
                             onAnimationEnd={() => setGallery((current) =>
                                 current.view === view ? { ...current, previousView: null } : current)}
-                            key={selected.image} src={selected.image} alt={selectedPhotoName}
-                            width={1440} height={810} fetchPriority="high" draggable={false} />
+                            key={selected.image}>
+                            <img src={selected.image} alt={selectedPhotoName} width={1440} height={810} fetchPriority="high" draggable={false}
+                                style={photoFramingStyle(selected.framing)} />
+                        </div>
                     </div>
 
                     <button className="product-gallery__zoom" type="button" aria-label="이미지 확대" onClick={() => zoom.current?.showModal()}>
@@ -80,9 +86,9 @@ export function ProductGallery({ name, subtitle, badge, colorName, gallery }: Pr
                             <button className="product-gallery__previous" type="button" aria-label="이전 이미지" onClick={() => moveGallery(-1)}><ChevronLeft aria-hidden="true" /></button>
                             <button className="product-gallery__next" type="button" aria-label="다음 이미지" onClick={() => moveGallery(1)}><ChevronRight aria-hidden="true" /></button>
                             <div className="product-gallery__controls" role="group" aria-label="갤러리 사진 선택">
-                                {gallery.map(({ label, image, thumbnail }, index) => (
+                                {gallery.map(({ label, image, thumbnail, framing }, index) => (
                                     <button key={label} type="button" aria-label={label} aria-pressed={view === index} onClick={() => moveGallery(index - view)}>
-                                        <img src={thumbnail ?? image} alt="" width={104} height={59} />
+                                        <img src={thumbnail ?? image} alt="" width={104} height={59} style={photoFramingStyle(framing)} />
                                     </button>
                                 ))}
                             </div>
@@ -93,7 +99,9 @@ export function ProductGallery({ name, subtitle, badge, colorName, gallery }: Pr
 
             {selected && <dialog className="product-detail__dialog" ref={zoom} aria-label="확대 이미지">
                 <form method="dialog"><button aria-label="확대 이미지 닫기"><X size={22} aria-hidden="true" /></button></form>
-                <img src={selected.image} alt={selectedPhotoName} width={1440} height={810} />
+                <div className="product-detail__dialog-photo">
+                    <img src={selected.image} alt={selectedPhotoName} width={1440} height={810} style={photoFramingStyle(selected.framing)} />
+                </div>
             </dialog>}
         </div>
     );

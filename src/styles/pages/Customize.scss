@@ -90,13 +90,16 @@
     flex: 1;
     place-items: end center;
     padding-bottom: 24px;
+}
 
-    img {
-        width: min(100%, 900px);
-        height: auto;
-        transform-origin: center 65%;
-        transition: scale .2s ease;
-    }
+.bike-build__stage-photo {
+    width: min(100%, 900px);
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    transform-origin: center 65%;
+    transition: scale .2s ease;
+
+    img { width: 100%; height: 100%; object-fit: contain; }
 }
 
 .bike-build__controls {

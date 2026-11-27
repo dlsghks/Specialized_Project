@@ -1,4 +1,5 @@
 import type { Product } from "../data/productTypes";
+import type { PhotoFraming } from "../data/photoFraming";
 
 const official = "https://www.specialized.com/kr/ko";
 const assets = `${import.meta.env.BASE_URL}images/products/tarmac-sl9/`;
@@ -20,7 +21,16 @@ const galleryAngles = [
     { label: "콕핏", file: "cockpit" },
     { label: "헤드튜브", file: "head-tube" },
     { label: "시트튜브", file: "seat-tube" },
-];
+] as const;
+
+export const tarmacRubyFrontFraming: PhotoFraming = { scale: 1.02, x: .2 };
+const rubyFraming: Partial<Record<(typeof galleryAngles)[number]["file"], PhotoFraming>> = {
+    "front-three-quarter": tarmacRubyFrontFraming,
+    "rear-three-quarter": { scale: 1.008, x: .12, y: .3 },
+    cockpit: { scale: 1.055, x: -1.8, y: 7.8 },
+    "head-tube": { scale: 1.29, x: 6.5, y: 11.6 },
+    "seat-tube": { scale: 1.061, x: -3.05 },
+};
 
 export const colors = [
     { key: "silver", name: "Satin Silver Dust", swatch: "#a8acac", purchaseUrl: officialProductUrl },
@@ -32,6 +42,7 @@ export const colors = [
         label,
         image: photo(`${color.key}-${file}`),
         thumbnail: photo(`${color.key}-${file}-thumb`),
+        framing: color.key === "ruby" ? rubyFraming[file] : undefined,
     })),
 }));
 
