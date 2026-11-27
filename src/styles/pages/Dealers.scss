@@ -133,6 +133,8 @@
 
 .dealer-finder__map {
     position: relative;
+    isolation: isolate;
+    z-index: 0;
     align-self: stretch;
     min-width: 0;
     aspect-ratio: 1166 / 638;
