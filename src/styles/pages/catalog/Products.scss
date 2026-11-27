@@ -127,6 +127,8 @@
 
     span { position: absolute; bottom: .5rem; color: #aaa; font-size: .55rem; }
     span::first-letter { color: #555; }
+    &[data-image="true"] { background: #f1f1f1; }
+    img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
 }
 
 .catalog__card-heading {
@@ -354,6 +356,7 @@
 }
 
 .catalog-compare__thumbnail { aspect-ratio: 1.65; border-radius: .15rem; background: #f1f1f1; }
+.catalog-compare__thumbnail img { width: 100%; height: 100%; object-fit: contain; }
 .catalog-compare__empty { display: grid; align-items: center; border: 1px dashed #666; color: #ccc; }
 .catalog button.catalog-compare__submit {
     padding: .6rem;

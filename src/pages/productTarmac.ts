@@ -1,3 +1,5 @@
+import type { Product } from "../data/productTypes";
+
 const official = "https://www.specialized.com/kr/ko";
 const assets = `${import.meta.env.BASE_URL}images/products/tarmac-sl9/`;
 
@@ -103,3 +105,34 @@ export const frames = [
     { name: "S-Works Tarmac SL9 팀 레플리카", detail: "Soudal Quick-Step", price: 8_900_000, image: photo("quick-step-frameset"), url: `${official}/s-works-tarmac-sl9-팀-레플리카-프레임셋-soudal-quick-step/p/4295584?color=5472520-4295584` },
     { name: "S-Works Tarmac SL9 팀 레플리카", detail: "Red Bull – BORA – hansgrohe", price: 8_900_000, image: photo("red-bull-frameset"), url: `${official}/s-works-tarmac-sl9-팀-레플리카-프레임셋-red-bull-bora-hansgrohe/p/4295586` },
 ];
+
+export const tarmacProduct: Product = {
+    id: "4293533",
+    name: modelName,
+    category: "로드",
+    price: listPrice,
+    detail: "스램 레드 AXS",
+    image: colors[0].gallery[0].image,
+    filters: { 컬러: ["빨간색", "하얀색"], 소재: ["카본"], 브랜드: ["스램"], 구성: ["2x", "11 · 12 · 13-Speed"] },
+    page: {
+        badge: "S-Works",
+        subtitle: "로드 레이스를 위한 한 대",
+        colors,
+        sizes: sizes.map((value) => ({ value, available: value !== 61 })),
+        pickupOnly: true,
+        purchaseUrl: officialProductUrl,
+        story: {
+            title: "중요한 순간을 위한 에어로",
+            description: "Tarmac SL9은 바람을 가르는 프레임과 빠르게 반응하는 핸들링으로 레이스의 결정적인 순간을 돕습니다.",
+            image: bannerImage,
+        },
+        features: { title: "타막 SL9의 주요 기술", items: features },
+        highlights,
+        specifications,
+        geometry: { sizes, rows: geometry },
+        manual: { label: "한국어 사용 설명서", url: manualUrl },
+        grades: { title: "타막 SL9 완성차 등급 비교", labels: gradeLabels, items: grades },
+        frames: { title: "타막 SL9 프레임셋", items: frames },
+        reviews: { url: officialProductUrl, label: "스페셜라이즈드 공식몰" },
+    },
+};

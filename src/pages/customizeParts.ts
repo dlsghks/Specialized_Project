@@ -1,5 +1,3 @@
-import type { CustomizeBike } from "./customizeBikes";
-
 export const partSteps = [
     { key: "tire", label: "TIRES" },
     { key: "wheel", label: "WHEELS" },
@@ -11,7 +9,7 @@ export type PartKind = (typeof partSteps)[number]["key"];
 export type PartOption = { id: string; name: string; thumbnailScale?: number };
 export type PartCatalog = Record<PartKind, PartOption[]>;
 
-export const customizeParts: Record<CustomizeBike["id"], PartCatalog> = {
+export const customizeParts = {
     "demo-11": {
         tire: [
             { id: "cannibal", name: "Cannibal Grid Gravity 2Bliss Ready T9", thumbnailScale: 1.06 },
@@ -76,4 +74,4 @@ export const customizeParts: Record<CustomizeBike["id"], PartCatalog> = {
             { id: "romin-evo-mimic", name: "Romin EVO Comp with MIMIC", thumbnailScale: 0.74 },
         ],
     },
-};
+} satisfies Record<string, PartCatalog>;

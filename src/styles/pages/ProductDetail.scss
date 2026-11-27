@@ -226,6 +226,7 @@
 }
 
 .product-order__price {
+    grid-column: -2 / -1;
     display: grid;
     justify-items: end;
     gap: .35rem;

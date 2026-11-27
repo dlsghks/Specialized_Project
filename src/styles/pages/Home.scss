@@ -1,8 +1,10 @@
 .home {
     --home-gutter: clamp(1rem, 2.15vw, 2.75rem);
     --home-red: #a80000;
+    --home-section-height: 1080px;
     background: #fafafa;
 
+    > section, .home-sections > section { height: var(--home-section-height); }
     :is(button, a):focus-visible { outline: 2px solid #d71920; outline-offset: 4px; }
 }
 
@@ -52,8 +54,8 @@
 .home-hero {
     position: relative;
     isolation: isolate;
-    min-height: clamp(29rem, 53vw, 62rem);
     display: grid;
+    overflow: clip;
     background: #1d2226;
     color: #fff;
 
@@ -63,7 +65,7 @@
 
 .home-hero__viewport {
     display: grid;
-    align-items: end;
+    align-items: center;
     min-width: 0;
     overflow: hidden;
     touch-action: pan-y pinch-zoom;
@@ -92,14 +94,13 @@
 }
 
 .home-hero[data-hero="customize"] {
-    .home-hero__image { width: min(77%, 105rem); height: 106%; object-fit: contain; object-position: center; filter: drop-shadow(0 18px 15px #220a08a0); }
+    .home-hero__image { width: min(77%, 105rem); object-fit: contain; object-position: center; filter: drop-shadow(0 18px 15px #220a08a0); }
     .home-hero__viewport::before { background: linear-gradient(90deg, #201e1ee8, #201e1e48 43%, transparent 67%), linear-gradient(0deg, #270e0dbb, transparent 27%); }
 }
 
 .home-hero__content {
     position: relative;
-    align-self: end;
-    margin: clamp(2rem, 7vw, 8rem) var(--home-gutter) clamp(5.8rem, 11vw, 12rem) clamp(1rem, 8.5vw, 10rem);
+    margin: clamp(10rem, 18vw, 16rem) var(--home-gutter) 0 clamp(1rem, 8.5vw, 10rem);
     max-width: 44rem;
 
     &[data-direction="1"] { --hero-slide: 1.75rem; animation: home-hero-enter 360ms ease-out both; }
@@ -191,6 +192,8 @@
 }
 
 .home-showcase {
+    display: grid;
+    align-content: center;
     overflow: hidden;
     padding: clamp(2.75rem, 4.65vw, 5rem) 0 clamp(2.5rem, 4vw, 4.5rem);
     background: #efefef;
@@ -259,7 +262,6 @@
     isolation: isolate;
     display: grid;
     place-items: center;
-    min-height: clamp(18rem, 49vw, 50rem);
     overflow: hidden;
     padding: 2rem var(--home-gutter);
     background: radial-gradient(ellipse at 50% 38%, #a32417, #470b08 67%, #230805);
@@ -275,11 +277,15 @@
 .home-sections {
     width: min(100%, 125rem);
     margin-inline: auto;
-    display: grid;
-    gap: clamp(3rem, 8vw, 9rem);
-    padding: clamp(3rem, 6vw, 7rem) var(--home-gutter) clamp(3rem, 5vw, 6rem);
+    padding-inline: var(--home-gutter);
 
-    > section { min-width: 0; }
+    > section {
+        display: grid;
+        align-content: center;
+        min-width: 0;
+    }
+
+    .dealer-finder__map { width: 100%; }
 }
 
 .home-section-heading {
@@ -387,8 +393,8 @@
 @media (max-width: 620px) {
     .home-hero__image { width: 100%; object-position: 53% center; }
     .home-hero__viewport::before { background: linear-gradient(0deg, #141414 0%, #141414b0 43%, #14141430 100%); }
-    .home-hero[data-hero="customize"] .home-hero__image { width: 100%; height: 83%; object-position: 60% 0; }
-    .home-hero__content { margin-inline: var(--home-gutter); }
+    .home-hero[data-hero="customize"] .home-hero__image { width: 100%; height: 83%; object-position: center 30%; }
+    .home-hero__content { margin: 0 var(--home-gutter) 6rem; }
     .home-hero__controls { grid-template-columns: 1fr auto; }
     .home-hero__tabs { grid-column: 1; }
     .home-components { grid-template-columns: repeat(2, minmax(0, 1fr)); }

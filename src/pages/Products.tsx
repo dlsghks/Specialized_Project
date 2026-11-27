@@ -1,35 +1,13 @@
 import { useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Check, SlidersHorizontal, X } from "lucide-react";
+import { ProductCard } from "../components/products/ProductCard";
+import { bikes, equipment, won } from "../data/products";
+import type { Product } from "../data/productTypes";
 import "../styles/pages/catalog/Products.scss";
 
 const sorts = ["추천순", "인기순", "가격 낮은 순", "가격 높은 순", "최신순"] as const;
 type Sort = typeof sorts[number];
-type Product = { name: string; category: string; price: number; detail?: string; id?: string };
-const bikes: Product[] = [
-    { name: "S-Works Tarmac SL9", category: "로드", price: 20900000, detail: "스램 레드 AXS", id: "4293533" },
-    { name: "S-Works Tarmac SL9 프레임셋", category: "로드", price: 8500000, detail: "FACT 12r 카본" },
-    { name: "Tarmac SL9 S-Level", category: "로드", price: 12500000 },
-    { name: "Tarmac SL9 Comp", category: "로드", price: 5900000 },
-    { name: "Roubaix SL8 Comp", category: "로드", price: 5850000 },
-    { name: "Allez Sport", category: "로드", price: 2200000 },
-    { name: "Chisel", category: "산악", price: 2800000 },
-    { name: "Stumpjumper", category: "산악", price: 4900000 },
-    { name: "Diverge Comp", category: "그래블", price: 4100000 },
-    { name: "Crux Sport", category: "그래블", price: 4700000 },
-    { name: "Jett 20", category: "아동용", price: 540000 },
-    { name: "Sirrus X", category: "액티브", price: 1250000 },
-    { name: "Hotwalk", category: "아동용", price: 320000 },
-    { name: "Turbo Vado", category: "액티브", price: 5500000 },
-];
-const equipment: Product[] = [
-    { name: "S-Works Evade 4 LTD", category: "헬멧", price: 450000 },
-    { name: "S-Works Ares 2 LTD", category: "슈즈", price: 590000 },
-    { name: "S-Works Rapide", category: "부품", price: 420000 },
-    { name: "Roval Terra CL", category: "부품", price: 1900000 },
-    { name: "Roval Terra 핸들바", category: "부품", price: 380000 },
-];
-const won = new Intl.NumberFormat("ko-KR", { style: "currency", currency: "KRW" });
 const pageSize = 12;
 const comparisonLimit = 3;
 
@@ -48,27 +26,23 @@ const swatches = ["#222", "#28558c", "#795747", "#46604e", "#808080", "#d47642",
 const priceLimits = [499999, 999999, 2499999, 4999999, 9999999, Infinity];
 const categoryDetails: Record<string, string> = { 로드: "로드 레이스 · 로드 엔듀런스", 산악: "트레일", 그래블: "그래블 레이스" };
 
-// Sample attributes until the live catalog is connected.
-const bikeAttributes: Record<string, Record<string, string[]>> = {
-    "S-Works Tarmac SL9": { 사이즈: ["44", "49", "52", "54", "56", "58", "61"], 컬러: ["빨간색", "하얀색"], 소재: ["카본"], 브랜드: ["스램"], 구성: ["2x", "11 · 12 · 13-Speed"] },
-    "S-Works Tarmac SL9 프레임셋": { 사이즈: ["49", "52", "54", "56"], 컬러: ["검은색"], 소재: ["카본"] },
-    "Tarmac SL9 S-Level": { 사이즈: ["49", "52", "54", "56", "58"], 컬러: ["회색"], 소재: ["카본"], 브랜드: ["스램"], 구성: ["2x", "11 · 12 · 13-Speed"] },
-    "Tarmac SL9 Comp": { 사이즈: ["49", "52", "54", "56", "58"], 컬러: ["파란색"], 소재: ["카본"], 브랜드: ["스램"], 구성: ["2x", "11 · 12 · 13-Speed"] },
-    "Allez Sport": { 사이즈: ["49", "52", "54", "56"], 컬러: ["검은색"], 소재: ["알루미늄"], 브랜드: ["시마노"], 구성: ["2x"] },
-    Chisel: { 사이즈: ["S", "M", "L", "XL"], 컬러: ["녹색"], 소재: ["알루미늄"], 브랜드: ["시마노"], 구성: ["1x", "11 · 12 · 13-Speed"] },
-    "Sirrus X": { 사이즈: ["XS", "S", "M", "L"], 컬러: ["회색"], 소재: ["알루미늄"], 브랜드: ["마이크로시프트"], 구성: ["1x"] },
-};
+function filterValues(product: Product, key: string): readonly string[] {
+    if (key === "그룹" && product.group) return [product.group];
+    if (key === "모델" && product.model) return [product.model];
+    if (key === "자전거 연식" && product.grade) return [product.grade];
+    return product.filters?.[key] ?? (key === "사이즈" ? product.page?.sizes?.map(({ value }) => String(value)) ?? [] : []);
+}
 
 function matchesFilter(product: Product, key: string, option: string) {
     if (key === "카테고리") return product.category === option;
-    if (key === "그룹") return option === (product.name.includes("프레임셋") ? "프레임셋" : product.name.startsWith("Turbo") ? "E-Bikes" : "자전거");
-    if (key === "모델") return product.name.includes(option);
-    if (key === "자전거 연식") return product.name.split(" ").includes(option);
+    if (key === "그룹") return option === (product.group ?? (product.name.includes("프레임셋") ? "프레임셋" : product.name.startsWith("Turbo") ? "E-Bikes" : "자전거"));
+    if (key === "모델") return product.model ? product.model === option : product.name.includes(option);
+    if (key === "자전거 연식") return product.grade ? product.grade === option : product.name.split(" ").includes(option);
     if (key === "가격") {
         const index = filterGroups.find((group) => group.label === "가격")!.options.indexOf(option);
         return product.price > (priceLimits[index - 1] ?? 199999) && product.price <= priceLimits[index];
     }
-    return bikeAttributes[product.name]?.[key]?.includes(option) ?? false;
+    return filterValues(product, key).includes(option);
 }
 
 export const Products = () => {
@@ -89,9 +63,17 @@ function Catalog({ isEquipment }: { isEquipment: boolean }) {
     const [comparison, setComparison] = useState<string[]>([]);
     const [comparisonCollapsed, setComparisonCollapsed] = useState(false);
     const comparisonDialog = useRef<HTMLDialogElement>(null);
-    const comparedProducts = comparison.flatMap((name) => products.filter((product) => product.name === name));
-    const removeComparison = (name: string) => {
-        setComparison((current) => current.filter((entry) => entry !== name));
+    const comparedProducts = comparison.flatMap((id) => products.filter((product) => product.id === id));
+    const removeComparison = (id: string) => {
+        setComparison((current) => current.filter((entry) => entry !== id));
+    };
+    const toggleComparison = (id: string, checked: boolean) => {
+        if (!checked) {
+            removeComparison(id);
+            return;
+        }
+        setComparison((current) => current.length < comparisonLimit ? [...current, id] : current);
+        setComparisonCollapsed(false);
     };
     const categoryOptions = [...new Set(products.map(({ category }) => category))];
     const filtered = products.filter((product) => Object.entries(filters).every(
@@ -175,14 +157,15 @@ function Catalog({ isEquipment }: { isEquipment: boolean }) {
                             <summary>카테고리</summary>
                             {renderOptions("카테고리", categoryOptions)}
                         </details>
-                        {!isEquipment && filterGroups.map(({ label, key, options, limit, style }) => {
+                        {!isEquipment && filterGroups.map(({ label, key = label, options, limit, style }) => {
                             const expanded = expandedGroups.includes(label);
+                            const choices = [...new Set([...options, ...products.flatMap((product) => filterValues(product, key))])];
                             return (
                                 <details key={label}>
                                     <summary>{label}</summary>
-                                    {key && <p>브랜드</p>}
-                                    {renderOptions(key ?? label, expanded ? options : options.slice(0, limit ?? options.length), style)}
-                                    {key && <><p>구성</p>{renderOptions("구성", ["1x", "2x", "11 · 12 · 13-Speed"])}</>}
+                                    {key === "브랜드" && <p>브랜드</p>}
+                                    {renderOptions(key, expanded ? choices : choices.slice(0, limit ?? choices.length), style)}
+                                    {key === "브랜드" && <><p>구성</p>{renderOptions("구성", [...new Set(["1x", "2x", "11 · 12 · 13-Speed", ...products.flatMap((product) => filterValues(product, "구성"))])])}</>}
                                     {limit && <button className="catalog__filter-more" type="button" aria-expanded={expanded} onClick={() => {
                                         setExpandedGroups((current) => expanded ? current.filter((group) => group !== label) : [...current, label]);
                                     }}>{expanded ? "접기" : "더 보기"}</button>}
@@ -196,27 +179,11 @@ function Catalog({ isEquipment }: { isEquipment: boolean }) {
                 <div className="catalog__results">
                     {sorted.length === 0 && <p role="status">선택한 조건에 맞는 상품이 없어요.</p>}
                     <ul className="catalog__grid">
-                        {sorted.slice((page - 1) * pageSize, page * pageSize).map(({ name, detail, category, price, id }) => (
-                            <li key={name}>
-                                <div className="catalog__photo" aria-hidden="true">제품 이미지<span>● ● ●</span></div>
-                                <div className="catalog__card-heading">
-                                    <h2>{id ? <Link to={`/products/${id}`}>{name}</Link> : name}</h2>
-                                    <label className="catalog__compare-choice" data-selected={comparison.includes(name)}>
-                                        {comparison.includes(name) ? "비교 중" : "비교"}
-                                        <input type="checkbox" aria-label={`${name} 비교 선택`} checked={comparison.includes(name)}
-                                            disabled={comparison.length >= comparisonLimit && !comparison.includes(name)}
-                                            onChange={(event) => {
-                                                if (!event.target.checked) {
-                                                    removeComparison(name);
-                                                    return;
-                                                }
-                                                setComparison((current) => current.length < comparisonLimit ? [...current, name] : current);
-                                                setComparisonCollapsed(false);
-                                            }} />
-                                    </label>
-                                </div>
-                                <p>{detail ?? category} · {won.format(price)}</p>
-                            </li>
+                        {sorted.slice((page - 1) * pageSize, page * pageSize).map((product) => (
+                            <ProductCard key={product.id} product={product}
+                                compared={comparison.includes(product.id)}
+                                compareDisabled={comparison.length >= comparisonLimit && !comparison.includes(product.id)}
+                                onCompare={toggleComparison} />
                         ))}
                     </ul>
                     {pages > 1 && (
@@ -251,11 +218,11 @@ function Catalog({ isEquipment }: { isEquipment: boolean }) {
                         </button>
                     </div>
                     <ul id="catalog-compare-slots" className="catalog-compare__slots" hidden={comparisonCollapsed}>
-                        {comparedProducts.map(({ name, price }) => (
-                            <li key={name} className="catalog-compare__product">
-                                <div className="catalog-compare__thumbnail" aria-hidden="true" />
+                        {comparedProducts.map(({ id, name, price, image }) => (
+                            <li key={id} className="catalog-compare__product">
+                                <div className="catalog-compare__thumbnail" aria-hidden="true">{image && <img src={image} alt="" />}</div>
                                 <div><strong title={name}>{name}</strong><p>{won.format(price)}</p></div>
-                                <button type="button" aria-label={`${name} 비교에서 제거`} onClick={() => removeComparison(name)}><X size={16} /></button>
+                                <button type="button" aria-label={`${name} 비교에서 제거`} onClick={() => removeComparison(id)}><X size={16} /></button>
                             </li>
                         ))}
                         {Array.from({ length: comparisonLimit - comparison.length }, (_, index) => (
@@ -276,11 +243,11 @@ function Catalog({ isEquipment }: { isEquipment: boolean }) {
                 </div>
                 <div className="catalog-compare-dialog__table">
                     <table>
-                        <thead><tr><th scope="col">항목</th>{comparedProducts.map(({ name }) => <th scope="col" key={name}>{name}</th>)}</tr></thead>
+                        <thead><tr><th scope="col">항목</th>{comparedProducts.map(({ id, name }) => <th scope="col" key={id}>{name}</th>)}</tr></thead>
                         <tbody>
-                            <tr><th scope="row">카테고리</th>{comparedProducts.map(({ name, category }) => <td key={name}>{category}</td>)}</tr>
-                            <tr><th scope="row">가격</th>{comparedProducts.map(({ name, price }) => <td key={name}>{won.format(price)}</td>)}</tr>
-                            <tr><th scope="row">구성</th>{comparedProducts.map(({ name, detail }) => <td key={name}>{detail ?? "—"}</td>)}</tr>
+                            <tr><th scope="row">카테고리</th>{comparedProducts.map(({ id, category }) => <td key={id}>{category}</td>)}</tr>
+                            <tr><th scope="row">가격</th>{comparedProducts.map(({ id, price }) => <td key={id}>{won.format(price)}</td>)}</tr>
+                            <tr><th scope="row">구성</th>{comparedProducts.map(({ id, detail }) => <td key={id}>{detail ?? "—"}</td>)}</tr>
                         </tbody>
                     </table>
                 </div>
