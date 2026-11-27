@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { ArrowRight, Bookmark, Check, ChevronDown, ChevronRight, CircleHelp, Eye, List, MessageCircle, RotateCcw, X, ZoomIn, ZoomOut } from "lucide-react";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useParams, useSearchParams } from "react-router-dom";
 import "../styles/pages/Customize.scss";
 
 import { gearImage, readGearCart, writeGearCart, type GearItem } from "./gearCart";
@@ -78,14 +78,71 @@ function readDraft(key: string): BuildDraft | null {
     }
 }
 
+function BuildSteps({ step, furthestStep, onSelect }: { step: number; furthestStep: number; onSelect: (step: number) => void }) {
+    return (
+        <nav className="bike-build__steps" aria-label="커스터마이징 단계">
+            {steps.map((label, index) => (
+                <button key={label} type="button" aria-current={step === index ? "step" : undefined} disabled={index > furthestStep} onClick={() => onSelect(index)}>
+                    <span>{index + 1}</span><span>{label}{step === index && index === 3 && <small>컬러를 선택하세요</small>}</span>
+                </button>
+            ))}
+        </nav>
+    );
+}
+
+function CategoryOptions({ categoryId, onSelect }: { categoryId?: string; onSelect: (id: string) => void }) {
+    return categoryCards.map(({ id, label, image }) => (
+        <button key={id} type="button" className="bike-build__option bike-build__bike-card bike-build__category-card"
+            aria-pressed={categoryId === id} onClick={() => onSelect(id)}>
+            <img src={`${import.meta.env.BASE_URL}images/customize/categories/${image}`} alt="" width={272} height={100} />
+            <strong>{label}</strong>
+        </button>
+    ));
+}
+
+type CustomizeBike = (typeof customizeBikes)[number];
+
+function ModelOption({ bike, onSelect }: { bike: CustomizeBike; onSelect?: () => void }) {
+    return (
+        <Link className="bike-build__option bike-build__bike-card" to={`/customize/${bike.id}`} state={{ modelSelected: true }} onClick={onSelect}>
+            <img src={bikePhoto(bike.id)} alt="" width={800} height={475} style={{ height: 100, objectFit: "contain" }} />
+            <strong>{bike.name}</strong>
+        </Link>
+    );
+}
+
+export function CustomizeStart() {
+    const [params, setParams] = useSearchParams();
+    const bike = customizeBikes.find(({ id }) => id === params.get("category"));
+    const step = bike ? 1 : 0;
+
+    useLayoutEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
+    return (
+        <article className="bike-build">
+            <h1 className="bike-build__start-title">자전거 커스터마이징</h1>
+            <BuildSteps step={step} furthestStep={step} onSelect={(nextStep) => {
+                if (nextStep !== step) setParams({}, { replace: true });
+            }} />
+            <section className="bike-build__options" aria-label={`${steps[step]} 옵션`}>
+                {bike
+                    ? <ModelOption bike={bike} />
+                    : <CategoryOptions onSelect={(id) => setParams({ category: id })} />}
+            </section>
+        </article>
+    );
+}
+
 export function Customize() {
     const { id } = useParams();
     const { key, state } = useLocation();
     const bike = customizeBikes.find((item) => item.id === id);
-    return bike ? <BikeCustomizer key={bike.id} bike={bike} initialStep={state?.modelSelected ? 2 : 0} draftKey={`specialized-${bike.id}-draft-${key}`} /> : <Link to="/customize">모델 선택으로 돌아가기</Link>;
+    return bike ? <BikeCustomizer key={bike.id} bike={bike} initialStep={state?.modelSelected ? 2 : 0} draftKey={`specialized-${bike.id}-draft-${key}`} /> : <Link to="/customize">카테고리 선택으로 돌아가기</Link>;
 }
 
-function BikeCustomizer({ bike, initialStep, draftKey }: { bike: (typeof customizeBikes)[number]; initialStep: number; draftKey: string }) {
+function BikeCustomizer({ bike, initialStep, draftKey }: { bike: CustomizeBike; initialStep: number; draftKey: string }) {
     const { name: model, category } = bike;
     const { sizes, colors, price } = modelOptions[bike.id];
     const storageKey = `specialized-${bike.id}-build`;
@@ -219,13 +276,7 @@ function BikeCustomizer({ bike, initialStep, draftKey }: { bike: (typeof customi
                     </div>
                 </div>
             </div>
-            <nav className="bike-build__steps" aria-label="커스터마이징 단계">
-                {steps.map((label, index) => (
-                    <button key={label} type="button" aria-current={step === index ? "step" : undefined} disabled={index > furthestStep} onClick={() => setStep(index)}>
-                        <span>{index + 1}</span><span>{label}{step === index && index === 3 && <small>컬러를 선택하세요</small>}</span>
-                    </button>
-                ))}
-            </nav>
+            <BuildSteps step={step} furthestStep={furthestStep} onSelect={setStep} />
             {step < steps.length && <section className="bike-build__options" aria-label={`${steps[step]} 옵션`}>
                 {step === 3 && colors.map(({ name, finish }, index) => (
                     <button className="bike-build__color" key={name} type="button" aria-pressed={build.color === index} onClick={() => { setBuild({ ...build, color: index }); advance(); }}>
@@ -241,24 +292,14 @@ function BikeCustomizer({ bike, initialStep, draftKey }: { bike: (typeof customi
                     </button>
                 ))}
                 {step === 2 && sizes.map((size) => <button className="bike-build__option" key={size} type="button" aria-pressed={build.size === size} onClick={() => { setBuild({ ...build, size }); advance(); }}>{size}</button>)}
-                {step === 1 && customizeBikes.filter((item) => item.id === categoryId).map(({ id, name }) => (
-                    <Link className="bike-build__option bike-build__bike-card" key={id}
-                        to={`/customize/${id}`} state={{ modelSelected: true }} onClick={() => { if (id === bike.id) advance(); }}>
-                        <img src={bikePhoto(id)} alt="" width={800} height={475} style={{ height: 100, objectFit: "contain" }} />
-                        <strong>{name}</strong>
-                    </Link>
+                {step === 1 && customizeBikes.filter((item) => item.id === categoryId).map((option) => (
+                    <ModelOption key={option.id} bike={option} onSelect={option.id === bike.id ? advance : undefined} />
                 ))}
-                {step === 0 && categoryCards.map(({ id, label, image }) => (
-                    <button key={id} type="button" className="bike-build__option bike-build__bike-card bike-build__category-card" aria-pressed={categoryId === id}
-                        onClick={() => {
-                            setCategoryId(id);
-                            if (id !== bike.id) setFurthestStep(1);
-                            advance();
-                        }}>
-                        <img src={`${import.meta.env.BASE_URL}images/customize/categories/${image}`} alt="" width={272} height={100} />
-                        <strong>{label}</strong>
-                    </button>
-                ))}
+                {step === 0 && <CategoryOptions categoryId={categoryId} onSelect={(id) => {
+                    setCategoryId(id);
+                    if (id !== bike.id) setFurthestStep(1);
+                    advance();
+                }} />}
                 {step >= 4 && step < gearStep && (
                     <button className="bike-build__option" type="button" onClick={() => {
                         setConfirmedParts((count) => Math.max(count, step - 3));

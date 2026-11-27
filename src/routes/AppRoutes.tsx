@@ -5,7 +5,7 @@ import { Home } from "../pages/Home";
 import { BikeFinder } from "../pages/BikeFinder";
 import { Products } from "../pages/Products";
 import { ProductDetail } from "../pages/ProductDetail";
-import { Customize } from "../pages/Customize";
+import { Customize, CustomizeStart } from "../pages/Customize";
 import { Compare } from "../pages/Compare";
 import { Cart } from "../pages/Cart";
 import { Checkout } from "../pages/Checkout";
@@ -20,7 +20,6 @@ import { CommunityDetail } from "../pages/CommunityDetail";
 import { Dealers } from "../pages/Dealers";
 import { TestRideReservation } from "../pages/TestRideReservation";
 import { CustomizeIntro } from "../pages/CustomizeIntro";
-import { CustomizeModels } from "../pages/CustomizeModels";
 import { FooterPage } from "../pages/FooterPage";
 import { NotFound } from "../pages/NotFound";
 
@@ -32,7 +31,7 @@ export const AppRoutes = () => {
                 <Route index element={<Home />} />
                 <Route path="products" element={<Products />} />
                 <Route path="products/:id" element={<ProductDetail />} />
-                <Route path="customize" element={<CustomizeModels />} />
+                <Route path="customize" element={<CustomizeStart />} />
                 <Route path="customize/intro" element={<CustomizeIntro />} />
                 <Route path="customize/:id" element={<Customize />} />
                 <Route path="community" element={<Community />} />
