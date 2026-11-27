@@ -344,13 +344,19 @@
     gap: clamp(.65rem, 1.45vw, 1.5rem);
 
     a { display: grid; height: 100%; overflow: hidden; border-radius: .55rem; background: #202020; color: #fff; }
-    img { width: 100%; aspect-ratio: 1; object-fit: cover; }
+    &__media { display: block; overflow: hidden; }
+    img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; }
     a > div { display: flex; align-items: center; justify-content: space-between; gap: .45rem; padding: clamp(.65rem, 1.35vw, 1.35rem); border-top: 1px solid #666; }
     a > div span { display: grid; gap: .3rem; }
     strong { font-size: clamp(.94rem, 1.8vw, 1.9rem); font-weight: 950; font-style: italic; letter-spacing: -.06em; }
     a > div span span { color: #e4e4e4; font-size: .78rem; }
     svg { flex: none; }
     a:hover > div { border-color: var(--home-red); background: #310c0c; }
+
+    @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+        img { transition: transform 420ms cubic-bezier(.22, .61, .36, 1); }
+        a:hover img { transform: translateY(-1%) scale(1.16); }
+    }
 }
 
 .home-community__carousel {

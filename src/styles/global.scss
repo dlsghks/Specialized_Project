@@ -47,6 +47,9 @@ img {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+
+    // Keep the content's stacking order below the fixed site header.
+    > :is(main, footer) { isolation: isolate; }
 }
 
 .main-content {
