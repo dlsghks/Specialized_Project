@@ -227,7 +227,6 @@
     button { display: flex; flex: none; align-items: center; gap: 8px; height: 40px; font-size: 13px; font-weight: 700; line-height: 1.2; letter-spacing: .03em; text-align: left; }
     button + button::before { color: #aaa; content: "›"; }
     button[aria-current] .bike-build__step-marker span { background: var(--build-red); transform: scale(1); }
-    button[aria-current] small { visibility: visible; }
     button:disabled { color: #777; }
     button:disabled .bike-build__step-marker span { background: #efefef; color: #777; }
 }
@@ -246,23 +245,6 @@
         color: #fff;
         transform: scale(.75);
         transition: transform 150ms ease-out, background-color 150ms ease-out;
-    }
-}
-
-.bike-build__step-label {
-    position: relative;
-
-    &:has(small) { min-width: 88px; }
-
-    small {
-        position: absolute;
-        top: 100%;
-        left: 0;
-        visibility: hidden;
-        white-space: nowrap;
-        font-size: 11px;
-        font-weight: 400;
-        letter-spacing: 0;
     }
 }
 

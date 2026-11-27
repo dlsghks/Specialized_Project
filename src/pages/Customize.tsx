@@ -106,10 +106,7 @@ function BuildSteps({ step, furthestStep, onSelect }: { step: number; furthestSt
             {steps.map((label, index) => (
                 <button key={label} type="button" aria-current={step === index ? "step" : undefined} disabled={index > furthestStep} onClick={() => onSelect(index)}>
                     <span className="bike-build__step-marker"><span>{index + 1}</span></span>
-                    <span className="bike-build__step-label">
-                        {label}
-                        {index === 3 && <small>컬러를 선택하세요</small>}
-                    </span>
+                    <span>{label}</span>
                 </button>
             ))}
         </nav>
