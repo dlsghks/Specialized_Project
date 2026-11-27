@@ -112,11 +112,19 @@ function BuildSteps({ step, furthestStep, onSelect }: { step: number; furthestSt
     );
 }
 
+function OptionPhoto({ src, scale }: { src: string; scale?: number }) {
+    return (
+        <span className="bike-build__option-photo">
+            <img src={src} alt="" width={640} height={360} style={{ scale }} />
+        </span>
+    );
+}
+
 function CategoryOptions({ categoryId, onSelect }: { categoryId?: string; onSelect: (id: string) => void }) {
     return categoryCards.map(({ id, label, image }) => (
         <button key={id} type="button" className="bike-build__option bike-build__bike-card bike-build__category-card"
             aria-pressed={categoryId === id} onClick={() => onSelect(id)}>
-            <img src={`${import.meta.env.BASE_URL}images/customize/categories/${image}`} alt="" width={272} height={100} />
+            <OptionPhoto src={`${import.meta.env.BASE_URL}images/customize/categories/${image}`} />
             <strong>{label}</strong>
         </button>
     ));
@@ -125,7 +133,7 @@ function CategoryOptions({ categoryId, onSelect }: { categoryId?: string; onSele
 function ModelOption({ bike, onSelect }: { bike: CustomizeBike; onSelect?: () => void }) {
     return (
         <Link className="bike-build__option bike-build__bike-card" to={`/customize/${bike.id}`} state={{ modelSelected: true }} onClick={onSelect}>
-            <img src={bikePhoto(bike.id)} alt="" width={800} height={475} style={{ height: 100, objectFit: "contain" }} />
+            <OptionPhoto src={bikePhoto(bike.id)} />
             <strong>{bike.name}</strong>
         </Link>
     );
@@ -147,9 +155,11 @@ export function CustomizeStart() {
                 if (nextStep !== step) setParams({}, { replace: true });
             }} />
             <section className="bike-build__options" aria-label={`${steps[step]} 옵션`}>
-                {bike
-                    ? <ModelOption bike={bike} />
-                    : <CategoryOptions onSelect={(id) => setParams({ category: id })} />}
+                <div className="bike-build__photo-grid">
+                    {bike
+                        ? <ModelOption bike={bike} />
+                        : <CategoryOptions onSelect={(id) => setParams({ category: id })} />}
+                </div>
             </section>
         </article>
     );
@@ -326,21 +336,25 @@ function BikeCustomizer({ bike, initialStep, draftKey }: { bike: CustomizeBike; 
                     </button>
                 ))}
                 {step === 2 && sizes.map((size) => <button className="bike-build__option" key={size} type="button" aria-pressed={build.size === size} onClick={() => { setBuild({ ...build, size }); advance(); }}>{size}</button>)}
-                {step === 1 && customizeBikes.filter((item) => item.id === categoryId).map((option) => (
-                    <ModelOption key={option.id} bike={option} onSelect={option.id === bike.id ? advance : undefined} />
-                ))}
-                {step === 0 && <CategoryOptions categoryId={categoryId} onSelect={(id) => {
-                    setCategoryId(id);
-                    if (id !== bike.id) setFurthestStep(1);
-                    advance();
-                }} />}
+                {step < 2 && (
+                    <div className="bike-build__photo-grid">
+                        {step === 1 && customizeBikes.filter((item) => item.id === categoryId).map((option) => (
+                            <ModelOption key={option.id} bike={option} onSelect={option.id === bike.id ? advance : undefined} />
+                        ))}
+                        {step === 0 && <CategoryOptions categoryId={categoryId} onSelect={(id) => {
+                            setCategoryId(id);
+                            if (id !== bike.id) setFurthestStep(1);
+                            advance();
+                        }} />}
+                    </div>
+                )}
                 {activePart && (
-                    <div className="bike-build__part-options">
-                        <div className="bike-build__part-grid">
-                            {catalog[activePart.key].map(({ id, name }) => (
+                    <div className="bike-build__part-options" data-part={activePart.key}>
+                        <div className="bike-build__photo-grid">
+                            {catalog[activePart.key].map(({ id, name, thumbnailScale }) => (
                                 <button key={id} className="bike-build__option bike-build__bike-card bike-build__part-card"
                                     type="button" aria-pressed={build.parts[activePart.key] === id} onClick={() => selectPart(activePart.key, id)}>
-                                    <img src={`${import.meta.env.BASE_URL}images/customize/parts/${id}.webp`} alt="" width={640} height={360} />
+                                    <OptionPhoto src={`${import.meta.env.BASE_URL}images/customize/parts/${id}.webp`} scale={thumbnailScale} />
                                     <strong>{name}</strong>
                                     {build.parts[activePart.key] === id && <span className="bike-build__part-selected" aria-hidden="true"><Check size={13} /> 선택됨</span>}
                                 </button>
@@ -357,11 +371,11 @@ function BikeCustomizer({ bike, initialStep, draftKey }: { bike: CustomizeBike; 
                             <button className="bike-build__finish" type="button" onClick={() => { setSummaryOpen(true); setNotice("구성이 완료됐어요."); advance(); }}><Check size={18} aria-hidden="true" /> 구성 완료</button>
                         </div>
                         {gear.length ? (
-                            <ul>
+                            <ul className="bike-build__photo-grid">
                                 {gear.map(({ name, image }) => (
                                     <li key={image}>
                                         <div className="bike-build__gear-media">
-                                            <img src={gearImage(image)} alt="" width={240} height={135} />
+                                            <OptionPhoto src={gearImage(image)} />
                                             <button className="bike-build__gear-detail" type="button" aria-label={`${name} 상세보기`} onClick={() => {
                                                 setGearDetail({ name, image });
                                                 gearDialog.current?.showModal();
