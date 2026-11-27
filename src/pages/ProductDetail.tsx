@@ -2,7 +2,7 @@ import { useLayoutEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ProductGallery } from "../components/products/ProductGallery";
 import { ProductDetailSections } from "../components/products/ProductDetailSections";
-import { products, won } from "../data/products";
+import { formatProductPrice, products } from "../data/products";
 import type { Product, ProductSize } from "../data/productTypes";
 import { NotFound } from "./NotFound";
 import "../styles/pages/ProductDetail.scss";
@@ -78,7 +78,7 @@ function ProductDetailView({ product }: { product: Product }) {
                         </div>
                     )}
                     <div className="product-order__price">
-                        <strong>{won.format(product.price)}</strong>
+                        <strong>{formatProductPrice(product.price)}</strong>
                         {page?.reviews && <a href="#product-reviews">라이더 구매 후기</a>}
                     </div>
                 </div>

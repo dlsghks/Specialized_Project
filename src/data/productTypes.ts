@@ -33,7 +33,7 @@ export type Product = {
     id: string;
     name: string;
     category: string;
-    price: number;
+    price: number | null;
     detail?: string;
     image?: string;
     model?: string;

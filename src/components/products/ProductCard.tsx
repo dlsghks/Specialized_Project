@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { won } from "../../data/products";
+import { formatProductPrice } from "../../data/products";
 import type { Product } from "../../data/productTypes";
 
 type ProductCardProps = {
@@ -26,7 +26,7 @@ export function ProductCard({ product, compared, compareDisabled, onCompare }: P
                         onChange={(event) => onCompare(id, event.target.checked)} />
                 </label>
             </div>
-            <p>{detail ?? category} · {won.format(price)}</p>
+            <p>{detail ?? category} · {formatProductPrice(price)}</p>
         </li>
     );
 }

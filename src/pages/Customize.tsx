@@ -6,7 +6,7 @@ import { photoFramingStyle } from "../data/photoFraming";
 
 import { gearImage, readGearCart, writeGearCart, type GearItem } from "./gearCart";
 import { bikePhoto, customizeBikes, customizeCategories, type CustomizeBike, type FrameColor } from "./customizeBikes";
-import { partSteps, type PartCatalog, type PartKind } from "./customizeParts";
+import { partImage, partSteps, type PartCatalog, type PartKind } from "./customizeParts";
 
 const firstPartStep = 4;
 const steps = ["CATEGORY", "MODEL", "SIZE", "COLOR", ...partSteps.map(({ label }) => label), "추천 장비"];
@@ -319,7 +319,7 @@ function BikeCustomizer({ bike, initialStep, draftKey }: { bike: CustomizeBike; 
                             {catalog[activePart.key].map(({ id, name, thumbnailScale }) => (
                                 <button key={id} className="bike-build__option bike-build__bike-card bike-build__part-card"
                                     type="button" aria-pressed={build.parts[activePart.key] === id} onClick={() => selectPart(activePart.key, id)}>
-                                    <OptionPhoto src={`${import.meta.env.BASE_URL}images/customize/parts/${id}.webp`} scale={thumbnailScale} />
+                                    <OptionPhoto src={partImage(id)} scale={thumbnailScale} />
                                     <strong>{name}</strong>
                                     {build.parts[activePart.key] === id && <span className="bike-build__part-selected" aria-hidden="true"><Check size={13} /> 선택됨</span>}
                                 </button>
