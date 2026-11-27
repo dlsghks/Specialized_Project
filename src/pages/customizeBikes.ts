@@ -34,8 +34,14 @@ const [silver, ruby, white] = tarmacColors;
 
 const roadColors: CustomizeBike["colors"] = [
     { name: "Satin Silver Dust", image: silver.gallery[0].image, finish: "linear-gradient(90deg, #c9cbce 40%, #7a7d7e)" },
-    { name: "Gloss White Silver Metallic", image: white.gallery[0].image, finish: "linear-gradient(90deg, #efeff1 43%, #b60022)" },
-    { name: "Gloss Ruby Metallic", image: ruby.gallery[0].image, finish: "linear-gradient(90deg, #d2d7d7 40%, #86262f)" },
+    {
+        name: "Gloss White Silver Metallic", image: white.gallery[0].image, framing: white.gallery[0].framing,
+        finish: "linear-gradient(90deg, #efeff1 43%, #b60022)",
+    },
+    {
+        name: "Gloss Ruby Metallic", image: ruby.gallery[0].image, framing: ruby.gallery[0].framing,
+        finish: "linear-gradient(90deg, #d2d7d7 40%, #86262f)",
+    },
 ];
 
 export const customizeBikes: readonly CustomizeBike[] = [
@@ -72,6 +78,7 @@ export const customizeBikes: readonly CustomizeBike[] = [
                 name: "Gloss Charcoal",
                 image: sidePhoto("3DvEpmXEz44ln9smdoRhp9VREa8/94527-01_DEMO-11-SW-CHAR-DLMMET-WHT_HERO-PDP_DARK.webp"),
                 finish: `url("${import.meta.env.BASE_URL}images/customize/swatches/demo-gray-white.png") center / cover no-repeat`,
+                framing: { scale: 1.003, y: .14 },
             },
         ],
         price: 14900000,
@@ -93,6 +100,7 @@ export const customizeBikes: readonly CustomizeBike[] = [
                 name: "Deep Marine Metallic",
                 image: sidePhoto("3DvF0Cpp8EeoOoYPfSidkJqH4Dc/91427-11_CRUX-5-S-LEVEL-AXS-METDPMRNBLU-SHDWSIL-DLMMET_HERO-PDP.webp") + "&bg=f1f1f1",
                 finish: `url("${import.meta.env.BASE_URL}images/customize/swatches/crux-gray-silver.png") center / cover no-repeat`,
+                framing: { scale: 1.087, y: -.28 },
             },
         ],
         price: 12500000,

@@ -23,13 +23,16 @@ const galleryAngles = [
     { label: "시트튜브", file: "seat-tube" },
 ] as const;
 
-export const tarmacRubyFrontFraming: PhotoFraming = { scale: 1.02, x: .2 };
-const rubyFraming: Partial<Record<(typeof galleryAngles)[number]["file"], PhotoFraming>> = {
-    "front-three-quarter": tarmacRubyFrontFraming,
-    "rear-three-quarter": { scale: 1.008, x: .12, y: .3 },
-    cockpit: { scale: 1.055, x: -1.8, y: 7.8 },
-    "head-tube": { scale: 1.29, x: 6.5, y: 11.6 },
-    "seat-tube": { scale: 1.061, x: -3.05 },
+const galleryFraming: Record<string, Partial<Record<(typeof galleryAngles)[number]["file"], PhotoFraming>>> = {
+    ruby: {
+        side: { scale: 1.005, y: .035 },
+        "front-three-quarter": { scale: 1.02, x: .2 },
+        "rear-three-quarter": { scale: 1.008, x: .12, y: .3 },
+        cockpit: { scale: 1.055, x: -1.8, y: 7.8 },
+        "head-tube": { scale: 1.29, x: 6.5, y: 11.6 },
+        "seat-tube": { scale: 1.061, x: -3.05 },
+    },
+    white: { side: { scale: .999, y: -.08 } },
 };
 
 export const colors = [
@@ -42,7 +45,7 @@ export const colors = [
         label,
         image: photo(`${color.key}-${file}`),
         thumbnail: photo(`${color.key}-${file}-thumb`),
-        framing: color.key === "ruby" ? rubyFraming[file] : undefined,
+        framing: galleryFraming[color.key]?.[file],
     })),
 }));
 
