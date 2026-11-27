@@ -386,6 +386,51 @@
     object-fit: cover;
 }
 
+.bike-build__part-options {
+    display: grid;
+    width: 100%;
+    gap: 12px;
+}
+
+.bike-build__part-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
+    max-width: 936px;
+    gap: 12px;
+}
+
+.bike-build__options .bike-build__part-card {
+    position: relative;
+    width: 100%;
+
+    img { aspect-ratio: 16 / 9; object-fit: contain; background: #f1f1f1; }
+    strong { line-height: 1.35; }
+}
+
+.bike-build__part-selected {
+    position: absolute;
+    top: 22px;
+    right: 22px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 7px;
+    border-radius: 4px;
+    background: #fff;
+    color: var(--build-red);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.bike-build .bike-build__part-default {
+    justify-self: start;
+    min-height: 40px;
+    padding: 0 12px;
+    text-decoration: underline;
+
+    &[aria-pressed="true"] { color: var(--build-red); font-weight: 700; }
+}
+
 .bike-build__gear {
     width: 100%;
 

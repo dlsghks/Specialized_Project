@@ -4,7 +4,8 @@ import { Link, useLocation, useParams, useSearchParams } from "react-router-dom"
 import "../styles/pages/Customize.scss";
 
 import { gearImage, readGearCart, writeGearCart, type GearItem } from "./gearCart";
-import { bikePhoto, customizeBikes } from "./customizeBikes";
+import { bikePhoto, customizeBikes, type CustomizeBike } from "./customizeBikes";
+import { customizeParts, partSteps, type PartCatalog, type PartKind } from "./customizeParts";
 const roadColors = [
     { name: "Satin Silver Dust", image: "satin-silver-dust.webp", finish: "linear-gradient(90deg, #c9cbce 40%, #7a7d7e)" },
     { name: "Gloss White Silver Metallic", image: "gloss-white-silver-metallic.webp", finish: "linear-gradient(90deg, #efeff1 43%, #b60022)" },
@@ -15,7 +16,8 @@ const categoryCards = [
     { id: "crux-5", label: "그래블", image: "gravel.webp" },
     { id: "tarmac-sl9", label: "로드", image: "road.webp" },
 ];
-const steps = ["CATEGORY", "MODEL", "SIZE", "COLOR", "TIRES", "WHEELS", "HANDLEBAR", "SADDLES", "추천 장비"];
+const firstPartStep = 4;
+const steps = ["CATEGORY", "MODEL", "SIZE", "COLOR", ...partSteps.map(({ label }) => label), "추천 장비"];
 const gearStep = steps.length - 1;
 
 const recommendedGear: Record<string, GearItem[]> = {
@@ -49,24 +51,44 @@ const modelOptions: Record<string, { sizes: (number | string)[]; colors: FrameCo
     },
 };
 
-function readBuild(storageKey: string, sizes: (number | string)[], colors: FrameColor[]): { size: number | string | null; color: number | null } {
+type Build = {
+    size: number | string | null;
+    color: number | null;
+    parts: Partial<Record<PartKind, string | null>>;
+};
+
+function restoreBuild(saved: Partial<Build> | null, sizes: (number | string)[], colors: FrameColor[], catalog: PartCatalog, confirmedParts = 0): Build {
+    const parts: Build["parts"] = {};
+    partSteps.forEach(({ key }, index) => {
+        const choice = saved?.parts?.[key];
+        if (choice === null || (choice && catalog[key].some(({ id }) => id === choice))) {
+            parts[key] = choice;
+        } else if (!saved?.parts && index < confirmedParts) {
+            parts[key] = null;
+        }
+    });
+
+    return {
+        size: saved?.size != null && sizes.includes(saved.size) ? saved.size : null,
+        color: typeof saved?.color === "number" && Number.isInteger(saved.color) && colors[saved.color] ? saved.color : null,
+        parts,
+    };
+}
+
+function readBuild(storageKey: string): Partial<Build> | null {
     try {
-        const saved = JSON.parse(localStorage.getItem(storageKey) ?? "null");
-        return {
-            size: sizes.includes(saved?.size) ? saved.size : null,
-            color: Number.isInteger(saved?.color) && colors[saved.color] ? saved.color : null,
-        };
+        return JSON.parse(localStorage.getItem(storageKey) ?? "null");
     } catch {
-        return { size: null, color: null };
+        return null;
     }
 }
 
 type BuildDraft = {
-    build: ReturnType<typeof readBuild>;
+    build: Partial<Build>;
     categoryId: string;
     step: number;
     furthestStep: number;
-    confirmedParts: number;
+    confirmedParts?: number;
     summaryOpen: boolean;
 };
 
@@ -99,8 +121,6 @@ function CategoryOptions({ categoryId, onSelect }: { categoryId?: string; onSele
         </button>
     ));
 }
-
-type CustomizeBike = (typeof customizeBikes)[number];
 
 function ModelOption({ bike, onSelect }: { bike: CustomizeBike; onSelect?: () => void }) {
     return (
@@ -145,30 +165,35 @@ export function Customize() {
 function BikeCustomizer({ bike, initialStep, draftKey }: { bike: CustomizeBike; initialStep: number; draftKey: string }) {
     const { name: model, category } = bike;
     const { sizes, colors, price } = modelOptions[bike.id];
+    const catalog = customizeParts[bike.id];
     const storageKey = `specialized-${bike.id}-build`;
     const [draft] = useState(() => readDraft(draftKey));
     const [categoryId, setCategoryId] = useState(draft?.categoryId ?? bike.id);
-    const [build, setBuild] = useState(() => draft?.build ?? readBuild(storageKey, sizes, colors));
+    const [build, setBuild] = useState(() => restoreBuild(draft?.build ?? readBuild(storageKey), sizes, colors, catalog, draft?.confirmedParts));
     const previewColor = colors[build.color ?? 0];
     const [step, setStep] = useState(draft?.step ?? initialStep);
     const [furthestStep, setFurthestStep] = useState(draft?.furthestStep ?? initialStep);
-    const [confirmedParts, setConfirmedParts] = useState(draft?.confirmedParts ?? 0);
+    const activePart = partSteps[step - firstPartStep];
     const gear = recommendedGear[bike.id] ?? [];
     const advance = () => {
         const nextStep = step + 1;
         setFurthestStep((furthest) => Math.max(furthest, nextStep));
         setStep(nextStep);
     };
+    const selectPart = (kind: PartKind, id: string | null) => {
+        setBuild((current) => ({ ...current, parts: { ...current.parts, [kind]: id } }));
+        advance();
+    };
     const [summaryOpen, setSummaryOpen] = useState(draft?.summaryOpen ?? true);
 
     useEffect(() => {
-        const currentDraft: BuildDraft = { build, categoryId, step, furthestStep, confirmedParts, summaryOpen };
+        const currentDraft: BuildDraft = { build, categoryId, step, furthestStep, summaryOpen };
         try {
             sessionStorage.setItem(draftKey, JSON.stringify(currentDraft));
         } catch {
             // The current configuration stays usable when browser storage is unavailable.
         }
-    }, [build, categoryId, step, furthestStep, confirmedParts, summaryOpen, draftKey]);
+    }, [build, categoryId, step, furthestStep, summaryOpen, draftKey]);
 
     const [helpOpen, setHelpOpen] = useState(false);
     const [zoom, setZoom] = useState(1);
@@ -195,7 +220,16 @@ function BikeCustomizer({ bike, initialStep, draftKey }: { bike: CustomizeBike; 
         setHelpOpen(false);
         helpToggle.current?.focus();
     };
-    const values = [category, model.toUpperCase(), build.size?.toString(), build.color === null ? undefined : colors[build.color].name, ...Array.from({ length: confirmedParts }, () => "기본 구성")];
+    const values = [
+        category,
+        model.toUpperCase(),
+        build.size?.toString(),
+        build.color === null ? undefined : colors[build.color].name,
+        ...partSteps.map(({ key }) => {
+            const id = build.parts[key];
+            return id === null ? "기본 구성" : catalog[key].find((option) => option.id === id)?.name;
+        }),
+    ];
 
     const save = () => {
         try {
@@ -300,11 +334,21 @@ function BikeCustomizer({ bike, initialStep, draftKey }: { bike: CustomizeBike; 
                     if (id !== bike.id) setFurthestStep(1);
                     advance();
                 }} />}
-                {step >= 4 && step < gearStep && (
-                    <button className="bike-build__option" type="button" onClick={() => {
-                        setConfirmedParts((count) => Math.max(count, step - 3));
-                        advance();
-                    }}>기본 구성 유지</button>
+                {activePart && (
+                    <div className="bike-build__part-options">
+                        <div className="bike-build__part-grid">
+                            {catalog[activePart.key].map(({ id, name }) => (
+                                <button key={id} className="bike-build__option bike-build__bike-card bike-build__part-card"
+                                    type="button" aria-pressed={build.parts[activePart.key] === id} onClick={() => selectPart(activePart.key, id)}>
+                                    <img src={`${import.meta.env.BASE_URL}images/customize/parts/${id}.webp`} alt="" width={640} height={360} />
+                                    <strong>{name}</strong>
+                                    {build.parts[activePart.key] === id && <span className="bike-build__part-selected" aria-hidden="true"><Check size={13} /> 선택됨</span>}
+                                </button>
+                            ))}
+                        </div>
+                        <button className="bike-build__part-default" type="button" aria-pressed={build.parts[activePart.key] === null}
+                            onClick={() => selectPart(activePart.key, null)}>기본 구성 유지</button>
+                    </div>
                 )}
                 {step === gearStep && (
                     <div className="bike-build__gear">
