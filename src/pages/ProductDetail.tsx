@@ -16,7 +16,9 @@ export const ProductDetail = () => {
 };
 
 function TarmacDetail() {
-    const [{ color, view, direction }, setGallery] = useState({ color: 0, view: 0, direction: 0 });
+    const [{ color, view, direction, previousView }, setGallery] = useState({
+        color: 0, view: 0, direction: 0, previousView: null as number | null,
+    });
     const [size, setSize] = useState<number | null>(null);
     const [purchaseStatus, setPurchaseStatus] = useState("");
     const swipe = useRef<{ id: number; x: number; y: number } | null>(null);
@@ -36,6 +38,7 @@ function TarmacDetail() {
         if (!offset || !hasMultipleViews) return;
         setGallery((current) => ({
             ...current,
+            previousView: current.view,
             view: (current.view + offset + gallery.length) % gallery.length,
             direction: Math.sign(offset),
         }));
@@ -72,12 +75,19 @@ function TarmacDetail() {
                         <p>로드 레이스를 위한 한 대</p>
                     </header>
 
-                    <div className="product-gallery__image" data-swipe={hasMultipleViews}
+                    <div className="product-gallery__image" data-swipe={hasMultipleViews} data-direction={direction}
                         onPointerDown={startSwipe} onPointerUp={finishSwipe}
+                        onPointerCancel={() => { swipe.current = null; }}
                         onLostPointerCapture={(event) => {
                             if (swipe.current?.id === event.pointerId) swipe.current = null;
                         }}>
-                        <img className={direction ? "product-gallery__slide" + (direction < 0 ? " product-gallery__slide--previous" : "") : undefined}
+                        {previousView !== null && (
+                            <img className="product-gallery__outgoing" key={gallery[previousView].image + "-outgoing"}
+                                src={gallery[previousView].image} alt="" aria-hidden="true" width={1440} height={810} draggable={false} />
+                        )}
+                        <img className={previousView === null ? undefined : "product-gallery__slide"}
+                            onAnimationEnd={() => setGallery((current) =>
+                                current.color === color && current.view === view ? { ...current, previousView: null } : current)}
                             key={selected.image} src={selected.image} alt={selectedPhotoName}
                             width={1440} height={810} fetchPriority="high" draggable={false} />
                     </div>
@@ -115,7 +125,7 @@ function TarmacDetail() {
                             {colors.map(({ name, swatch }, index) => (
                                 <button key={name} type="button" className="product-options__swatch"
                                     aria-label={name} aria-pressed={color === index} style={{ background: swatch }}
-                                    onClick={() => { setGallery({ color: index, view: 0, direction: 0 }); setPurchaseStatus(""); }} />
+                                        onClick={() => { setGallery({ color: index, view: 0, direction: 0, previousView: null }); setPurchaseStatus(""); }} />
                             ))}
                         </div>
                     </div>

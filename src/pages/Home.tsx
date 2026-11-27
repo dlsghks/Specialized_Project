@@ -1,188 +1,217 @@
 import { useRef, useState, type PointerEvent } from "react";
+import { ArrowRight, ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
 import { Link } from "react-router-dom";
+import { DealerFinder } from "./Dealers";
+import { bannerImage, colors, grades } from "./productTarmac";
 import "../styles/pages/Home.scss";
 
+const base = import.meta.env.BASE_URL + "images/";
+const productDetail = "/products/4293533";
+const equipment = "/products?type=equipment";
 const highlights = [
     {
-        label: "3D 바이크 빌드",
-        title: ["나만의 스페셜라이즈드,", "3D로 커스터마이징하세요"],
-        description: ["프레임 컬러부터 주요 부품까지", "실시간 3D로 확인하며 나만의 라이드를 완성해보세요."],
-        action: "S-LAB 시작하기",
-        to: "/customize",
+        key: "customize", label: "S-LAB 3D CUSTOMIZATION", title: ["나만의 스페셜라이즈드,", "3D로 커스터마이징하세요"],
+        action: "S-LAB 시작하기", to: "/customize", help: "커스터마이징 가이드",
+        description: "프레임 컬러와 부품을 골라 나만의 자전거를 구성해 보세요.", image: colors[1].gallery[0].image,
     },
     {
-        label: "AI 바이크 어드바이저",
-        title: ["내게 맞는 자전거를", "찾아보세요"],
-        description: ["라이딩 목적과 취향을 바탕으로", "나에게 맞는 자전거를 추천받아 보세요."],
+        key: "advisor", label: "AI BIKE ADVISOR", title: ["몇 가지 질문으로 찾는", "나에게 맞는 스페셜라이즈드"],
+        action: "AI 추천 시작하기", to: "/bike-finder", help: "추천 방식 알아보기",
+        description: "라이딩 스타일과 주행 환경, 예산에 맞춰 자전거를 추천해 드려요.", image: base + "home/hero-advisor.webp",
     },
     {
-        label: "라이더 커뮤니티",
-        title: ["함께 달리는", "라이더 커뮤니티"],
-        description: ["라이더들의 시승 후기와", "다양한 라이딩 이야기를 만나보세요."],
-        action: "커뮤니티 둘러보기",
-        to: "/community",
+        key: "community", label: "RIDER COMMUNITY", title: ["함께 달리는 라이더들의", "진짜 라이딩 이야기"],
+        action: "라이더 후기 보기", to: "/community", help: "커뮤니티 둘러보기", image: base + "home/hero-community.webp",
     },
+];
+const parts = [
+    { name: "TIRE", label: "타이어", image: base + "customize/parts/cannibal.webp" },
+    { name: "HELMET", label: "헬멧", image: base + "customize/gear/S-Works_Evade4.webp" },
+    { name: "CAGE", label: "물통 케이지", image: base + "customize/gear/S-Works_Carbon_Rib_Cage3.webp" },
+    { name: "HANDLEBAR", label: "핸들바", image: base + "customize/parts/rapide-cockpit.webp" },
+];
+const stories = [
+    { title: "오르막에서 다시 속도를 붙이는 순간", text: "빠른 반응과 안정적인 핸들링으로 오르막과 코너를 이어 달리는 타막을 만나보세요.", bike: grades[0], image: bannerImage },
+    { title: "길이 달라지면 라이딩도 달라져요", text: "자주 달리는 길과 라이딩 스타일에 맞는 자전거를 찾아보세요.", bike: grades[1], image: base + "customize/categories/road.webp" },
+    { title: "주말에 함께 달릴 코스를 찾아서", text: "라이더들과 함께 나누는 새로운 길과 주행 이야기를 둘러보세요.", bike: grades[2], image: base + "home/hero-community.webp" },
 ];
 
-const featuredBikes = ["S-Works Tarmac SL9", "Tarmac SL9 S-Level", "Tarmac SL9 Comp"];
-const components = [
-    { id: "evade-4", name: "S-Works Evade 4 LTD", price: 450000 },
-    { id: "ares-2", name: "S-Works Ares 2 LTD", price: 590000 },
-    { id: "rapide", name: "S-Works Rapide", price: 420000 },
-    { id: "terra-cl", name: "Roval Terra CL", price: 1900000 },
-    { id: "terra-handlebar", name: "Roval Terra 핸들바", price: 380000 },
-];
-const won = new Intl.NumberFormat("ko-KR", { style: "currency", currency: "KRW" });
+const wrap = (index: number, count: number) => (index + count) % count;
+const countText = (index: number, count: number) => String(index + 1).padStart(2, "0") + " / " + String(count).padStart(2, "0");
 
 export const Home = () => {
-    const [{ index: highlightIndex, direction }, setHighlight] = useState({ index: 0, direction: 1 });
-    const swipeStart = useRef<{ id: number; x: number; y: number } | null>(null);
+    const [{ index: highlightIndex, direction }, setHighlight] = useState({ index: 0, direction: 0 });
+    const swipe = useRef<{ id: number; x: number; y: number } | null>(null);
     const [bikeIndex, setBikeIndex] = useState(0);
+    const [bikeColor, setBikeColor] = useState(1);
+    const [storyIndex, setStoryIndex] = useState(0);
     const [heroPaused, setHeroPaused] = useState(false);
     const [showGuide, setShowGuide] = useState(false);
     const highlight = highlights[highlightIndex];
-    const visibleBikes = [-1, 0, 1].map(
-        (offset) => featuredBikes[(bikeIndex + offset + featuredBikes.length) % featuredBikes.length],
-    );
-    const changeHighlight = (offset: number) =>
-        setHighlight(({ index }) => ({
-            index: (index + offset + highlights.length) % highlights.length,
-            direction: Math.sign(offset),
-        }));
+    const currentBike = grades[bikeIndex];
+    const previousBike = grades[wrap(bikeIndex - 1, grades.length)];
+    const nextBike = grades[wrap(bikeIndex + 1, grades.length)];
+    const story = stories[storyIndex];
+
+    const changeHighlight = (offset: number) => {
+        if (!offset) return;
+        setShowGuide(false);
+        setHighlight(({ index }) => ({ index: wrap(index + offset, highlights.length), direction: Math.sign(offset) }));
+    };
 
     const startSwipe = (event: PointerEvent<HTMLDivElement>) => {
         if (!event.isPrimary || event.button !== 0 || (event.target as Element).closest("a, button")) return;
-        swipeStart.current = { id: event.pointerId, x: event.clientX, y: event.clientY };
+        swipe.current = { id: event.pointerId, x: event.clientX, y: event.clientY };
         event.currentTarget.setPointerCapture(event.pointerId);
     };
 
     const finishSwipe = (event: PointerEvent<HTMLDivElement>) => {
-        const start = swipeStart.current;
+        const start = swipe.current;
         if (!start || start.id !== event.pointerId) return;
-        swipeStart.current = null;
+        swipe.current = null;
         const x = event.clientX - start.x;
         const y = event.clientY - start.y;
         if (Math.abs(x) >= 45 && Math.abs(x) > Math.abs(y)) changeHighlight(x < 0 ? 1 : -1);
     };
-    const changeBike = (offset: number) =>
-        setBikeIndex((index) => (index + offset + featuredBikes.length) % featuredBikes.length);
+
+    const showcaseImage = (bike: typeof currentBike) => bike === grades[0] ? colors[bikeColor].gallery[0].image : bike.image;
 
     return (
         <div className="home">
-            <section className="home-hero" aria-label="주요 서비스">
+            <section className="home-hero" aria-label="주요 서비스" data-hero={highlight.key}>
                 <div className="home-hero__viewport" onPointerDown={startSwipe} onPointerUp={finishSwipe}
-                    onLostPointerCapture={() => { swipeStart.current = null; }}>
-                    <div className={`home-hero__content${direction < 0 ? " home-hero__content--previous" : ""}`} key={highlightIndex}>
-                        <p>{highlight.label}</p>
+                    onPointerCancel={() => { swipe.current = null; }} onLostPointerCapture={() => { swipe.current = null; }}>
+                    <img className="home-hero__image" key={highlight.image} src={highlight.image} alt="" fetchPriority="high" draggable={false} />
+                    <div className="home-hero__content" key={highlight.key} data-direction={direction}>
+                        <p className="home-eyebrow">{highlight.label}</p>
                         <h1>{highlight.title[0]}<br />{highlight.title[1]}</h1>
-                        <p className="home-hero__description">{highlight.description[0]}<br />{highlight.description[1]}</p>
                         <div className="home-hero__actions">
-                            {highlight.to ? (
-                                <Link className="home-link" to={highlight.to}>{highlight.action}</Link>
-                            ) : (
-                                <Link className="home-link" to="/bike-finder">자전거 추천 받기</Link>
-                            )}
-                            {highlightIndex === 0 && (
-                                <button className="home-link home-link--outline" type="button"
-                                    aria-expanded={showGuide} onClick={() => setShowGuide((open) => !open)}>
-                                    커스터마이징 가이드
-                                </button>
-                            )}
+                            <Link className="home-link" to={highlight.to}>{highlight.action}<ChevronRight size={17} aria-hidden="true" /></Link>
+                            {highlight.description ? (
+                                <button className="home-link home-link--outline" type="button" aria-expanded={showGuide}
+                                    onClick={() => setShowGuide((open) => !open)}>{highlight.help}<ChevronRight size={17} aria-hidden="true" /></button>
+                            ) : <a className="home-link home-link--outline" href="#home-community">{highlight.help}<ChevronRight size={17} aria-hidden="true" /></a>}
                         </div>
-                        {highlightIndex === 0 && showGuide && (
-                            <p className="home-hero__description">S-LAB에서 모델을 선택한 뒤 컬러와 부품을 조합해보세요.</p>
-                        )}
+                        {showGuide && <p className="home-hero__description">{highlight.description}</p>}
                     </div>
                 </div>
-                <div className="home-controls home-hero__controls">
-                    <div className="home-hero__tabs">
+                <div className="home-hero__controls">
+                    <div className="home-hero__tabs" role="group" aria-label="히어로 슬라이드">
                         {highlights.map(({ label }, index) => (
-                            <button key={label} type="button" aria-pressed={index === highlightIndex}
+                            <button key={label} type="button" aria-label={label} aria-pressed={index === highlightIndex}
                                 onClick={() => changeHighlight(index - highlightIndex)}>
                                 {index === highlightIndex && (
-                                    <span className={`home-hero__progress${heroPaused ? " is-paused" : ""}`}
-                                        aria-hidden="true" onAnimationEnd={() => changeHighlight(1)} />
+                                    <span className="home-hero__progress" data-paused={heroPaused} aria-hidden="true"
+                                        onAnimationEnd={() => changeHighlight(1)} />
                                 )}
-                                {label}
                             </button>
                         ))}
                     </div>
                     <div className="home-hero__playback">
-                        <span aria-label={`전체 ${highlights.length}개 중 ${highlightIndex + 1}번째`}>
-                            {String(highlightIndex + 1).padStart(2, "0")} / {String(highlights.length).padStart(2, "0")}
-                        </span>
-                        <button className="home-hero__pause" type="button" aria-label={heroPaused ? "자동 재생" : "일시정지"}
-                            onClick={() => setHeroPaused((paused) => !paused)}>
-                            <img src={`${import.meta.env.BASE_URL}images/icons/${heroPaused ? "play" : "pause"}.png`}
-                                alt="" width={24} height={24} />
+                        <span>{countText(highlightIndex, highlights.length)}</span>
+                        <button type="button" aria-label={heroPaused ? "자동 재생" : "일시정지"} onClick={() => setHeroPaused((paused) => !paused)}>
+                            {heroPaused ? <Play size={16} aria-hidden="true" /> : <Pause size={16} aria-hidden="true" />}
                         </button>
                     </div>
                 </div>
             </section>
 
-            <div className="home-sections">
-                <section aria-labelledby="featured-bikes">
-                    <div className="home-section-heading">
-                        <h2 id="featured-bikes">자전거 제품 소개</h2>
-                        <Link to="/products">전체보기 →</Link>
-                    </div>
-                    <div className="home-bike-window" aria-hidden="true">
-                        <div className="home-bike-track">
-                            {visibleBikes.map((bike) => (
-                                <div key={bike} className="home-bike-media home-media">{bike}</div>
+            <section className="home-showcase" aria-labelledby="featured-bikes">
+                <h2 id="featured-bikes">BIKE SHOWCASE</h2>
+                <div className="home-showcase__stage">
+                    <img src={showcaseImage(previousBike)} alt="" className="home-showcase__side home-showcase__side--previous" loading="lazy" />
+                    <img src={showcaseImage(currentBike)} alt={currentBike.name} className="home-showcase__bike" loading="lazy" />
+                    <img src={showcaseImage(nextBike)} alt="" className="home-showcase__side home-showcase__side--next" loading="lazy" />
+                    <button className="home-carousel-button home-carousel-button--previous" type="button" aria-label="이전 자전거"
+                        onClick={() => setBikeIndex((index) => wrap(index - 1, grades.length))}><ChevronLeft aria-hidden="true" /></button>
+                    <button className="home-carousel-button home-carousel-button--next" type="button" aria-label="다음 자전거"
+                        onClick={() => setBikeIndex((index) => wrap(index + 1, grades.length))}><ChevronRight aria-hidden="true" /></button>
+                </div>
+                <p className="home-showcase__count">{countText(bikeIndex, grades.length)}</p>
+                <div className="home-showcase__bar">
+                    <strong aria-live="polite">{currentBike.name}</strong>
+                    {bikeIndex === 0 && (
+                        <div className="home-showcase__colors" role="group" aria-label="전시 자전거 색상">
+                            {colors.map(({ name, swatch }, index) => (
+                                <button type="button" key={name} aria-label={name} aria-pressed={bikeColor === index}
+                                    style={{ background: swatch }} onClick={() => setBikeColor(index)} />
                             ))}
                         </div>
-                    </div>
-                    <div className="home-section-heading">
-                        <h3 aria-live="polite">{featuredBikes[bikeIndex]}</h3>
-                        <div className="home-controls">
-                            <button type="button" aria-label="이전 자전거" onClick={() => changeBike(-1)}>‹</button>
-                            <button type="button" aria-label="다음 자전거" onClick={() => changeBike(1)}>›</button>
-                        </div>
-                    </div>
-                </section>
+                    )}
+                    {currentBike.url
+                        ? <a href={currentBike.url}>자세히 보기 <ArrowRight size={15} aria-hidden="true" /></a>
+                        : <Link to={productDetail}>자세히 보기 <ArrowRight size={15} aria-hidden="true" /></Link>}
+                </div>
+            </section>
 
+            <section className="home-ride-finder" aria-labelledby="ride-title">
+                <img src={colors[1].gallery[3].image} alt="" loading="lazy" />
+                <div>
+                    <h2 id="ride-title">FIND YOUR RIDE</h2>
+                    <p>라이딩 스타일에 맞는 자전거를 찾아보세요.</p>
+                    <Link className="home-link" to="/bike-finder">AI 자전거 추천 받기 <ChevronRight size={17} aria-hidden="true" /></Link>
+                </div>
+            </section>
+
+            <div className="home-sections">
                 <section aria-labelledby="bike-components">
+                    <p className="home-eyebrow">제품 소개</p>
                     <div className="home-section-heading">
-                        <h2 id="bike-components">Bike components</h2>
+                        <div><h2 id="bike-components">PRODUCT LIST</h2><p>라이딩을 완성하는 장비를 둘러보세요.</p></div>
+                        <Link className="home-link" to={equipment}>전체 제품 보기 <ArrowRight size={16} aria-hidden="true" /></Link>
                     </div>
                     <ul className="home-components">
-                        {components.map(({ id, name, price }) => (
-                            <li key={id}>
-                                <div className="home-media" aria-hidden="true" />
-                                <h3>{name}</h3>
-                                <p>{won.format(price)}</p>
-                                <Link to={`/products/${id}`} aria-label={`${name} 보기`}>View →</Link>
+                        {parts.map(({ name, label, image }) => (
+                            <li key={name}>
+                                <Link to={equipment} aria-label={label + " 장비 둘러보기"}>
+                                    <img src={image} alt="" loading="lazy" />
+                                    <div><span><strong>{name}</strong><span>{label}</span></span><ArrowRight size={19} aria-hidden="true" /></div>
+                                </Link>
                             </li>
                         ))}
                     </ul>
-                    <div className="home-component-actions">
-                        <Link className="home-link" to="/products">VIEW ALL →</Link>
+                </section>
+
+                <section className="home-community" id="home-community" aria-labelledby="community-title">
+                    <p className="home-eyebrow">라이더 커뮤니티</p>
+                    <div className="home-section-heading">
+                        <div><h2 id="community-title">RIDER COMMUNITY</h2><p>라이더들의 시승 후기와 라이딩 이야기를 만나보세요.</p></div>
+                    </div>
+                    <div className="home-community__carousel">
+                        <div className="home-community__aside home-community__aside--previous" aria-hidden="true">
+                            <img src={stories[wrap(storyIndex - 1, stories.length)].image} alt="" loading="lazy" />
+                        </div>
+                        <article className="home-community__featured">
+                            <div className="home-community__story">
+                                <img src={story.image} alt="" loading="lazy" />
+                                <h3>{story.title}</h3>
+                                <p>{story.text}</p>
+                                <Link to="/community">후기 보기 <ArrowRight size={15} aria-hidden="true" /></Link>
+                            </div>
+                            <div className="home-community__bike">
+                                <h3>{story.bike.name}</h3>
+                                <p>{story.bike.specs.slice(0, 3).join(" · ")}</p>
+                                <img src={story.bike.image} alt={story.bike.name} loading="lazy" />
+                                {story.bike.url
+                                    ? <a className="home-community__detail" href={story.bike.url}>제품 자세히 보기</a>
+                                    : <Link className="home-community__detail" to={productDetail}>제품 자세히 보기</Link>}
+                            </div>
+                        </article>
+                        <div className="home-community__aside home-community__aside--next" aria-hidden="true">
+                            <img src={stories[wrap(storyIndex + 1, stories.length)].image} alt="" loading="lazy" />
+                        </div>
+                        <button className="home-carousel-button home-carousel-button--previous" type="button" aria-label="이전 라이딩 이야기"
+                            onClick={() => setStoryIndex((index) => wrap(index - 1, stories.length))}><ChevronLeft aria-hidden="true" /></button>
+                        <button className="home-carousel-button home-carousel-button--next" type="button" aria-label="다음 라이딩 이야기"
+                            onClick={() => setStoryIndex((index) => wrap(index + 1, stories.length))}><ChevronRight aria-hidden="true" /></button>
+                    </div>
+                    <div className="home-community__progress">
+                        <span aria-live="polite">{countText(storyIndex, stories.length)}</span>
+                        <span aria-hidden="true" style={{ width: ((storyIndex + 1) / stories.length) * 100 + "%" }} />
                     </div>
                 </section>
 
-                <section className="home-ride-finder" id="ride-finder" aria-labelledby="ride-title">
-                    <h2 id="ride-title">FIND YOUR RIDE</h2>
-                    <p>AI를 통해 나에게 딱 맞는 자전거를 추천받아 보세요.</p>
-                    <Link className="home-link" to="/bike-finder">AI 자전거 추천 받기</Link>
-                </section>
-
-                <section className="home-community" aria-labelledby="community-title">
-                    <div>
-                        <h2 id="community-title">라이더 커뮤니티</h2>
-                        <p>라이더들의 시승 후기와 라이딩 이야기를 만나보세요.</p>
-                        <Link className="home-link" to="/community">커뮤니티 둘러보기</Link>
-                    </div>
-                    <div className="home-media" aria-hidden="true" />
-                </section>
-
-                <section className="home-dealers" aria-labelledby="dealer-title">
-                    <h2 id="dealer-title">대리점 찾기 · 시승 예약</h2>
-                    <div className="home-dealer-actions">
-                        <Link className="home-link" to="/dealers">대리점 찾기</Link>
-                        <Link className="home-link" to="/dealers/reserve">시승 예약</Link>
-                    </div>
-                </section>
+                <DealerFinder home />
             </div>
         </div>
     );
