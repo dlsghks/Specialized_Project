@@ -105,7 +105,11 @@ function BuildSteps({ step, furthestStep, onSelect }: { step: number; furthestSt
         <nav className="bike-build__steps" aria-label="커스터마이징 단계">
             {steps.map((label, index) => (
                 <button key={label} type="button" aria-current={step === index ? "step" : undefined} disabled={index > furthestStep} onClick={() => onSelect(index)}>
-                    <span>{index + 1}</span><span>{label}{step === index && index === 3 && <small>컬러를 선택하세요</small>}</span>
+                    <span className="bike-build__step-marker"><span>{index + 1}</span></span>
+                    <span className="bike-build__step-label">
+                        {label}
+                        {index === 3 && <small>컬러를 선택하세요</small>}
+                    </span>
                 </button>
             ))}
         </nav>
@@ -154,7 +158,7 @@ export function CustomizeStart() {
             <BuildSteps step={step} furthestStep={step} onSelect={(nextStep) => {
                 if (nextStep !== step) setParams({}, { replace: true });
             }} />
-            <section className="bike-build__options" aria-label={`${steps[step]} 옵션`}>
+            <section key={step} className="bike-build__options" aria-label={`${steps[step]} 옵션`}>
                 <div className="bike-build__photo-grid">
                     {bike
                         ? <ModelOption bike={bike} />
@@ -321,7 +325,7 @@ function BikeCustomizer({ bike, initialStep, draftKey }: { bike: CustomizeBike; 
                 </div>
             </div>
             <BuildSteps step={step} furthestStep={furthestStep} onSelect={setStep} />
-            {step < steps.length && <section className="bike-build__options" aria-label={`${steps[step]} 옵션`}>
+            {step < steps.length && <section key={step} className="bike-build__options" aria-label={`${steps[step]} 옵션`}>
                 {step === 3 && colors.map(({ name, finish }, index) => (
                     <button className="bike-build__color" key={name} type="button" aria-pressed={build.color === index} onClick={() => { setBuild({ ...build, color: index }); advance(); }}>
                         <span className="bike-build__swatch" style={{ background: finish }} />
