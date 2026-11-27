@@ -111,8 +111,11 @@ html:has(.site-navigation[open]) {
     }
 
     &::backdrop {
-        background: #0009;
+        background-color: #0009;
+        transition: background-color 240ms ease-in;
     }
+
+    &[data-closing]::backdrop { background-color: transparent; }
 }
 
 .site-navigation__close {
@@ -154,4 +157,5 @@ html:has(.site-navigation[open]) {
 
 @media (prefers-reduced-motion: reduce) {
     .site-navigation[open] { animation: none; }
+    .site-navigation::backdrop { transition: none; }
 }

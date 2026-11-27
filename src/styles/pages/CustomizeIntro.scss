@@ -13,7 +13,7 @@
         position: absolute;
         inset: 0;
         z-index: -1;
-        background: linear-gradient(0deg, rgb(0 0 0 / 75%), transparent 55%);
+        background: linear-gradient(to top, rgb(0 0 0 / 88%), rgb(0 0 0 / 52%) 30%, rgb(0 0 0 / 16%) 72%);
         content: "";
     }
 }
@@ -26,6 +26,22 @@
     height: 100%;
     object-fit: cover;
     object-position: center;
+}
+
+.customize-intro__content {
+    display: grid;
+    justify-items: center;
+    gap: clamp(1rem, 3svh, 1.75rem);
+    max-width: 52rem;
+    color: #fff;
+    text-align: center;
+    word-break: keep-all;
+
+    h1 {
+        font-size: clamp(1.75rem, 3.5vw, 3.25rem);
+        line-height: 1.2;
+        text-wrap: balance;
+    }
 }
 
 .customize-intro__action {

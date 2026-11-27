@@ -137,8 +137,14 @@
     margin-top: .65rem;
 
     h2 { font-size: clamp(.8rem, 1.05vw, 1rem); }
-    label { font-size: .7rem; white-space: nowrap; }
-    input { vertical-align: middle; }
+    .catalog__compare-choice {
+        display: inline-flex;
+        align-items: center;
+        flex-shrink: 0;
+        gap: .5rem;
+        font-size: .7rem;
+        white-space: nowrap;
+    }
 }
 
 .catalog__pagination {

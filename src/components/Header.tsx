@@ -6,7 +6,28 @@ const iconDirectory = `${import.meta.env.BASE_URL}images/icons/`;
 export const Header = () => {
     const [menuOpen, setMenuOpen] = useState(false);
     const menu = useRef<HTMLDialogElement>(null);
-    const closeMenu = () => menu.current?.close();
+    const closeMenu = () => {
+        const dialog = menu.current;
+        if (!dialog?.open || dialog.dataset.closing) return;
+
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+            dialog.close();
+            return;
+        }
+
+        const position = getComputedStyle(dialog).transform;
+        dialog.dataset.closing = "true";
+        const animation = dialog.animate(
+            [{ transform: position }, { transform: "translateX(-100%)" }],
+            { duration: 240, easing: "ease-in", fill: "forwards" },
+        );
+        const finish = () => {
+            dialog.close();
+            animation.cancel();
+            delete dialog.dataset.closing;
+        };
+        void animation.finished.then(finish, finish);
+    };
 
     return (
         <header className="site-header">
@@ -24,7 +45,10 @@ export const Header = () => {
             </Link>
 
             <dialog ref={menu} id="site-navigation" className="site-navigation" aria-label="주 메뉴"
-                onClose={() => setMenuOpen(false)} onClick={(event) => {
+                onClose={() => setMenuOpen(false)} onCancel={(event) => {
+                    event.preventDefault();
+                    closeMenu();
+                }} onClick={(event) => {
                     if (event.target !== event.currentTarget) return;
                     const { left, right, top, bottom } = event.currentTarget.getBoundingClientRect();
                     if (event.clientX < left || event.clientX > right || event.clientY < top || event.clientY > bottom) closeMenu();
