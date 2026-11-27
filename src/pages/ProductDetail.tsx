@@ -2,26 +2,12 @@ import { useLayoutEffect, useRef, useState, type PointerEvent } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ArrowDownToLine, ChevronLeft, ChevronRight, Search, X } from "lucide-react";
 import {
-    bannerImage, features, frames, geometry, gradeLabels, grades, highlights, listPrice,
-    manualUrl, modelName, officialProductUrl, silverGallery, sizes, specifications,
+    bannerImage, colors, features, frames, geometry, gradeLabels, grades, highlights, listPrice,
+    manualUrl, modelName, officialProductUrl, sizes, specifications,
 } from "./productTarmac";
 import "../styles/pages/ProductDetail.scss";
 
 const won = new Intl.NumberFormat("ko-KR", { style: "currency", currency: "KRW" });
-const customizeAssets = import.meta.env.BASE_URL + "images/customize/";
-const colors = [
-    { name: "Satin Silver Dust", swatch: "#a8acac", gallery: silverGallery },
-    {
-        name: "Gloss Ruby Metallic",
-        swatch: "linear-gradient(#f2f1ed 48%, #ac082a 49%)",
-        gallery: [{ label: "측면", image: customizeAssets + "gloss-ruby-metallic.webp", thumbnail: customizeAssets + "gloss-ruby-metallic.webp" }],
-    },
-    {
-        name: "Gloss White Silver Metallic",
-        swatch: "linear-gradient(#ae4955 48%, #e5e4e3 49%)",
-        gallery: [{ label: "측면", image: customizeAssets + "gloss-white-silver-metallic.webp", thumbnail: customizeAssets + "gloss-white-silver-metallic.webp" }],
-    },
-];
 
 export const ProductDetail = () => {
     const { id } = useParams();
@@ -37,7 +23,7 @@ function TarmacDetail() {
     const zoom = useRef<HTMLDialogElement>(null);
     const specsPanel = useRef<HTMLDetailsElement>(null);
     const geometryPanel = useRef<HTMLDetailsElement>(null);
-    const { name: colorName, gallery } = colors[color];
+    const { name: colorName, gallery, purchaseUrl } = colors[color];
     const selected = gallery[view];
     const hasMultipleViews = gallery.length > 1;
     const selectedPhotoName = [modelName, colorName, selected.label].join(" · ");
@@ -93,7 +79,7 @@ function TarmacDetail() {
                         }}>
                         <img className={direction ? "product-gallery__slide" + (direction < 0 ? " product-gallery__slide--previous" : "") : undefined}
                             key={selected.image} src={selected.image} alt={selectedPhotoName}
-                            width={1600} height={900} fetchPriority="high" draggable={false} />
+                            width={1440} height={810} fetchPriority="high" draggable={false} />
                     </div>
 
                     <button className="product-gallery__zoom" type="button" aria-label="이미지 확대" onClick={() => zoom.current?.showModal()}>
@@ -116,68 +102,69 @@ function TarmacDetail() {
 
                 <dialog className="product-detail__dialog" ref={zoom} aria-label="확대 이미지">
                     <form method="dialog"><button aria-label="확대 이미지 닫기"><X size={22} aria-hidden="true" /></button></form>
-                    <img src={selected.image} alt={selectedPhotoName} width={1600} height={900} />
+                    <img src={selected.image} alt={selectedPhotoName} width={1440} height={810} />
                 </dialog>
 
-                <section className="product-order product-detail__content" aria-labelledby="product-name">
-                    <div className="product-options">
-                        <div>
-                            <div className="product-options__heading"><h2>컬러</h2><p>{colorName}</p></div>
-                            <div className="product-options__choices">
-                                {colors.map(({ name, swatch }, index) => (
-                                    <button key={name} type="button" className="product-options__swatch"
-                                        aria-label={name} aria-pressed={color === index} style={{ background: swatch }}
-                                        onClick={() => { setGallery({ color: index, view: 0, direction: 0 }); setPurchaseStatus(""); }} />
-                                ))}
-                            </div>
-                        </div>
-                        <div className="product-options__size">
-                            <div className="product-options__heading">
-                                <h2>사이즈</h2>
-                                <button type="button" className="product-options__guide" onClick={() => showPanel(geometryPanel.current)}>사이즈 가이드</button>
-                            </div>
-                            <div className="product-options__choices product-options__sizes">
-                                {sizes.map((value) => (
-                                    <button key={value} type="button" disabled={value === 61} aria-pressed={value === size}
-                                        onClick={() => { setSize(value); setPurchaseStatus(""); }}>{value}</button>
-                                ))}
-                            </div>
-                        </div>
-                        <div className="product-order__price">
-                            <strong>{won.format(listPrice)}</strong>
-                            <a href="#product-reviews">라이더 구매 후기</a>
-                        </div>
-                    </div>
-                    <div className="product-fulfillment">
-                        <fieldset>
-                            <legend>배송 방법</legend>
-                            <div className="product-fulfillment__choices">
-                                <button type="button" disabled>집으로 수령</button>
-                                <button type="button" aria-pressed="true">매장 수령</button>
-                            </div>
-                        </fieldset>
-                        <div className="product-fulfillment__store">
-                            <div><strong>대리점에서 수령하기</strong><p>매장별 재고와 수령 가능 여부를 확인해 보세요.</p></div>
-                            <Link to="/dealers">가까운 매장 찾기</Link>
-                        </div>
-                    </div>
-                    <div className="product-purchase">
-                        <div><h2>선택 요약</h2><p>{colorName} / {size ?? "사이즈 미선택"} / 매장 수령</p></div>
-                        <div className="product-purchase__actions">
-                            <button type="button" disabled={size === null}
-                                onClick={() => setPurchaseStatus("이 상품의 장바구니 연동을 준비 중이에요.")}>장바구니 담기</button>
-                            {size === null
-                                ? <button type="button" disabled>바로 구매</button>
-                                : <a href={officialProductUrl} target="_blank" rel="noreferrer">공식몰에서 구매</a>}
-                        </div>
-                        {purchaseStatus && <p className="product-purchase__status" role="status">{purchaseStatus}</p>}
-                    </div>
-                </section>
             </div>
+
+            <section className="product-order product-detail__content" aria-labelledby="product-name">
+                <div className="product-options">
+                    <div>
+                        <div className="product-options__heading"><h2>컬러</h2><p>{colorName}</p></div>
+                        <div className="product-options__choices">
+                            {colors.map(({ name, swatch }, index) => (
+                                <button key={name} type="button" className="product-options__swatch"
+                                    aria-label={name} aria-pressed={color === index} style={{ background: swatch }}
+                                    onClick={() => { setGallery({ color: index, view: 0, direction: 0 }); setPurchaseStatus(""); }} />
+                            ))}
+                        </div>
+                    </div>
+                    <div className="product-options__size">
+                        <div className="product-options__heading">
+                            <h2>사이즈</h2>
+                            <button type="button" className="product-options__guide" onClick={() => showPanel(geometryPanel.current)}>사이즈 가이드</button>
+                        </div>
+                        <div className="product-options__choices product-options__sizes">
+                            {sizes.map((value) => (
+                                <button key={value} type="button" disabled={value === 61} aria-pressed={value === size}
+                                    onClick={() => { setSize(value); setPurchaseStatus(""); }}>{value}</button>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="product-order__price">
+                        <strong>{won.format(listPrice)}</strong>
+                        <a href="#product-reviews">라이더 구매 후기</a>
+                    </div>
+                </div>
+                <div className="product-fulfillment">
+                    <fieldset>
+                        <legend>배송 방법</legend>
+                        <div className="product-fulfillment__choices">
+                            <button type="button" disabled>집으로 수령</button>
+                            <button type="button" aria-pressed="true">매장 수령</button>
+                        </div>
+                    </fieldset>
+                    <div className="product-fulfillment__store">
+                        <div><strong>대리점에서 수령하기</strong><p>매장별 재고와 수령 가능 여부를 확인해 보세요.</p></div>
+                        <Link to="/dealers">가까운 매장 찾기</Link>
+                    </div>
+                </div>
+                <div className="product-purchase">
+                    <div><h2>선택 요약</h2><p>{colorName} / {size ?? "사이즈 미선택"} / 매장 수령</p></div>
+                    <div className="product-purchase__actions">
+                        <button type="button" disabled={size === null}
+                            onClick={() => setPurchaseStatus("이 상품의 장바구니 연동을 준비 중이에요.")}>장바구니 담기</button>
+                        {size === null
+                            ? <button type="button" disabled>바로 구매</button>
+                            : <a href={purchaseUrl} target="_blank" rel="noreferrer">공식몰에서 구매</a>}
+                    </div>
+                    {purchaseStatus && <p className="product-purchase__status" role="status">{purchaseStatus}</p>}
+                </div>
+            </section>
 
             <div className="product-detail__content product-detail__sections">
                 <section className="product-story" aria-labelledby="product-story-title">
-                    <img src={bannerImage} alt="" loading="lazy" width={1600} height={676} />
+                    <img src={bannerImage} alt="" loading="lazy" width={1500} height={844} />
                     <div>
                         <h2 id="product-story-title">중요한 순간을 위한 에어로</h2>
                         <p>Tarmac SL9은 바람을 가르는 프레임과 빠르게 반응하는 핸들링으로 레이스의 결정적인 순간을 돕습니다.</p>
@@ -187,9 +174,9 @@ function TarmacDetail() {
                 <section aria-labelledby="product-features-title">
                     <h2 id="product-features-title">타막 SL9의 주요 기술</h2>
                     <div className="product-features">
-                        {features.map(({ title, text, image, position }) => (
+                        {features.map(({ title, text, image }) => (
                             <article key={title}>
-                                <img src={image} alt="" style={{ objectPosition: position }} loading="lazy" width={480} height={480} />
+                                <img src={image} alt="" loading="lazy" />
                                 <div><h3>{title}</h3><p>{text}</p></div>
                             </article>
                         ))}
@@ -250,7 +237,7 @@ function TarmacDetail() {
                     <div className="product-frames">
                         {frames.map(({ name, detail, price, image, url }) => (
                             <a key={url} href={url} target="_blank" rel="noreferrer">
-                                <img src={image} alt="" loading="lazy" width={680} height={383} />
+                                <img src={image} alt="" loading="lazy" width={680} height={680} />
                                 <h3>{name}</h3>
                                 <p>{detail}</p>
                                 <strong>{won.format(price)}</strong>

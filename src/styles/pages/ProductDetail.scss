@@ -27,7 +27,7 @@
 }
 
 .product-detail__hero {
-    background: linear-gradient(180deg, #2d2e30 0%, #37393b 37%, #5d6063 54%, #f4f4f4 77%, #fff 86%);
+    background: linear-gradient(180deg, #2d2e30 0%, #37393b 52%, #737678 76%, #fff 100%);
 }
 
 .product-gallery {
@@ -432,7 +432,7 @@
 .product-frames {
     grid-template-columns: repeat(4, minmax(0, 1fr));
 
-    img { width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: contain; border-radius: .25rem; background: #f1f1f1; }
+    img { width: 100%; height: auto; aspect-ratio: 1; object-fit: contain; border-radius: .25rem; background: #f1f1f1; }
     h3 { margin-top: .65rem; font-size: .95rem; line-height: 1.35; }
     p { margin-block: .25rem .5rem; color: #555; font-size: .85rem; }
     strong { font-size: .9rem; }
