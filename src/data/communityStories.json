@@ -1,0 +1,592 @@
+[
+    {
+        "id": "specialized-radial-mtb-tires",
+        "title": "스페셜라이즈드 래디얼 MTB 타이어",
+        "summary": "트레일에서 타이어가 지면을 따라 움직이는 방식에 주목해 개발한 래디얼 케이싱을 소개합니다. 접지감과 지지력을 함께 고려한 설계와 테스트 과정을 살펴보세요.",
+        "date": "2026-09-23",
+        "tags": [
+            "mountain",
+            "innovation"
+        ],
+        "image": "stories/specialized-radial-mtb-tires.webp"
+    },
+    {
+        "id": "finn-iles",
+        "title": "Finn Iles - Specialized Factory Racing",
+        "summary": "2018년 엘리트 무대에 오른 핀 아일스는 빠른 페이스와 과감한 다운힐 주행으로 존재감을 보여 왔습니다. 험준한 코스에서 자신만의 스타일을 만들어 온 과정을 만나보세요.",
+        "date": "2026-09-14",
+        "tags": [
+            "athletes-pro-cycling"
+        ],
+        "image": "stories/finn-iles.webp"
+    },
+    {
+        "id": "adrien-boichis",
+        "title": "Adrien Boichis - Specialized Factory XC Team",
+        "summary": "U23 세계 챔피언과 월드컵 우승 경력을 쌓은 아드리앙 부아쉬가 크로스컨트리 상위 무대로 올라서는 과정을 소개합니다.",
+        "date": "2026-09-14",
+        "tags": [
+            "athletes-pro-cycling"
+        ],
+        "image": "stories/adrien-boichis.webp"
+    },
+    {
+        "id": "christopher-blevins",
+        "title": "Christopher Blevins - Specialized Factory XC Team",
+        "summary": "세계선수권, 월드컵 종합, 케이프 에픽에서 정상에 오른 크리스토퍼 블레빈스가 XC 코스에서 창의적인 라인을 만드는 방식을 만나보세요.",
+        "date": "2026-09-14",
+        "tags": [
+            "athletes-pro-cycling"
+        ],
+        "image": "stories/christopher-blevins.webp"
+    },
+    {
+        "id": "haley-batten",
+        "title": "Haley Batten - Specialized Factory XC Team",
+        "summary": "올림픽 은메달과 월드컵 우승을 거둔 헤일리 배튼의 이야기입니다. 강한 압박 속에서도 페이스를 잃지 않는 그의 크로스컨트리 레이싱을 살펴보세요.",
+        "date": "2026-09-14",
+        "tags": [
+            "athletes-pro-cycling"
+        ],
+        "image": "stories/haley-batten.webp"
+    },
+    {
+        "id": "jordan-williams",
+        "title": "Jordan Williams - Specialized Factory Gravity",
+        "summary": "주니어 세계 챔피언에서 엘리트 월드컵 우승자로 성장한 조던 윌리엄스의 다운힐 여정을 소개합니다.",
+        "date": "2026-09-14",
+        "tags": [
+            "athletes-pro-cycling"
+        ],
+        "image": "stories/jordan-williams.webp"
+    },
+    {
+        "id": "loic-bruni",
+        "title": "Loïc Bruni - Specialized Factory Racing",
+        "summary": "여러 차례 다운힐 세계 정상에 선 로익 브루니의 레이스를 돌아봅니다. 정교한 주행을 중요한 순간에도 반복하는 것이 그의 강점입니다.",
+        "date": "2026-09-14",
+        "tags": [
+            "athletes-pro-cycling"
+        ],
+        "image": "stories/loic-bruni.webp"
+    },
+    {
+        "id": "martin-vidaurre",
+        "title": "Martin Vidaurre - Specialized Factory XC Team",
+        "summary": "칠레 출신 마르틴 비다우레가 빠른 페이스와 공격적인 전략으로 크로스컨트리 경쟁에서 자신의 자리를 만들어 가는 이야기입니다.",
+        "date": "2026-09-14",
+        "tags": [
+            "athletes-pro-cycling"
+        ],
+        "image": "stories/martin-vidaurre.webp"
+    },
+    {
+        "id": "rosa-marie-jensen",
+        "title": "Rosa Marie Jensen - Specialized Factory Gravity",
+        "summary": "Gen-S 개발 프로그램을 거쳐 그래비티 팩토리 팀에 합류한 로사 마리 옌센이 월드컵 무대로 나아가는 과정을 소개합니다.",
+        "date": "2026-09-14",
+        "tags": [
+            "athletes-pro-cycling"
+        ],
+        "image": "stories/rosa-marie-jensen.webp"
+    },
+    {
+        "id": "sina-frei",
+        "title": "Sina Frei - Specialized Factory XC Team",
+        "summary": "올림픽 은메달과 월드 챔피언 경력을 가진 시나 프레이가 큰 경기에서도 침착하게 레이스를 풀어 가는 모습을 소개합니다.",
+        "date": "2026-09-14",
+        "tags": [
+            "athletes-pro-cycling"
+        ],
+        "image": "stories/sina-frei.webp"
+    },
+    {
+        "id": "victor-koretzky",
+        "title": "Victor Koretzky - Specialized XC Factory Team",
+        "summary": "빅토르 코레츠키의 올림픽과 월드컵 경험을 돌아보고, 다양한 상황에 맞춰 전술을 바꾸는 그의 크로스컨트리 레이스를 살펴봅니다.",
+        "date": "2026-09-14",
+        "tags": [
+            "athletes-pro-cycling"
+        ],
+        "image": "stories/victor-koretzky.webp"
+    },
+    {
+        "id": "tarmac-sl9-bike-level-guide",
+        "title": "Tarmac SL9 S-Level 로드 자전거",
+        "summary": "공기역학과 무게를 함께 고려한 타막 SL9 S-Level을 소개합니다. 스페셜라이즈드 로드 라인업의 S-Level 등급을 살펴보세요.",
+        "date": "2026-08-25",
+        "tags": [
+            "innovation",
+            "road"
+        ],
+        "image": "stories/tarmac-sl9-bike-level-guide.webp"
+    },
+    {
+        "id": "demo-11-creator-story",
+        "title": "Demo 11은 어떻게 만들어졌을까",
+        "summary": "로익 브루니와 핀 아일스, 개발팀이 다운힐 자전거 Demo 11을 만들며 마주한 시행착오와 해결 과정을 들려줍니다.",
+        "date": "2026-08-10",
+        "tags": [
+            "mountain"
+        ],
+        "image": "stories/demo-11-creator-story.webp"
+    },
+    {
+        "id": "best-cycling-cockpit-handlebar",
+        "title": "로드·그래블 콕핏 선택 가이드",
+        "summary": "로발 라피드, 알피니스트, 테라의 특징을 비교하고 속도와 자세, 자주 달리는 지형에 맞춰 콕핏을 고르는 기준을 살펴봅니다.",
+        "date": "2026-06-30",
+        "tags": [
+            "gravel"
+        ],
+        "image": "stories/best-cycling-cockpit-handlebar.webp"
+    },
+    {
+        "id": "best-road-bikes",
+        "title": "내게 맞는 로드 자전거 찾기",
+        "summary": "레이스와 장거리 등 용도별 로드 자전거의 차이를 알아보고, 사이즈와 구동계를 고를 때 살펴볼 항목을 정리했습니다.",
+        "date": "2026-06-30",
+        "tags": [
+            "road"
+        ],
+        "image": "stories/best-road-bikes.webp"
+    },
+    {
+        "id": "crux-5-s-level-gravel-bike-guide",
+        "title": "Crux 5 S-Level 그래블 자전거",
+        "summary": "그래블 라인업의 초경량 Crux 5 S-Level과 새롭게 추가된 S-Level 등급의 특징을 소개합니다.",
+        "date": "2026-05-29",
+        "tags": [],
+        "image": "stories/crux-5-s-level-gravel-bike-guide.webp"
+    },
+    {
+        "id": "keegan-swenson",
+        "title": "Keegan Swenson - Specialized Off-Road Team",
+        "summary": "북미 장거리 레이스와 XC 마라톤에서 우승한 키건 스웬슨이 오프로드 엔듀런스 경기에 접근하는 방식을 만나보세요.",
+        "date": "2026-05-28",
+        "tags": [
+            "athletes-pro-cycling",
+            "gravel"
+        ],
+        "image": "stories/keegan-swenson.webp"
+    },
+    {
+        "id": "mads-wurtz-schmidt",
+        "title": "Mads Würtz Schmidt - Specialized Off-Road Team",
+        "summary": "로드 레이스와 올림픽에서 쌓은 속도와 페이스 감각을 그래블에 옮겨 온 매즈 뷔르츠 슈미트의 이야기입니다.",
+        "date": "2026-05-28",
+        "tags": [
+            "athletes-pro-cycling",
+            "gravel"
+        ],
+        "image": "stories/mads-wurtz-schmidt.webp"
+    },
+    {
+        "id": "santaminji",
+        "title": "산타민지의 Urban Adventure",
+        "summary": "트레일 러닝과 클라이밍, 캠핑을 즐기는 산타민지가 도시와 자연을 오가며 자신만의 모험을 발견하는 이야기를 소개합니다.",
+        "date": null,
+        "tags": [
+            "active"
+        ],
+        "image": "stories/santaminji.webp"
+    },
+    {
+        "id": "kids-bikes",
+        "title": "어린이 자전거 둘러보기",
+        "summary": "어린 라이더가 성장 단계와 주행 환경에 맞춰 탈 수 있는 스페셜라이즈드 어린이 자전거 라인업을 만나보세요.",
+        "date": null,
+        "tags": [],
+        "image": "stories/kids-bikes.webp"
+    },
+    {
+        "id": "ar-pprogram",
+        "title": "사고 파손 제품 지원 프로그램 ARP",
+        "summary": "일반 보증으로 처리하기 어려운 사고 파손 제품에 대해 스페셜라이즈드가 운영하는 수리·교체 지원 제도를 안내합니다.",
+        "date": null,
+        "tags": [],
+        "image": "stories/ar-pprogram.webp"
+    },
+    {
+        "id": "setup-my-riprock",
+        "title": "Riprock 라이딩 준비하기",
+        "summary": "어린이 산악자전거 Riprock을 타기 전에 모델별 설정과 준비 절차를 확인할 수 있는 공식 안내입니다.",
+        "date": null,
+        "tags": [],
+        "image": "stories/setup-my-riprock.webp"
+    },
+    {
+        "id": "s-sizing",
+        "title": "산악자전거 S-Sizing 알아보기",
+        "summary": "스페셜라이즈드 산악자전거의 S-Sizing 체계와 주행 스타일에 따라 사이즈를 비교하는 방법을 소개합니다.",
+        "date": null,
+        "tags": [],
+        "image": "stories/s-sizing.webp"
+    },
+    {
+        "id": "swat-technology",
+        "title": "SWAT 수납 기술",
+        "summary": "물과 공구, 라이딩에 필요한 물건을 자전거에 통합해 휴대할 수 있도록 만든 SWAT 시스템을 소개합니다.",
+        "date": null,
+        "tags": [
+            "innovation",
+            "mountain",
+            "cycling-gear"
+        ],
+        "image": "stories/swat-technology.webp"
+    },
+    {
+        "id": "2600k",
+        "title": "2,600km 랜도너링, 12일의 기록",
+        "summary": "12일 동안 2,600km를 달리며 누적 고도 약 40,000m를 넘은 장거리 랜도너링 여정을 따라갑니다.",
+        "date": null,
+        "tags": [],
+        "image": "stories/2600k.webp"
+    },
+    {
+        "id": "story_tarmacsl8",
+        "title": "S-Works Tarmac SL8 팀 프레임 에디션",
+        "summary": "프로팀 컬러를 적용한 S-Works Tarmac SL8 팀 프레임 에디션과 그 디자인을 소개합니다.",
+        "date": null,
+        "tags": [
+            "athletes-pro-cycling",
+            "road"
+        ],
+        "image": "stories/story_tarmacsl8.webp"
+    },
+    {
+        "id": "breakthe-rules",
+        "title": "에이토스와 나만의 라이딩",
+        "summary": "정해진 틀을 벗어나 자신의 감각으로 달리는 즐거움을 에이토스와 함께 담은 라이딩 스토리입니다.",
+        "date": null,
+        "tags": [],
+        "image": "stories/breakthe-rules.webp"
+    },
+    {
+        "id": "future-shock",
+        "title": "Future Shock 서스펜션의 원리",
+        "summary": "로드와 그래블 자전거의 조향부에서 충격을 줄이도록 설계된 Future Shock이 어떻게 작동하는지 살펴봅니다.",
+        "date": null,
+        "tags": [
+            "innovation",
+            "gravel"
+        ],
+        "image": "stories/future-shock.webp"
+    },
+    {
+        "id": "remco-evenepoel-and-specialized-sign-lifetime-partnership",
+        "title": "렘코 에베네폴과 스페셜라이즈드의 평생 파트너십",
+        "summary": "렘코 에베네폴과 스페셜라이즈드가 맺은 장기 파트너십과 장비 개발 및 레이싱에서 이어갈 협업을 소개합니다.",
+        "date": "2026-04-24",
+        "tags": [
+            "athletes-pro-cycling"
+        ],
+        "image": "stories/remco-evenepoel-and-specialized-sign-lifetime-partnership.webp"
+    },
+    {
+        "id": "tarmac-sl8-artist-series-ltd",
+        "title": "Tarmac SL8 아티스트 시리즈 제작기",
+        "summary": "아티스트의 작업이 한정판 Tarmac SL8 프레임 디자인으로 이어지는 과정과 라이딩에서 받은 영감을 만납니다.",
+        "date": "2026-02-17",
+        "tags": [
+            "road",
+            "innovation"
+        ],
+        "image": "stories/tarmac-sl8-artist-series-ltd.webp"
+    },
+    {
+        "id": "best-gravel-tires",
+        "title": "그래블 타이어 선택 가이드",
+        "summary": "지면에 따라 타이어 폭과 트레드가 달라지는 이유를 알아보고, 자신의 그래블 라이딩에 맞는 타이어를 고르는 기준을 정리했습니다.",
+        "date": "2026-02-06",
+        "tags": [
+            "gravel",
+            "how-to-articles",
+            "cycling-gear"
+        ],
+        "image": "stories/best-gravel-tires.webp"
+    },
+    {
+        "id": "celia-gery",
+        "title": "Célia Gery - FDJ United – Suez",
+        "summary": "U23 로드 세계선수권을 제패한 셀리아 제리가 로드와 사이클로크로스를 오가며 성장한 과정을 소개합니다.",
+        "date": "2026-02-01",
+        "tags": [
+            "athletes-pro-cycling",
+            "road"
+        ],
+        "image": "stories/celia-gery.webp"
+    },
+    {
+        "id": "giulio-pellizzari",
+        "title": "Giulio Pellizzari - Red Bull – BORA – hansgrohe",
+        "summary": "시즌마다 경험을 쌓으며 클라이밍 재능을 키워 온 줄리오 펠리차리의 성장 이야기를 살펴봅니다.",
+        "date": "2026-02-01",
+        "tags": [
+            "athletes-pro-cycling",
+            "road"
+        ],
+        "image": "stories/giulio-pellizzari.webp"
+    },
+    {
+        "id": "lorenzo-finn",
+        "title": "Lorenzo Finn - Red Bull – BORA – hansgrohe",
+        "summary": "이탈리아에서 자란 로렌조 핀은 어린 시절 자전거를 접하고 오르막에서 재능을 드러냈습니다. 그의 성장 과정과 레이싱을 만나보세요.",
+        "date": "2026-02-01",
+        "tags": [
+            "athletes-pro-cycling",
+            "road"
+        ],
+        "image": "stories/lorenzo-finn.webp"
+    },
+    {
+        "id": "saddle-mirror",
+        "title": "Mirror 안장의 3D 프린팅 설계",
+        "summary": "바디 지오메트리 설계와 Retül 데이터를 이용해 3D 프린팅 패딩의 밀도를 조절하는 Mirror 안장 기술을 소개합니다.",
+        "date": "2026-01-01",
+        "tags": [
+            "innovation"
+        ],
+        "image": "stories/saddle-mirror.webp"
+    },
+    {
+        "id": "aethos-2-jack-ultra-everesting-world-championships",
+        "title": "잭 톰슨의 에트나산 에베레스팅 도전",
+        "summary": "잭 톰슨이 에이토스 2를 타고 에트나산에서 열린 에베레스팅 세계선수권에 도전한 이야기를 소개합니다.",
+        "date": "2025-11-13",
+        "tags": [
+            "road",
+            "athletes-pro-cycling"
+        ],
+        "image": "stories/aethos-2-jack-ultra-everesting-world-championships.webp"
+    },
+    {
+        "id": "bike-maintenance-checklist",
+        "title": "라이딩 전 자전거 정비 체크리스트",
+        "summary": "프로팀 정비사가 투르 드 프랑스를 앞두고 점검하는 항목을 바탕으로, 출발 전 자전거를 살펴보는 순서를 정리했습니다.",
+        "date": "2025-10-08",
+        "tags": [
+            "road",
+            "how-to-articles"
+        ],
+        "image": "stories/bike-maintenance-checklist.webp"
+    },
+    {
+        "id": "jinhakkim",
+        "title": "김진학의 Coulee Challenge 1200K",
+        "summary": "스페셜라이즈드 앰배서더 김진학이 미국 미네소타에서 미시시피강을 따라 1,200km 랜도너링에 도전한 기록입니다.",
+        "date": "2025-09-14",
+        "tags": [
+            "road"
+        ],
+        "image": "stories/jinhakkim.webp"
+    },
+    {
+        "id": "best-gravel-bikes",
+        "title": "주행 스타일별 그래블 자전거 고르기",
+        "summary": "프레임 설계, 타이어가 들어갈 공간, 서스펜션이 그래블 주행에 어떤 차이를 만드는지 살펴보고 자전거를 비교합니다.",
+        "date": "2025-09-09",
+        "tags": [
+            "gravel",
+            "how-to-articles"
+        ],
+        "image": "stories/best-gravel-bikes.webp"
+    },
+    {
+        "id": "geerike-schreurs",
+        "title": "Geerike Schreurs - Specialized Off-Road Team",
+        "summary": "네덜란드 라이더 헤리케 슈뢰르스가 도로에서 거친 그래블 코스로 무대를 넓히며 함께한 레이스를 소개합니다.",
+        "date": "2025-09-09",
+        "tags": [
+            "road",
+            "athletes-pro-cycling"
+        ],
+        "image": "stories/geerike-schreurs.webp"
+    },
+    {
+        "id": "ian-boswell",
+        "title": "Ian Boswell - Specialized Privateer Gravel Racer",
+        "summary": "그랜드 투어에서 팀 동료를 지원하던 이안 보스웰이 그래블로 옮겨 언바운드 챔피언이 되기까지의 이야기입니다.",
+        "date": "2025-09-09",
+        "tags": [
+            "road",
+            "athletes-pro-cycling"
+        ],
+        "image": "stories/ian-boswell.webp"
+    },
+    {
+        "id": "matt-beers",
+        "title": "Matt Beers - Specialized Off-Road Team",
+        "summary": "케이프 에픽에서 우승하고 라이프 타임 그랑프리 포디엄에도 오른 매트 비어스가 다양한 오프로드 레이스에 도전한 기록을 살펴봅니다.",
+        "date": "2025-09-09",
+        "tags": [
+            "road",
+            "athletes-pro-cycling"
+        ],
+        "image": "stories/matt-beers.webp"
+    },
+    {
+        "id": "sofia-gomez-villafane",
+        "title": "Sofia Gomez Villafane - Specialized Off-Road Team",
+        "summary": "언바운드와 케이프 에픽, 라이프 타임 그랑프리에서 정상에 오른 소피아 고메즈 비야파녜의 오프로드 레이싱을 소개합니다.",
+        "date": "2025-09-09",
+        "tags": [
+            "road"
+        ],
+        "image": "stories/sofia-gomez-villafane.webp"
+    },
+    {
+        "id": "demi-vollering",
+        "title": "Demi Vollering - FDJ United – Suez",
+        "summary": "한계를 정하기보다 목표를 먼저 꿈꾸는 데미 볼러링이 라이딩과 레이스를 대하는 태도를 들려줍니다.",
+        "date": "2025-07-24",
+        "tags": [
+            "athletes-pro-cycling",
+            "road"
+        ],
+        "image": "stories/demi-vollering.webp"
+    },
+    {
+        "id": "best-bike-saddle",
+        "title": "라이딩에 맞는 자전거 안장 고르기",
+        "summary": "로드, 산악, 그래블에서 필요한 안장 특성을 비교하고 핏과 바디 지오메트리 설계가 어떻게 다른지 살펴봅니다.",
+        "date": "2025-07-17",
+        "tags": [
+            "cycling-gear",
+            "how-to-articles"
+        ],
+        "image": "stories/best-bike-saddle.webp"
+    },
+    {
+        "id": "best-cycling-shoes",
+        "title": "사이클링 슈즈와 클릿 선택 가이드",
+        "summary": "주행 종목에 따라 슈즈와 클릿을 고르는 기준, 발에 맞는 핏을 확인할 때 살펴볼 항목을 안내합니다.",
+        "date": "2025-07-17",
+        "tags": [
+            "how-to-articles",
+            "cycling-gear"
+        ],
+        "image": "stories/best-cycling-shoes.webp"
+    },
+    {
+        "id": "how-to-choose-a-bike-helmet",
+        "title": "나에게 맞는 자전거 헬멧 고르기",
+        "summary": "자주 타는 지형과 라이딩 방식에 따라 헬멧의 핏과 보호 기능을 비교하는 방법을 안내합니다.",
+        "date": "2025-07-17",
+        "tags": [
+            "cycling-gear",
+            "how-to-articles"
+        ],
+        "image": "stories/how-to-choose-a-bike-helmet.webp"
+    },
+    {
+        "id": "anna-van-der-breggen",
+        "title": "Anna van der Breggen - Team SD Worx – Protime",
+        "summary": "2015년 지로 디탈리아 페미니레 우승을 계기로 정상급 로드 선수로 성장한 안나 반 더 브레겐의 레이스를 돌아봅니다.",
+        "date": "2025-07-01",
+        "tags": [
+            "athletes-pro-cycling",
+            "road"
+        ],
+        "image": "stories/anna-van-der-breggen.webp"
+    },
+    {
+        "id": "evita-muzic",
+        "title": "Évita Muzic - FDJ United – Suez",
+        "summary": "어머니의 지도를 받으며 다섯 살에 클럽에서 경주를 시작한 에비타 뮈직이 로드 사이클리스트로 성장한 이야기입니다.",
+        "date": "2025-07-01",
+        "tags": [
+            "athletes-pro-cycling",
+            "road"
+        ],
+        "image": "stories/evita-muzic.webp"
+    },
+    {
+        "id": "florian-lipowitz",
+        "title": "Florian Lipowitz - Red Bull – BORA – hansgrohe",
+        "summary": "2025년 투르 드 프랑스 첫 출전에서 종합 3위와 영 라이더 부문 우승을 기록한 플로리안 리포비츠를 소개합니다.",
+        "date": "2025-07-01",
+        "tags": [
+            "athletes-pro-cycling",
+            "road"
+        ],
+        "image": "stories/florian-lipowitz.webp"
+    },
+    {
+        "id": "how-to-ride-climbs",
+        "title": "렘코와 데미가 전하는 오르막 라이딩 팁",
+        "summary": "렘코 에베네폴과 데미 볼러링이 긴 오르막을 준비하며 고려하는 훈련, 페이스 조절, 장비 선택을 소개합니다.",
+        "date": "2025-07-01",
+        "tags": [
+            "tips-advice",
+            "how-to-articles",
+            "road"
+        ],
+        "image": "stories/how-to-ride-climbs.webp"
+    },
+    {
+        "id": "juliette-labous",
+        "title": "Juliette Labous - FDJ United – Suez",
+        "summary": "주니어 때 개인 타임트라이얼과 로드 레이스에서 국가 챔피언에 오른 줄리엣 라부스의 성장 과정을 소개합니다.",
+        "date": "2025-07-01",
+        "tags": [
+            "athletes-pro-cycling",
+            "road"
+        ],
+        "image": "stories/juliette-labous.webp"
+    },
+    {
+        "id": "lorena-wiebes",
+        "title": "Lorena Wiebes - Team SD Worx – Protime",
+        "summary": "여자 로드 레이스의 대표 스프린터 로레나 위베스가 결승 구간에서 강점을 발휘해 온 과정을 소개합니다.",
+        "date": "2025-07-01",
+        "tags": [
+            "athletes-pro-cycling",
+            "road"
+        ],
+        "image": "stories/lorena-wiebes.webp"
+    },
+    {
+        "id": "lotte-kopecky",
+        "title": "Lotte Kopecky - Team SD Worx – Protime",
+        "summary": "로드와 트랙을 오가며 세계선수권과 올림픽에서 성과를 거둔 로테 코페키의 레이싱을 만나보세요.",
+        "date": "2025-07-01",
+        "tags": [
+            "athletes-pro-cycling",
+            "road"
+        ],
+        "image": "stories/lotte-kopecky.webp"
+    },
+    {
+        "id": "mischa-bredewold",
+        "title": "Mischa Bredewold - Team SD Worx – Protime",
+        "summary": "네덜란드 홈 레이스 우승을 통해 자신의 강점을 보여준 미샤 브레데볼트의 도전과 성장 이야기를 만나보세요.",
+        "date": "2025-07-01",
+        "tags": [
+            "athletes-pro-cycling",
+            "road"
+        ],
+        "image": "stories/mischa-bredewold.webp"
+    },
+    {
+        "id": "remco-evenepoel",
+        "title": "Remco Evenepoel - Red Bull – BORA – hansgrohe",
+        "summary": "올림픽과 세계선수권에서 정상에 오른 렘코 에베네폴이 어려움을 이겨 내며 레이스에 복귀해 온 과정을 돌아봅니다.",
+        "date": "2025-07-01",
+        "tags": [
+            "athletes-pro-cycling",
+            "road"
+        ],
+        "image": "stories/remco-evenepoel.webp"
+    },
+    {
+        "id": "fact-carbon-fiber",
+        "title": "FACT 카본 프레임 설계",
+        "summary": "라이더의 주행 특성에 맞춰 카본 복합 소재를 선택하고 프레임과 장비를 개발하는 FACT 기술을 소개합니다.",
+        "date": "2024-06-10",
+        "tags": [
+            "innovation"
+        ],
+        "image": "stories/fact-carbon-fiber.webp"
+    }
+]

@@ -1,4 +1,5 @@
-import { Routes, Route } from "react-router-dom";
+import { lazy, Suspense } from "react";
+import { Outlet, Routes, Route } from "react-router-dom";
 import { Layout } from "../layouts/Layout";
 
 import { Home } from "../pages/Home";
@@ -15,13 +16,14 @@ import { Signup } from "../pages/Signup";
 import { MyPage } from "../pages/MyPage";
 import { OrderDetail } from "../pages/OrderDetail";
 import { Support } from "../pages/Support";
-import { Community } from "../pages/Community";
-import { CommunityDetail } from "../pages/CommunityDetail";
 import { Dealers } from "../pages/Dealers";
 import { TestRideReservation } from "../pages/TestRideReservation";
 import { CustomizeIntro } from "../pages/CustomizeIntro";
 import { FooterPage } from "../pages/FooterPage";
 import { NotFound } from "../pages/NotFound";
+
+const Community = lazy(async () => ({ default: (await import("../pages/Community")).Community }));
+const CommunityDetail = lazy(async () => ({ default: (await import("../pages/CommunityDetail")).CommunityDetail }));
 
 export const AppRoutes = () => {
     return (
@@ -34,8 +36,11 @@ export const AppRoutes = () => {
                 <Route path="customize" element={<CustomizeStart />} />
                 <Route path="customize/intro" element={<CustomizeIntro />} />
                 <Route path="customize/:id" element={<Customize />} />
-                <Route path="community" element={<Community />} />
-                <Route path="community/:id" element={<CommunityDetail />} />
+                <Route path="community" element={<Suspense fallback={null}><Outlet /></Suspense>}>
+                    <Route index element={<Community />} />
+                    <Route path="stories/:id" element={<CommunityDetail kind="story" />} />
+                    <Route path=":id" element={<CommunityDetail />} />
+                </Route>
                 <Route path="dealers" element={<Dealers />} />
                 <Route path="dealers/reserve" element={<TestRideReservation />} />
                 <Route path="compare" element={<Compare />} />
