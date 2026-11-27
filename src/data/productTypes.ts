@@ -1,4 +1,6 @@
-export type ProductPhoto = { label: string; image: string; thumbnail?: string };
+import type { PhotoFraming } from "./photoFraming";
+
+export type ProductPhoto = { label: string; image: string; thumbnail?: string; framing?: PhotoFraming };
 export type ProductSize = number | string;
 type Spec = readonly [label: string, value: string];
 type ProductFeature = { title: string; text: string; image: string };

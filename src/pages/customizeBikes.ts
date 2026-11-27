@@ -1,5 +1,7 @@
+import type { PhotoFraming } from "../data/photoFraming";
 import { customizeParts, type PartCatalog } from "./customizeParts";
 import type { GearItem } from "./gearCart";
+import { tarmacRubyFrontFraming } from "./productTarmac";
 
 export const customizeCategories = {
     "demo-11": { label: "산악", image: "mountain.webp" },
@@ -7,7 +9,7 @@ export const customizeCategories = {
     "tarmac-sl9": { label: "로드", image: "road.webp" },
 } as const;
 
-export type FrameColor = { name: string; finish: string; image?: string };
+export type FrameColor = { name: string; finish: string; image?: string; framing?: PhotoFraming };
 
 export type CustomizeBike = {
     id: string;
@@ -24,7 +26,7 @@ export type CustomizeBike = {
 const roadColors: CustomizeBike["colors"] = [
     { name: "Satin Silver Dust", image: "satin-silver-dust.webp", finish: "linear-gradient(90deg, #c9cbce 40%, #7a7d7e)" },
     { name: "Gloss White Silver Metallic", image: "gloss-white-silver-metallic.webp", finish: "linear-gradient(90deg, #efeff1 43%, #b60022)" },
-    { name: "Gloss Ruby Metallic", image: "gloss-ruby-metallic.webp", finish: "linear-gradient(90deg, #d2d7d7 40%, #86262f)" },
+    { name: "Gloss Ruby Metallic", image: "gloss-ruby-metallic.webp", finish: "linear-gradient(90deg, #d2d7d7 40%, #86262f)", framing: tarmacRubyFrontFraming },
 ];
 
 export const customizeBikes: readonly CustomizeBike[] = [
@@ -66,7 +68,11 @@ export const customizeBikes: readonly CustomizeBike[] = [
         sizes: [49, 52, 54, 56, 58],
         colors: [
             { name: "Redwood Metallic", finish: `url("${import.meta.env.BASE_URL}images/customize/swatches/redwood-metallic.png") center / cover no-repeat`, image: "crux-5-preview.webp" },
-            { name: "Deep Marine Metallic", image: "crux-deep-marine-metallic.webp", finish: `url("${import.meta.env.BASE_URL}images/customize/swatches/crux-gray-silver.png") center / cover no-repeat` },
+            {
+                name: "Deep Marine Metallic", image: "crux-deep-marine-metallic.webp",
+                finish: `url("${import.meta.env.BASE_URL}images/customize/swatches/crux-gray-silver.png") center / cover no-repeat`,
+                framing: { scale: 1.087, y: -.3 },
+            },
         ],
         price: 12500000,
         parts: customizeParts["crux-5"],
