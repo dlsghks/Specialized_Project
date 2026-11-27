@@ -76,7 +76,8 @@ export function Community() {
                         <p>{tab === "stories" ? "선수들의 이야기와 라이딩에 필요한 가이드를 만나보세요." : "커뮤니티 홈 / 선수"}</p>
                     </div>
                     <img className="community-masthead__photo" src={communityImages + (tab === "stories" ? "stories-hero.webp" : "athletes-hero.webp")}
-                        alt={tab === "stories" ? "설산을 배경으로 산악자전거를 타는 라이더" : "산과 숲을 따라 이어지는 흙길"} width={1840} height={759} fetchPriority="high" />
+                        alt={tab === "stories" ? "설산을 배경으로 산악자전거를 타는 라이더" : "들판 옆 자갈길을 달리는 두 선수와 지원 차량"}
+                        width={tab === "stories" ? 1840 : 780} height={tab === "stories" ? 759 : 329} fetchPriority="high" />
                 </header>
             )}
 
