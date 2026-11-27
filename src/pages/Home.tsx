@@ -1,7 +1,8 @@
 import { useRef, useState, type PointerEvent } from "react";
-import { ArrowRight, ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
+import { ArrowRight, ArrowUpRight, ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
 import { Link } from "react-router-dom";
 import { DealerFinder } from "./Dealers";
+import { bikePhoto, customizeBikes } from "./customizeBikes";
 import { colors, grades } from "./productTarmac";
 import "../styles/pages/Home.scss";
 
@@ -9,6 +10,19 @@ const base = import.meta.env.BASE_URL + "images/";
 const homeImages = base + "home/";
 const productDetail = "/products/4293533";
 const equipment = "/products?type=equipment";
+const showcaseLinks: Record<string, { href: string; external?: boolean }> = {
+    "tarmac-sl9": { href: productDetail },
+    "demo-11": { href: "https://www.specialized.com/kr/ko/s-works-demo-11/p/4293955", external: true },
+    "crux-5": { href: "https://www.specialized.com/kr/ko/crux-5-s-level-sram-red-xplr/p/4294829", external: true },
+};
+const showcaseBikes = customizeBikes.filter(({ id }) => Object.hasOwn(showcaseLinks, id)).map((bike) => ({
+    id: bike.id,
+    name: bike.name,
+    link: showcaseLinks[bike.id],
+    colors: bike.id === "tarmac-sl9"
+        ? colors.map(({ name, swatch, gallery }) => ({ name, swatch, image: gallery[0].image }))
+        : bike.colors.map(({ name, finish, image }) => ({ name, swatch: finish, image: bikePhoto(image ?? bike.image) })),
+}));
 const highlights = [
     {
         key: "customize", label: "S-LAB 3D CUSTOMIZATION", title: ["나만의 스페셜라이즈드,", "3D로 커스터마이징하세요"],
@@ -34,7 +48,7 @@ const parts = [
 const stories = [
     {
         title: "오르막에서 다시 속도를 붙이기 편했어요.", text: "늘 타던 언덕에서 잠깐 속도를 줄였다가 다시 페달을 밟아 봤어요.",
-        bike: grades[0], image: homeImages + "rider-community-story.webp", artwork: homeImages + "rider-community-featured.webp",
+        caption: "한강라이더 · 시승 후기 · 54 사이즈", bike: grades[0], image: homeImages + "rider-community-story.webp",
     },
     { title: "길이 달라지면 라이딩도 달라져요", text: "자주 달리는 길과 라이딩 스타일에 맞는 자전거를 찾아보세요.", bike: grades[1], image: base + "customize/categories/road.webp" },
     { title: "주말에 함께 달릴 코스를 찾아서", text: "라이더들과 함께 나누는 새로운 길과 주행 이야기를 둘러보세요.", bike: grades[2], image: homeImages + "hero-community.webp" },
@@ -47,15 +61,18 @@ export const Home = () => {
     const [{ index: highlightIndex, direction }, setHighlight] = useState({ index: 0, direction: 0 });
     const swipe = useRef<{ id: number; x: number; y: number } | null>(null);
     const [bikeIndex, setBikeIndex] = useState(0);
-    const [bikeColor, setBikeColor] = useState(1);
+    const [bikeColors, setBikeColors] = useState<Record<string, number>>({ "tarmac-sl9": 1 });
     const [storyIndex, setStoryIndex] = useState(0);
     const [heroPaused, setHeroPaused] = useState(false);
     const [showGuide, setShowGuide] = useState(false);
     const highlight = highlights[highlightIndex];
-    const currentBike = grades[bikeIndex];
-    const previousBike = grades[wrap(bikeIndex - 1, grades.length)];
-    const nextBike = grades[wrap(bikeIndex + 1, grades.length)];
+    const currentBike = showcaseBikes[bikeIndex];
+    const previousBike = showcaseBikes[wrap(bikeIndex - 1, showcaseBikes.length)];
+    const nextBike = showcaseBikes[wrap(bikeIndex + 1, showcaseBikes.length)];
+    const currentColorIndex = bikeColors[currentBike.id] ?? 0;
+    const currentColor = currentBike.colors[currentColorIndex];
     const story = stories[storyIndex];
+    const storyLabel = `STORY ${String(storyIndex + 1).padStart(2, "0")}`;
 
     const changeHighlight = (offset: number) => {
         if (!offset) return;
@@ -78,7 +95,7 @@ export const Home = () => {
         if (Math.abs(x) >= 45 && Math.abs(x) > Math.abs(y)) changeHighlight(x < 0 ? 1 : -1);
     };
 
-    const showcaseImage = (bike: typeof currentBike) => bike === grades[0] ? colors[bikeColor].gallery[0].image : bike.image;
+    const showcaseImage = (bike: typeof currentBike) => bike.colors[bikeColors[bike.id] ?? 0].image;
 
     return (
         <div className="home">
@@ -127,27 +144,25 @@ export const Home = () => {
                 <h2 id="featured-bikes">BIKE SHOWCASE</h2>
                 <div className="home-showcase__stage">
                     <img src={showcaseImage(previousBike)} alt="" className="home-showcase__side home-showcase__side--previous" loading="lazy" />
-                    <img src={showcaseImage(currentBike)} alt={currentBike.name} className="home-showcase__bike" loading="lazy" />
+                    <img src={currentColor.image} alt={`${currentBike.name} · ${currentColor.name}`} className="home-showcase__bike" loading="lazy" />
                     <img src={showcaseImage(nextBike)} alt="" className="home-showcase__side home-showcase__side--next" loading="lazy" />
                     <button className="home-carousel-button home-carousel-button--previous" type="button" aria-label="이전 자전거"
-                        onClick={() => setBikeIndex((index) => wrap(index - 1, grades.length))}><ChevronLeft aria-hidden="true" /></button>
+                        onClick={() => setBikeIndex((index) => wrap(index - 1, showcaseBikes.length))}><ChevronLeft aria-hidden="true" /></button>
                     <button className="home-carousel-button home-carousel-button--next" type="button" aria-label="다음 자전거"
-                        onClick={() => setBikeIndex((index) => wrap(index + 1, grades.length))}><ChevronRight aria-hidden="true" /></button>
+                        onClick={() => setBikeIndex((index) => wrap(index + 1, showcaseBikes.length))}><ChevronRight aria-hidden="true" /></button>
                 </div>
-                <p className="home-showcase__count">{countText(bikeIndex, grades.length)}</p>
+                <p className="home-showcase__count">{bikeIndex + 1} / {showcaseBikes.length}</p>
                 <div className="home-showcase__bar">
                     <strong aria-live="polite">{currentBike.name}</strong>
-                    {bikeIndex === 0 && (
-                        <div className="home-showcase__colors" role="group" aria-label="전시 자전거 색상">
-                            {colors.map(({ name, swatch }, index) => (
-                                <button type="button" key={name} aria-label={name} aria-pressed={bikeColor === index}
-                                    style={{ background: swatch }} onClick={() => setBikeColor(index)} />
-                            ))}
-                        </div>
-                    )}
-                    {currentBike.url
-                        ? <a href={currentBike.url}>자세히 보기 <ArrowRight size={15} aria-hidden="true" /></a>
-                        : <Link to={productDetail}>자세히 보기 <ArrowRight size={15} aria-hidden="true" /></Link>}
+                    <div className="home-showcase__colors" role="group" aria-label={`${currentBike.name} 색상`}>
+                        {currentBike.colors.map(({ name, swatch }, index) => (
+                            <button type="button" key={name} aria-label={name} aria-pressed={currentColorIndex === index}
+                                style={{ background: swatch }} onClick={() => setBikeColors((selected) => ({ ...selected, [currentBike.id]: index }))} />
+                        ))}
+                    </div>
+                    {currentBike.link.external
+                        ? <a href={currentBike.link.href}>자세히 보기 <ArrowRight size={15} aria-hidden="true" /></a>
+                        : <Link to={currentBike.link.href}>자세히 보기 <ArrowRight size={15} aria-hidden="true" /></Link>}
                 </div>
             </section>
 
@@ -188,27 +203,30 @@ export const Home = () => {
                         <div className="home-community__aside home-community__aside--previous" aria-hidden="true">
                             <img src={stories[wrap(storyIndex - 1, stories.length)].image} alt="" loading="lazy" />
                         </div>
-                        <article className="home-community__featured" data-artwork={!!story.artwork}>
-                            {story.artwork && (
-                                <div className="home-community__artwork">
-                                    <img src={story.artwork} alt={`${story.title} ${story.text} ${story.bike.name}`} width={1430} height={710} loading="lazy" />
-                                    <Link className="home-community__artwork-review" to="/community" aria-label="후기 읽기" />
-                                    <Link className="home-community__artwork-detail" to={productDetail} aria-label="모델 자세히 보기" />
-                                </div>
-                            )}
+                        <article className="home-community__featured">
                             <div className="home-community__story">
-                                <img src={story.image} alt="" loading="lazy" />
+                                <div className="home-community__story-media">
+                                    <img src={story.image} alt="" loading="lazy" />
+                                    <Link className="home-community__story-badge" to="/community" aria-label={`${storyLabel} 후기 읽기`}>
+                                        {storyLabel}
+                                    </Link>
+                                </div>
+                                {story.caption && <p className="home-community__caption">{story.caption}</p>}
                                 <h3>{story.title}</h3>
                                 <p>{story.text}</p>
-                                <Link to="/community">후기 보기 <ArrowRight size={15} aria-hidden="true" /></Link>
+                                <Link className="home-community__read" to="/community">후기 읽기 <ArrowUpRight size={15} aria-hidden="true" /></Link>
                             </div>
                             <div className="home-community__bike">
-                                <h3>{story.bike.name}</h3>
-                                <p>{story.bike.specs.slice(0, 3).join(" · ")}</p>
+                                <div className="home-community__bike-heading">
+                                    <div>
+                                        <h3>{story.bike.name}</h3>
+                                        <p>{story.bike.specs.slice(0, 3).join(" · ")}</p>
+                                    </div>
+                                    {story.bike.url
+                                        ? <a className="home-community__detail" href={story.bike.url}>모델 자세히 보기 <ChevronRight size={16} aria-hidden="true" /></a>
+                                        : <Link className="home-community__detail" to={productDetail}>모델 자세히 보기 <ChevronRight size={16} aria-hidden="true" /></Link>}
+                                </div>
                                 <img src={story.bike.image} alt={story.bike.name} loading="lazy" />
-                                {story.bike.url
-                                    ? <a className="home-community__detail" href={story.bike.url}>제품 자세히 보기</a>
-                                    : <Link className="home-community__detail" to={productDetail}>제품 자세히 보기</Link>}
                             </div>
                         </article>
                         <div className="home-community__aside home-community__aside--next" aria-hidden="true">
