@@ -19,6 +19,7 @@ import { Community } from "../pages/Community";
 import { CommunityDetail } from "../pages/CommunityDetail";
 import { Dealers } from "../pages/Dealers";
 import { TestRideReservation } from "../pages/TestRideReservation";
+import { CustomizeIntro } from "../pages/CustomizeIntro";
 import { CustomizeModels } from "../pages/CustomizeModels";
 import { FooterPage } from "../pages/FooterPage";
 import { NotFound } from "../pages/NotFound";
@@ -32,6 +33,7 @@ export const AppRoutes = () => {
                 <Route path="products" element={<Products />} />
                 <Route path="products/:id" element={<ProductDetail />} />
                 <Route path="customize" element={<CustomizeModels />} />
+                <Route path="customize/intro" element={<CustomizeIntro />} />
                 <Route path="customize/:id" element={<Customize />} />
                 <Route path="community" element={<Community />} />
                 <Route path="community/:id" element={<CommunityDetail />} />

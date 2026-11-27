@@ -35,7 +35,7 @@ export const Header = () => {
                 <nav className="site-navigation__primary" aria-label="주 메뉴">
                     <Link to="/products" onClick={closeMenu}><span aria-hidden="true">›</span>자전거</Link>
                     <Link to="/products?type=equipment" onClick={closeMenu}><span aria-hidden="true">›</span>장비</Link>
-                    <Link to="/customize" onClick={closeMenu}><span aria-hidden="true">›</span>장비 커스텀</Link>
+                    <Link to="/customize/intro" onClick={closeMenu}><span aria-hidden="true">›</span>장비 커스텀</Link>
                     <Link to="/community" onClick={closeMenu}><span aria-hidden="true">›</span>라이더 커뮤니티</Link>
                     <Link to="/dealers" onClick={closeMenu}><span aria-hidden="true">›</span>대리점</Link>
                 </nav>
