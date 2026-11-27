@@ -113,8 +113,15 @@ export function DealerFinder({ home = false }: { home?: boolean }) {
         new maps.services.Places().keywordSearch(term ? "스페셜라이즈드 " + term : "스페셜라이즈드", (data, status) => {
             if (token !== request.current) return;
             if (status === maps.services.Status.OK) {
-                setPlaces(data);
-                setMessage("");
+                const normalize = (value: string) => value.normalize("NFKC").toLowerCase().replace(/\s+/g, "");
+                const keyword = normalize(term);
+                const filtered = keyword ? data.filter((place) =>
+                    [place.place_name, place.address_name, place.road_address_name].some((value) =>
+                        normalize(value || "").includes(keyword)
+                    )
+                ) : data;
+                setPlaces(filtered);
+                setMessage(filtered.length ? "" : "검색 결과가 없어요. 다른 지역이나 매장명으로 검색해 주세요.");
             } else {
                 setMessage(status === maps.services.Status.ZERO_RESULT ? "검색 결과가 없어요. 다른 지역이나 매장명으로 검색해 주세요." : "매장 검색에 실패했어요. 잠시 후 다시 시도해 주세요.");
             }
