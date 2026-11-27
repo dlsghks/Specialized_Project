@@ -41,14 +41,14 @@ const highlights = [
     },
     {
         key: "community", label: "RIDER COMMUNITY", title: ["함께 달리는 라이더들의", "진짜 라이딩 이야기"],
-        action: "라이더 후기 보기", to: "/community", help: "커뮤니티 둘러보기", image: homeImages + "hero-community.webp",
+        action: "라이더 후기 보기", to: "/community", help: "커뮤니티 둘러보기", image: homeImages + "hero-community-wide.webp",
     },
 ];
 const parts = [
-    { name: "TIRE", label: "타이어", image: base + "customize/parts/cannibal.webp" },
-    { name: "HELMET", label: "헬멧", image: base + "customize/gear/S-Works_Evade4.webp" },
-    { name: "CAGE", label: "물통 케이지", image: base + "customize/gear/S-Works_Carbon_Rib_Cage3.webp" },
-    { name: "HANDLEBAR", label: "핸들바", image: base + "customize/parts/rapide-cockpit.webp" },
+    { name: "TIRE", label: "타이어", image: homeImages + "products/tire.png" },
+    { name: "HELMET", label: "헬멧", image: homeImages + "products/helmet.png" },
+    { name: "CAGE", label: "물통 케이지", image: homeImages + "products/cage.png" },
+    { name: "HANDLEBAR", label: "핸들바", image: homeImages + "products/handlebar.png" },
 ];
 const stories = [
     {
@@ -80,7 +80,10 @@ export const Home = () => {
     const changeHighlight = (offset: number) => {
         if (!offset) return;
         setShowGuide(false);
-        setHighlight(({ index }) => ({ index: wrap(index + offset, highlights.length), direction: Math.sign(offset) }));
+        setHighlight(({ index }) => ({
+            index: wrap(index + offset, highlights.length),
+            direction: Math.sign(offset),
+        }));
     };
 
     const startSwipe = (event: PointerEvent<HTMLDivElement>) => {
@@ -100,10 +103,16 @@ export const Home = () => {
 
     return (
         <div className="home">
-            <section className="home-hero" aria-label="주요 서비스" data-hero={highlight.key}>
+            <section className="home-hero" aria-label="주요 서비스">
                 <div className="home-hero__viewport" onPointerDown={startSwipe} onPointerUp={finishSwipe}
                     onPointerCancel={() => { swipe.current = null; }} onLostPointerCapture={() => { swipe.current = null; }}>
-                    <img className="home-hero__image" key={highlight.image} src={highlight.image} alt="" fetchPriority="high" draggable={false} />
+                    <div className="home-hero__media" aria-hidden="true">
+                        {highlights.map(({ key, image }, index) => (
+                            <img className="home-hero__image" key={key} src={image} alt="" draggable={false}
+                                data-slide={key} data-active={index === highlightIndex}
+                                fetchPriority={index === 0 ? "high" : "low"} />
+                        ))}
+                    </div>
                     <div className="home-hero__content" key={highlight.key} data-direction={direction}>
                         <p className="home-eyebrow">
                             <img src={homeImages + "hero-specialized-mark.png"} alt="" width={30} height={30} />

@@ -56,11 +56,8 @@
     isolation: isolate;
     display: grid;
     overflow: clip;
-    background: #1d2226;
+    background: #221d1d;
     color: #fff;
-
-    &[data-hero="customize"] { background: radial-gradient(ellipse at 82% 48%, #a3210d, #56170e 46%, #221d1d 82%); }
-    &[data-hero="community"] { background: #3f3033; }
 }
 
 .home-hero__viewport {
@@ -75,27 +72,38 @@
         position: absolute;
         inset: 0;
         z-index: -1;
-        background: linear-gradient(90deg, #171616 0%, #171616f0 27%, #17161632 66%, transparent 100%),
-            linear-gradient(0deg, #151414b0 0%, transparent 36%);
+        background: linear-gradient(90deg, #14141452, transparent 58%),
+            linear-gradient(0deg, #14141459, transparent 22%);
         pointer-events: none;
         content: "";
     }
 }
 
-.home-hero__image {
+.home-hero__media {
     position: absolute;
-    inset: 0 0 0 auto;
-    width: min(76%, 105rem);
-    height: 100%;
-    object-fit: cover;
-    object-position: 56% center;
+    inset: 0;
     z-index: -2;
+    isolation: isolate;
     pointer-events: none;
 }
 
-.home-hero[data-hero="customize"] {
-    .home-hero__image { width: 100%; object-position: 64% center; }
-    .home-hero__viewport::before { background: linear-gradient(90deg, #17161666, transparent 64%); }
+.home-hero__image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: var(--hero-image-position, 56%) center;
+    opacity: 0;
+    // Blend the two faded images at full combined brightness.
+    mix-blend-mode: plus-lighter;
+    transition: opacity 640ms cubic-bezier(.22, .61, .36, 1);
+
+    &[data-slide="customize"] { --hero-image-position: 64%; filter: brightness(1.12); }
+    &[data-slide="advisor"] { filter: brightness(1.17); }
+    &[data-slide="community"] { --hero-image-position: 78%; }
+
+    &[data-active="true"] { opacity: 1; }
 }
 
 .home-hero__content {
@@ -103,10 +111,12 @@
     margin: clamp(10rem, 18vw, 16rem) var(--home-gutter) 0 clamp(1rem, 8.5vw, 10rem);
     max-width: 44rem;
 
-    &[data-direction="1"] { --hero-slide: 1.75rem; animation: home-hero-enter 360ms ease-out both; }
-    &[data-direction="-1"] { --hero-slide: -1.75rem; animation: home-hero-enter 360ms ease-out both; }
+    &[data-direction="1"] { --hero-slide: .8rem; }
+    &[data-direction="-1"] { --hero-slide: -.8rem; }
+    &[data-direction]:not([data-direction="0"]) { animation: home-hero-enter 520ms cubic-bezier(.22, .61, .36, 1) both; }
     .home-eyebrow {
         color: #fff;
+        text-shadow: 0 1px 8px #0008;
 
         &::before { content: none; }
         img { flex: none; width: 30px; height: 30px; }
@@ -117,6 +127,7 @@
         line-height: 1.18;
         letter-spacing: -.075em;
         word-break: keep-all;
+        text-shadow: 0 2px 15px #0008;
     }
 }
 
@@ -181,7 +192,7 @@
 }
 
 @keyframes home-hero-enter {
-    from { transform: translateX(var(--hero-slide)); opacity: .35; }
+    from { transform: translateX(var(--hero-slide)); opacity: .55; }
     to { transform: translateX(0); opacity: 1; }
 }
 
@@ -191,7 +202,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .home-hero__content[data-direction] { animation: none; }
+    .home-hero__image { transition: none; }
+    .home-hero__content[data-direction]:not([data-direction="0"]) { animation: none; }
     .home-hero__progress { animation: none; }
     .home-hero__playback button { display: none; }
 }
@@ -484,12 +496,8 @@
 }
 
 @media (max-width: 620px) {
-    .home-hero__image { width: 100%; object-position: 53% center; }
-    .home-hero__viewport::before { background: linear-gradient(0deg, #141414 0%, #141414b0 43%, #14141430 100%); }
-    .home-hero[data-hero="customize"] {
-        .home-hero__image { object-position: 67% center; }
-        .home-hero__viewport::before { background: linear-gradient(0deg, #141414cf, #14141480 48%, transparent 78%); }
-    }
+    .home-hero__image[data-slide="customize"] { --hero-image-position: 72%; }
+    .home-hero__viewport::before { background: linear-gradient(0deg, #141414a6, #1414144d 52%, transparent 75%); }
     .home-hero__content { margin: 0 var(--home-gutter) 6rem; }
     .home-hero__controls { grid-template-columns: 1fr auto; }
     .home-hero__tabs { grid-column: 1; }
