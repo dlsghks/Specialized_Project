@@ -5,7 +5,8 @@
 }
 
 html {
-    scroll-padding-top: 60px;
+    --site-header-height: 60px;
+    scroll-padding-top: var(--site-header-height);
     scrollbar-gutter: stable;
 }
 
@@ -42,7 +43,7 @@ img {
 }
 
 .layout {
-    padding-top: 60px;
+    padding-top: var(--site-header-height);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -55,7 +56,7 @@ img {
 .site-header {
     position: fixed;
     inset: 0 0 auto;
-    height: 60px;
+    height: var(--site-header-height);
     z-index: 1;
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
@@ -110,8 +111,11 @@ html:has(.site-navigation[open]) {
     }
 
     &::backdrop {
-        background: #0009;
+        background-color: #0009;
+        transition: background-color 240ms ease-in;
     }
+
+    &[data-closing]::backdrop { background-color: transparent; }
 }
 
 .site-navigation__close {
@@ -153,4 +157,5 @@ html:has(.site-navigation[open]) {
 
 @media (prefers-reduced-motion: reduce) {
     .site-navigation[open] { animation: none; }
+    .site-navigation::backdrop { transition: none; }
 }
