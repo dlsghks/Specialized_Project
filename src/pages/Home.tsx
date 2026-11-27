@@ -2,26 +2,27 @@ import { useRef, useState, type PointerEvent } from "react";
 import { ArrowRight, ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
 import { Link } from "react-router-dom";
 import { DealerFinder } from "./Dealers";
-import { bannerImage, colors, grades } from "./productTarmac";
+import { colors, grades } from "./productTarmac";
 import "../styles/pages/Home.scss";
 
 const base = import.meta.env.BASE_URL + "images/";
+const homeImages = base + "home/";
 const productDetail = "/products/4293533";
 const equipment = "/products?type=equipment";
 const highlights = [
     {
         key: "customize", label: "S-LAB 3D CUSTOMIZATION", title: ["나만의 스페셜라이즈드,", "3D로 커스터마이징하세요"],
         action: "S-LAB 시작하기", to: "/customize", help: "커스터마이징 가이드",
-        description: "프레임 컬러와 부품을 골라 나만의 자전거를 구성해 보세요.", image: colors[1].gallery[0].image,
+        description: "프레임 컬러와 부품을 골라 나만의 자전거를 구성해 보세요.", image: homeImages + "hero-customization.webp",
     },
     {
         key: "advisor", label: "AI BIKE ADVISOR", title: ["몇 가지 질문으로 찾는", "나에게 맞는 스페셜라이즈드"],
         action: "AI 추천 시작하기", to: "/bike-finder", help: "추천 방식 알아보기",
-        description: "라이딩 스타일과 주행 환경, 예산에 맞춰 자전거를 추천해 드려요.", image: base + "home/hero-advisor.webp",
+        description: "라이딩 스타일과 주행 환경, 예산에 맞춰 자전거를 추천해 드려요.", image: homeImages + "hero-advisor.webp",
     },
     {
         key: "community", label: "RIDER COMMUNITY", title: ["함께 달리는 라이더들의", "진짜 라이딩 이야기"],
-        action: "라이더 후기 보기", to: "/community", help: "커뮤니티 둘러보기", image: base + "home/hero-community.webp",
+        action: "라이더 후기 보기", to: "/community", help: "커뮤니티 둘러보기", image: homeImages + "hero-community.webp",
     },
 ];
 const parts = [
@@ -31,9 +32,12 @@ const parts = [
     { name: "HANDLEBAR", label: "핸들바", image: base + "customize/parts/rapide-cockpit.webp" },
 ];
 const stories = [
-    { title: "오르막에서 다시 속도를 붙이는 순간", text: "빠른 반응과 안정적인 핸들링으로 오르막과 코너를 이어 달리는 타막을 만나보세요.", bike: grades[0], image: bannerImage },
+    {
+        title: "오르막에서 다시 속도를 붙이기 편했어요.", text: "늘 타던 언덕에서 잠깐 속도를 줄였다가 다시 페달을 밟아 봤어요.",
+        bike: grades[0], image: homeImages + "rider-community-story.webp", artwork: homeImages + "rider-community-featured.webp",
+    },
     { title: "길이 달라지면 라이딩도 달라져요", text: "자주 달리는 길과 라이딩 스타일에 맞는 자전거를 찾아보세요.", bike: grades[1], image: base + "customize/categories/road.webp" },
-    { title: "주말에 함께 달릴 코스를 찾아서", text: "라이더들과 함께 나누는 새로운 길과 주행 이야기를 둘러보세요.", bike: grades[2], image: base + "home/hero-community.webp" },
+    { title: "주말에 함께 달릴 코스를 찾아서", text: "라이더들과 함께 나누는 새로운 길과 주행 이야기를 둘러보세요.", bike: grades[2], image: homeImages + "hero-community.webp" },
 ];
 
 const wrap = (index: number, count: number) => (index + count) % count;
@@ -83,7 +87,10 @@ export const Home = () => {
                     onPointerCancel={() => { swipe.current = null; }} onLostPointerCapture={() => { swipe.current = null; }}>
                     <img className="home-hero__image" key={highlight.image} src={highlight.image} alt="" fetchPriority="high" draggable={false} />
                     <div className="home-hero__content" key={highlight.key} data-direction={direction}>
-                        <p className="home-eyebrow">{highlight.label}</p>
+                        <p className="home-eyebrow">
+                            <img src={homeImages + "hero-specialized-mark.png"} alt="" width={30} height={30} />
+                            {highlight.label}
+                        </p>
                         <h1>{highlight.title[0]}<br />{highlight.title[1]}</h1>
                         <div className="home-hero__actions">
                             <Link className="home-link" to={highlight.to}>{highlight.action}<ChevronRight size={17} aria-hidden="true" /></Link>
@@ -145,7 +152,7 @@ export const Home = () => {
             </section>
 
             <section className="home-ride-finder" aria-labelledby="ride-title">
-                <img src={colors[1].gallery[3].image} alt="" loading="lazy" />
+                <img src={homeImages + "find-your-ride.webp"} alt="" loading="lazy" />
                 <div>
                     <h2 id="ride-title">FIND YOUR RIDE</h2>
                     <p>라이딩 스타일에 맞는 자전거를 찾아보세요.</p>
@@ -181,7 +188,14 @@ export const Home = () => {
                         <div className="home-community__aside home-community__aside--previous" aria-hidden="true">
                             <img src={stories[wrap(storyIndex - 1, stories.length)].image} alt="" loading="lazy" />
                         </div>
-                        <article className="home-community__featured">
+                        <article className="home-community__featured" data-artwork={!!story.artwork}>
+                            {story.artwork && (
+                                <div className="home-community__artwork">
+                                    <img src={story.artwork} alt={`${story.title} ${story.text} ${story.bike.name}`} width={1430} height={710} loading="lazy" />
+                                    <Link className="home-community__artwork-review" to="/community" aria-label="후기 읽기" />
+                                    <Link className="home-community__artwork-detail" to={productDetail} aria-label="모델 자세히 보기" />
+                                </div>
+                            )}
                             <div className="home-community__story">
                                 <img src={story.image} alt="" loading="lazy" />
                                 <h3>{story.title}</h3>
