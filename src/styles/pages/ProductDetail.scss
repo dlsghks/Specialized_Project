@@ -298,6 +298,7 @@
 
 .product-purchase__actions a { background: #a80000; }
 .product-purchase__status { grid-column: 1 / -1; text-align: end; }
+.product-purchase__status a { text-decoration: underline; text-underline-offset: 3px; }
 
 .product-detail__sections {
     display: grid;

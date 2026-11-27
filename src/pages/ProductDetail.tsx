@@ -2,6 +2,7 @@ import { useLayoutEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ProductGallery } from "../components/products/ProductGallery";
 import { ProductDetailSections } from "../components/products/ProductDetailSections";
+import { addCartItem } from "../data/commerce";
 import { formatProductPrice, products } from "../data/products";
 import type { Product, ProductSize } from "../data/productTypes";
 import { NotFound } from "./NotFound";
@@ -21,7 +22,8 @@ function ProductDetailView({ product }: { product: Product }) {
     const [colorIndex, setColorIndex] = useState(0);
     const [galleryVersion, setGalleryVersion] = useState(0);
     const [size, setSize] = useState<ProductSize | null>(null);
-    const [purchaseStatus, setPurchaseStatus] = useState("");
+    const [purchaseStatus, setPurchaseStatus] = useState<"" | "added" | "error">("");
+    const [adding, setAdding] = useState(false);
     const geometryPanel = useRef<HTMLDetailsElement>(null);
     const color = colors[colorIndex];
     const gallery = color?.gallery ?? page?.gallery ?? (product.image ? [{ label: "제품 사진", image: product.image }] : []);
@@ -38,6 +40,28 @@ function ProductDetailView({ product }: { product: Product }) {
         if (!geometryPanel.current) return;
         geometryPanel.current.open = true;
         geometryPanel.current.scrollIntoView();
+    };
+
+    const addProduct = async () => {
+        if (product.price === null || needsSize || adding) return;
+        setAdding(true);
+        try {
+            await addCartItem({
+                id: JSON.stringify([product.id, color?.name, size]),
+                productId: product.id,
+                name: product.name,
+                price: product.price,
+                quantity: 1,
+                image: gallery[0]?.image,
+                pickupOnly: page?.pickupOnly,
+                options: [color ? `색상 ${color.name}` : "", size === null ? "" : `사이즈 ${size}`].filter(Boolean),
+            });
+            setPurchaseStatus("added");
+        } catch {
+            setPurchaseStatus("error");
+        } finally {
+            setAdding(false);
+        }
     };
 
     return (
@@ -97,19 +121,22 @@ function ProductDetailView({ product }: { product: Product }) {
                         </div>
                     </div>
                 )}
-                {(summary || purchaseUrl) && (
+                {(summary || purchaseUrl || product.price !== null) && (
                     <div className="product-purchase">
                         {summary ? <div><h2>선택 요약</h2><p>{summary}</p></div> : <div><h2>구매 안내</h2></div>}
                         <div className="product-purchase__actions">
-                            {page?.pickupOnly && (
-                                <button type="button" disabled={needsSize}
-                                    onClick={() => setPurchaseStatus("이 상품의 장바구니 연동을 준비 중이에요.")}>장바구니 담기</button>
+                            {product.price !== null && (
+                                <button type="button" disabled={needsSize || adding} onClick={() => { void addProduct(); }}>장바구니 담기</button>
                             )}
                             {purchaseUrl && (needsSize
                                 ? <button type="button" disabled>바로 구매</button>
                                 : <a href={purchaseUrl} target="_blank" rel="noreferrer">공식몰에서 구매</a>)}
                         </div>
-                        {purchaseStatus && <p className="product-purchase__status" role="status">{purchaseStatus}</p>}
+                        {purchaseStatus && (
+                            <p className="product-purchase__status" role="status">
+                                {purchaseStatus === "added" ? <>장바구니에 담았어요. <Link to="/cart">장바구니 보기</Link></> : "장바구니에 담지 못했어요. 다시 시도해 주세요."}
+                            </p>
+                        )}
                     </div>
                 )}
             </section>

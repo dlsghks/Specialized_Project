@@ -209,6 +209,9 @@
 }
 
 .bike-build__summary .bike-build__cart {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 100%;
     min-height: 56px;
     border-radius: 2px;

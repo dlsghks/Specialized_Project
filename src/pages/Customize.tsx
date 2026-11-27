@@ -2,9 +2,10 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { ArrowRight, Bookmark, Check, ChevronDown, ChevronRight, CircleHelp, Eye, List, MessageCircle, RotateCcw, X, ZoomIn, ZoomOut } from "lucide-react";
 import { Link, useLocation, useParams, useSearchParams } from "react-router-dom";
 import "../styles/pages/Customize.scss";
+import { addCartItem, gearCartId, gearCartItem, useShop } from "../data/commerce";
 import { photoFramingStyle } from "../data/photoFraming";
 
-import { gearImage, readGearCart, writeGearCart, type GearItem } from "./gearCart";
+import { gearImage, type GearItem } from "./gearCart";
 import { bikePhoto, customizeBikes, customizeCategories, type CustomizeBike, type FrameColor } from "./customizeBikes";
 import { partImage, partSteps, type PartCatalog, type PartKind } from "./customizeParts";
 
@@ -170,17 +171,15 @@ function BikeCustomizer({ bike, initialStep, draftKey }: { bike: CustomizeBike; 
     const [helpOpen, setHelpOpen] = useState(false);
     const [zoom, setZoom] = useState(1);
     const [notice, setNotice] = useState("");
-    const [cartItems, setCartItems] = useState(readGearCart);
+    const { cart: cartItems } = useShop();
+    const [addingBike, setAddingBike] = useState(false);
     const [gearDetail, setGearDetail] = useState<GearItem | null>(null);
     const [gearNotice, setGearNotice] = useState("");
     const gearDialog = useRef<HTMLDialogElement>(null);
 
-    const addGear = (item: GearItem) => {
-        const current = readGearCart();
-        const next = current.some(({ image }) => image === item.image) ? current : [...current, item];
+    const addGear = async (item: GearItem) => {
         try {
-            writeGearCart(next);
-            setCartItems(next);
+            await addCartItem(gearCartItem(item), true);
             setGearNotice(`${item.name}을(를) 장바구니에 담았어요.`);
         } catch {
             setGearNotice("장비를 장바구니에 담지 못했어요.");
@@ -202,6 +201,30 @@ function BikeCustomizer({ bike, initialStep, draftKey }: { bike: CustomizeBike; 
             return id === null ? "기본 구성" : catalog[key].find((option) => option.id === id)?.name;
         }),
     ];
+
+    const canAddBike = build.size !== null && build.color !== null && partSteps.every(({ key }) => build.parts[key] !== undefined);
+    const configuredId = JSON.stringify(["custom", bike.id, build.size, previewColor.name, ...partSteps.map(({ key }) => build.parts[key])]);
+
+    const addBike = async () => {
+        if (!canAddBike || addingBike) return;
+        setAddingBike(true);
+        try {
+            await addCartItem({
+                id: configuredId,
+                name: model,
+                price,
+                quantity: 1,
+                image: displayedColor.image ?? bikePhoto(bike.image),
+                pickupOnly: true,
+                options: [`색상 ${previewColor.name}`, `사이즈 ${build.size}`, ...values.slice(firstPartStep).filter((value): value is string => Boolean(value && value !== "기본 구성"))],
+            }, true);
+            setNotice("구성한 자전거를 장바구니에 담았어요.");
+        } catch {
+            setNotice("자전거를 장바구니에 담지 못했어요.");
+        } finally {
+            setAddingBike(false);
+        }
+    };
 
     const save = () => {
         try {
@@ -278,7 +301,10 @@ function BikeCustomizer({ bike, initialStep, draftKey }: { bike: CustomizeBike; 
                                     </div>
                                 </dl>
                                 <div className="bike-build__total"><span>합산 가격</span><strong>₩ {build.size && build.color !== null ? price.toLocaleString("ko-KR") : "00,000,000"}</strong></div>
-                                <button className="bike-build__cart" type="button" disabled title="장바구니 연결 준비 중">장바구니 담기</button>
+                                {canAddBike && cartItems.some(({ id }) => id === configuredId)
+                                    ? <Link className="bike-build__cart" to="/cart">장바구니 보기</Link>
+                                    : <button className="bike-build__cart" type="button" disabled={!canAddBike || addingBike}
+                                        onClick={() => { void addBike(); }}>장바구니 담기</button>}
                                 {notice && <p role="status" className="bike-build__notice">{notice}</p>}
                             </div>
                         </aside>
@@ -348,9 +374,9 @@ function BikeCustomizer({ bike, initialStep, draftKey }: { bike: CustomizeBike; 
                                         </div>
                                         <div className="bike-build__gear-body">
                                             <strong>{name}</strong>
-                                            {cartItems.some((item) => item.image === image) ? (
+                                            {cartItems.some((item) => item.id === gearCartId(image)) ? (
                                                 <Link className="bike-build__gear-add" to="/cart" aria-label={`${name} 담김, 장바구니 보기`}>담김 <ArrowRight size={14} aria-hidden="true" /></Link>
-                                            ) : <button className="bike-build__gear-add" type="button" aria-label={`${name} 담기`} onClick={() => addGear({ name, image })}>담기</button>}
+                                            ) : <button className="bike-build__gear-add" type="button" aria-label={`${name} 담기`} onClick={() => { void addGear({ name, image }); }}>담기</button>}
                                         </div>
                                     </li>
                                 ))}
