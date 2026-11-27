@@ -211,7 +211,7 @@ export const Home = () => {
                         {parts.map(({ name, label, image }) => (
                             <li key={name}>
                                 <Link to={equipment} aria-label={label + " 장비 둘러보기"}>
-                                    <img src={image} alt="" loading="lazy" />
+                                    <span className="home-components__media"><img src={image} alt="" loading="lazy" /></span>
                                     <div><span><strong>{name}</strong><span>{label}</span></span><ArrowRight size={19} aria-hidden="true" /></div>
                                 </Link>
                             </li>
